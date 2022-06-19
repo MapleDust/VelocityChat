@@ -13,7 +13,7 @@
     ```toml
     #主前缀
     mainprefix = "§8[§6testServerName§8]"
-    #子服前缀,注意lobby一定是你在velocity里配置的子服名称，否则导致不生效
+    #子服前缀,注意lobby一定是你在velocity里配置的子服名称，否则导致不生效甚至消息发不出去
     [subprefix]
     lobby = "§8[§alobby§8]"
     ```
