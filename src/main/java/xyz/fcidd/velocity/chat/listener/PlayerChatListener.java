@@ -44,7 +44,7 @@ public class PlayerChatListener {
                 //获取子服的前缀
                 Object subPrefix = configServerList.get(configServer);
                 //向所有服务器发送处理后的玩家消息
-                proxyServer.getAllServers().forEach(registeredServer -> registeredServer.sendMessage(Component.text(subPrefix + mainPrefix + "§f<" + playerUsername + ">" + playerMessage)));
+                proxyServer.getAllServers().forEach(registeredServer -> registeredServer.sendMessage(Component.text(subPrefix + mainPrefix + "§f<" + playerUsername + "> " + playerMessage)));
             }
         });
     }
