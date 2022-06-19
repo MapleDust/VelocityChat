@@ -1,0 +1,5 @@
+#主前缀
+mainprefix = "§8[§6testServerName§8]"
+#子服前缀
+[subprefix]
+lobby = "§8[§alobby§8]"
