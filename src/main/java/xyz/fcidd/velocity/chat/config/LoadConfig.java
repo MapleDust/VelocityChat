@@ -10,8 +10,8 @@ import java.util.Map;
 
 @Data
 public class LoadConfig implements Serializable {
-    private String mainPrefix = loadToml().getString("mainprefix");
-    private Map<String, Object> configServerList = loadToml().getTable("subprefix").toMap();
+    private String mainPrefix = loadToml().getString("main_prefix");
+    private Map<String, Object> configServerList = loadToml().getTable("sub_prefix").toMap();
     private String mcdrCommandPrefix=loadToml().getString("mcdr_command_prefix");
 
     @SneakyThrows
