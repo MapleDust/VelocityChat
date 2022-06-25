@@ -27,16 +27,23 @@ public class PlayerChatListener {
         String serverName = player.getCurrentServer().get().getServer().getServerInfo().getName();
         //获取玩家发送的消息
         String playerMessage = playerChatEvent.getMessage().replaceAll("&", "§");
+        //获取玩家消息的长度
+        int playerMessageLength = playerMessage.length();
         //读取配置文件
         LoadConfig loadConfig = new LoadConfig();
         //获取mcdr命令前缀
         String mcdrCommandPrefix = loadConfig.getMcdrCommandPrefix();
         //获取mcdr命令前缀文字的长度
         int mcdrCommandPrefixLength = mcdrCommandPrefix.length();
-        //将玩家发送的消息从头截取与mcdr命令前缀文字的相同长度
-        String playerMessageSubMcdrCommandPrefix = mcdrCommandPrefix.substring(0, mcdrCommandPrefixLength);
+        //初始化playerMessageSubMcdrCommandPrefix
+        String playerMessageSubMcdrCommandPrefix = null;
+        //有可能会发生字符串下标越界异常，需要简单的处理一下
+        if (playerMessageLength > mcdrCommandPrefixLength) {
+            //将玩家发送的消息从头截取与mcdr命令前缀文字的相同长度
+            playerMessageSubMcdrCommandPrefix = playerMessage.substring(0, mcdrCommandPrefixLength);
+        }
         //如果mcdr命令前缀与截取玩家发送的消息不一致
-        if (!mcdrCommandPrefix.equals(playerMessageSubMcdrCommandPrefix)){
+        if (!mcdrCommandPrefix.equals(playerMessageSubMcdrCommandPrefix)) {
             //取消消息发送
             playerChatEvent.setResult(PlayerChatEvent.ChatResult.denied());
             //获取配置文件的主前缀
