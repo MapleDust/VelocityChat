@@ -6,7 +6,7 @@
 
   - 将从 `Releases` 上下载的插件放入 Velocity 端根目录的 `plugins` 文件夹里
 
-  - 首次运行会在 `plugins` 文件里生成 `velocitychat` 文件夹下的 `config.toml` 配置文件，推荐使用 `Notepad++` 来编辑
+  - 首次运行会在 `plugins` 文件里生成 `velocitychat` 文件夹下的 `config.toml` 配置文件，推荐使用 `Notepad3` 等编辑器来编辑
 
   - 本插件 `config.toml` 配置文件说明
 
