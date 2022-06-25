@@ -23,10 +23,8 @@ public class Initialization {
             if (!CONFIG_FILE.exists()) {
                 // 创建配置文件夹
                 CONFIG_FOLDER.mkdirs();
-
                 // 创建配置文件
                 RandomAccessFile raf = new RandomAccessFile(CONFIG_FILE, "rw");
-
                 // 读取 resource 目录下的配置文件
                 while ((len = CONFIG_RESOURCE.read(data)) != 1) {
                     // 写入配置文件
