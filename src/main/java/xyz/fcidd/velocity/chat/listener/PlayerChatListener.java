@@ -39,7 +39,7 @@ public class PlayerChatListener {
         String playerMessageSubMcdrCommandPrefix = null;
         // 有可能会发生字符串下标越界异常，需要简单的处理一下
         if (playerMessageLength > mcdrCommandPrefixLength) {
-            //将玩家发送的消息从头截取与 MCDR 命令前缀文字的相同长度
+            // 将玩家发送的消息从头截取与 MCDR 命令前缀文字的相同长度
             playerMessageSubMcdrCommandPrefix = playerMessage.substring(0, mcdrCommandPrefixLength);
         }
         // 如果 MCDR 命令前缀与截取玩家发送的消息不一致
