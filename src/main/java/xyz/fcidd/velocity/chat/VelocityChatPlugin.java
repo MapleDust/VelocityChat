@@ -16,14 +16,14 @@ public class VelocityChatPlugin {
     @Inject
     public VelocityChatPlugin(ProxyServer proxyServer, Logger logger) {
         this.proxyServer = proxyServer;
-        //初始化插件
+        // 初始化插件
         Initialization.init();
-        logger.info("§aVelocityChat已载入完成,项目地址https://github.com/MapleDust/VelocityChat");
+        logger.info("§aVelocityChat 已载入完成,项目地址 https://github.com/MapleDust/VelocityChat");
     }
 
     @Subscribe
     public void onInitialize(ProxyInitializeEvent event) {
-        //注册监听器
+        // 注册监听器
         proxyServer.getEventManager().register(this, new PlayerChatListener(proxyServer));
     }
 
