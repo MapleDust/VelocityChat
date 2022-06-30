@@ -15,7 +15,7 @@
     main_prefix = "§8[§6testServerName§8]"
     # 在此处填写 MCDR 命令的前缀,如果没有使用 MCDR 开服的请保持默认，如果使用 MCDR 开服请根据实际情况填写
     mcdr_command_prefix = "!!"
-    # 子服前缀
+    # 子服前缀,注意lobby一定要是你在velocity配置的子服名称,否则导致不生效甚至消息发不出去
     [sub_prefix]
     lobby = "§8[§alobby§8]"
     ```
