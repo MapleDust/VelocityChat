@@ -12,7 +12,7 @@ import java.util.Map;
 public class LoadConfig implements Serializable {
     private String mainPrefix = loadToml().getString("main_prefix");
     private Map<String, Object> configServerList = loadToml().getTable("sub_prefix").toMap();
-    private String mcdrCommandPrefix=loadToml().getString("mcdr_command_prefix");
+    private String mcdrCommandPrefix = loadToml().getString("mcdr_command_prefix");
 
     @SneakyThrows
     public static Toml loadToml() {

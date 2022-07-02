@@ -52,16 +52,13 @@ public class PlayerChatListener {
             Map<String, Object> configServerList = loadConfig.getConfigServerList();
             // 获取配置文件中服务器所有子服名称
             Set<String> configServers = configServerList.keySet();
-            // 进行循环
-            configServers.forEach(configServer -> {
-                // 如果配置文件的服务器名称和玩家所在的服务器一致
-                if (serverName.equals(configServer)) {
-                    // 获取子服的前缀
-                    Object subPrefix = configServerList.get(configServer);
-                    // 向所有服务器发送处理后的玩家消息
-                    proxyServer.getAllServers().forEach(registeredServer -> registeredServer.sendMessage(Component.text(subPrefix + mainPrefix + "§f<" + playerUsername + "> " + playerMessage)));
-                }
-            });
+            // 如果配置文件的服务器名称包含玩家所连接服务器的名称
+            if (configServers.contains(serverName)) {
+                // 获取子服的前缀
+                Object subPrefix = configServerList.get(serverName);
+                // 向所有服务器发送处理后的玩家消息
+                proxyServer.getAllServers().forEach(registeredServer -> registeredServer.sendMessage(Component.text(subPrefix + " " + mainPrefix + " §r<" + playerUsername + "> " + playerMessage)));
+            }
         }
     }
 }
