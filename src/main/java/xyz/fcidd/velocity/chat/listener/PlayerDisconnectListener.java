@@ -21,7 +21,7 @@ public class PlayerDisconnectListener {
         String playerUsername = player.getUsername();
         // 将玩家退出群组的消息发送给所有人
         proxyServer.getAllServers().forEach(server -> {
-            server.sendMessage(Component.text("§r" + playerUsername + " §2离开了群组"));
+            server.sendMessage(Component.text("§8[§c-§8]§r " + playerUsername + " §2离开了群组"));
         });
     }
 }

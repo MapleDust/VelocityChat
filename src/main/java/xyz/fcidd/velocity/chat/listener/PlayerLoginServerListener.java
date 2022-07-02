@@ -56,9 +56,9 @@ public class PlayerLoginServerListener {
             Object previousServerSubPrefix = configServerList.get(previousServerName);
             // 向所有的服务器发送玩家切换服务器的消息
             proxyServer.getAllServers().forEach(server -> {
-                server.sendMessage(Component.text("§8[§6⇄§8]§r " + playerUsername + " §2从§r " + subPrefix + " §2切换到§r " + previousServerSubPrefix));
+                server.sendMessage(Component.text("§8[§b⇄§8]§r " + playerUsername + " §2从§r " + previousServerSubPrefix + " §2切换到§r " + subPrefix));
             });
-            player.sendMessage(Component.text("§8[§6⇄§8]§r " + playerUsername + " §2从§r " + subPrefix + " §2切换到§r " + previousServerSubPrefix));
+            player.sendMessage(Component.text("§8[§b⇄§8]§r " + playerUsername + " §2从§r " + previousServerSubPrefix + " §2切换到§r " + subPrefix));
         }
     }
 }
