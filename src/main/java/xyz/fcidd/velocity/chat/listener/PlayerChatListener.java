@@ -18,6 +18,7 @@ public class PlayerChatListener {
         this.proxyServer = proxyServer;
     }
 
+
     @Subscribe
     public void playerChatEvent(PlayerChatEvent playerChatEvent) {
         // 获取玩家信息
@@ -27,7 +28,7 @@ public class PlayerChatListener {
         // 获取服务器昵称
         String serverName = player.getCurrentServer().get().getServer().getServerInfo().getName();
         // 获取玩家发送的消息
-        String playerMessage = playerChatEvent.getMessage().replaceAll("&", "§");
+        String playerMessage = MinecraftColorCodeUtil.replaceColorCode(playerChatEvent.getMessage());
         // 获取玩家消息的长度
         int playerMessageLength = playerMessage.length();
         // 读取配置文件
