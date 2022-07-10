@@ -6,6 +6,7 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import xyz.fcidd.velocity.chat.config.LoadConfig;
+import xyz.fcidd.velocity.chat.util.MinecraftColorCodeUtil;
 
 import java.util.Map;
 import java.util.Set;

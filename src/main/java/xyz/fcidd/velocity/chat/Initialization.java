@@ -1,8 +1,8 @@
 package xyz.fcidd.velocity.chat;
 
-import lombok.SneakyThrows;
-
-import java.io.*;
+import java.io.File;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
 
 public class Initialization {
     // 配置文件目录
