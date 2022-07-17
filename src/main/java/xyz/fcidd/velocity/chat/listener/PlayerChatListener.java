@@ -8,6 +8,7 @@ import net.kyori.adventure.text.Component;
 import xyz.fcidd.velocity.chat.config.LoadConfig;
 import xyz.fcidd.velocity.chat.util.MinecraftColorCodeUtil;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,19 +34,29 @@ public class PlayerChatListener {
         int playerMessageLength = playerMessage.length();
         // 读取配置文件
         LoadConfig loadConfig = new LoadConfig();
-        // 获取 MCDR 命令前缀
-        String mcdrCommandPrefix = loadConfig.getMcdrCommandPrefix();
-        // 获取 MCDR 命令前缀文字的长度
-        int mcdrCommandPrefixLength = mcdrCommandPrefix.length();
-        // 初始化 playerMessageSubMcdrCommandPrefix
-        String playerMessageSubMcdrCommandPrefix = null;
-        // 有可能会发生字符串下标越界异常，需要简单的处理一下
-        if (playerMessageLength > mcdrCommandPrefixLength) {
-            // 将玩家发送的消息从头截取与 MCDR 命令前缀文字的相同长度
-            playerMessageSubMcdrCommandPrefix = playerMessage.substring(0, mcdrCommandPrefixLength);
+        // 获取 MCDR 命令前缀的列表
+        List<Object> mcdrCommandPrefixList = loadConfig.getMcdrCommandPrefix();
+        // 初始化迭代后的 MCDR 命令前缀
+        String finalMcdrCommandPrefix = null;
+        // 将 MCDR 命令前缀列表进行迭代
+        for (Object mcdrCommandPrefix : mcdrCommandPrefixList) {
+            // 获取 MCDR 命令前缀文字的长度
+            int mcdrCommandPrefixLength = mcdrCommandPrefix.toString().length();
+            // 初始化根据 MCDR 命令长度来截取玩家消息
+            String playerMessageSubMcdrCommandPrefix = null;
+            // 有可能会发生字符串下标越界异常，需要简单的处理一下
+            if (playerMessageLength > mcdrCommandPrefixLength) {
+                // 将玩家发送的消息从头截取与 MCDR 命令前缀文字的相同长度
+                playerMessageSubMcdrCommandPrefix = playerMessage.substring(0, mcdrCommandPrefixLength);
+            }
+            // 如果截取玩家消息不为为空并且截取玩家的消息和 MCDR 命令前缀相同
+            if (playerMessageSubMcdrCommandPrefix != null && playerMessageSubMcdrCommandPrefix.equals(mcdrCommandPrefix)) {
+                // 获取 MCDR 命令前缀
+                finalMcdrCommandPrefix = mcdrCommandPrefix.toString();
+            }
         }
-        // 如果 MCDR 命令前缀与截取玩家发送的消息不一致
-        if (!mcdrCommandPrefix.equals(playerMessageSubMcdrCommandPrefix)) {
+        // 如果迭代后的 MCDR 命令前缀为空
+        if (finalMcdrCommandPrefix == null) {
             // 取消消息发送
             playerChatEvent.setResult(PlayerChatEvent.ChatResult.denied());
             // 获取配置文件的主前缀

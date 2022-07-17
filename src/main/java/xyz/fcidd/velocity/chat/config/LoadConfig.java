@@ -6,13 +6,14 @@ import lombok.SneakyThrows;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 @Data
 public class LoadConfig implements Serializable {
     private String mainPrefix = loadToml().getString("main_prefix");
     private Map<String, Object> configServerList = loadToml().getTable("sub_prefix").toMap();
-    private String mcdrCommandPrefix = loadToml().getString("mcdr_command_prefix");
+    private List<Object> mcdrCommandPrefix = loadToml().getList("mcdr_command_prefix");
 
     @SneakyThrows
     public static Toml loadToml() {

@@ -10,7 +10,7 @@ import xyz.fcidd.velocity.chat.listener.PlayerChatListener;
 import xyz.fcidd.velocity.chat.listener.PlayerDisconnectListener;
 import xyz.fcidd.velocity.chat.listener.PlayerLoginServerListener;
 
-@Plugin(id = "velocity_chat", name = "VelocityChat", version = "1.1.0",
+@Plugin(id = "velocity_chat", name = "VelocityChat", version = "1.2.0",
         authors = "MapleDust", url = "https://github.com/MapleDust/VelocityChat")
 public class VelocityChatPlugin {
     private final ProxyServer proxyServer;
