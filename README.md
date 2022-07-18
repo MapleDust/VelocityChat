@@ -26,6 +26,17 @@
 
 在每次升级中请将原来的 `config.toml` 重命名或者移动到其他文件夹，然后根据根据实际情况填写配置（懒）
 
+## 已知问题（可能带有解决方案）
+
+### 聊天消息出现在 Action Bar（物品栏上方）
+
+- 复现：
+  - Velocity 版本：Development 版 #161
+  - ViaVersion 版本：稳定版 4.3.1
+  - 子服版本： 1.18.2
+  - 客户端版本：1.19
+- 解决方案：使用 ViaVersion 最新 DEV 版，到 [此处](https://ci.viaversion.com/job/ViaVersion-DEV/) 下载
+
 ## 更新日志
 
 - v1.1.1
