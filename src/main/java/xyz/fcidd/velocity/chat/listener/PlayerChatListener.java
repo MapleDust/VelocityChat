@@ -1,16 +1,16 @@
 package xyz.fcidd.velocity.chat.listener;
 
+import com.moandjiezana.toml.Toml;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
-import xyz.fcidd.velocity.chat.config.LoadConfig;
+import xyz.fcidd.velocity.chat.config.ConfigManager;
+import xyz.fcidd.velocity.chat.config.VCCConfig;
 import xyz.fcidd.velocity.chat.util.MinecraftColorCodeUtil;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class PlayerChatListener {
     private final ProxyServer proxyServer;
@@ -27,21 +27,22 @@ public class PlayerChatListener {
         // 获取玩家昵称
         String playerUsername = player.getUsername();
         // 获取服务器昵称
+        //noinspection OptionalGetWithoutIsPresent
         String serverName = player.getCurrentServer().get().getServer().getServerInfo().getName();
         // 获取玩家发送的消息
         String playerMessage = MinecraftColorCodeUtil.replaceColorCode(playerChatEvent.getMessage());
         // 获取玩家消息的长度
         int playerMessageLength = playerMessage.length();
         // 读取配置文件
-        LoadConfig loadConfig = new LoadConfig();
+        VCCConfig config = ConfigManager.getConfig();
         // 获取 MCDR 命令前缀的列表
-        List<Object> mcdrCommandPrefixList = loadConfig.getMcdrCommandPrefix();
+        List<String> mcdrCommandPrefixList = config.getMcdr_command_prefix();
         // 初始化迭代后的 MCDR 命令前缀
         String finalMcdrCommandPrefix = null;
         // 将 MCDR 命令前缀列表进行迭代
-        for (Object mcdrCommandPrefix : mcdrCommandPrefixList) {
+        for (String mcdrCommandPrefix : mcdrCommandPrefixList) {
             // 获取 MCDR 命令前缀文字的长度
-            int mcdrCommandPrefixLength = mcdrCommandPrefix.toString().length();
+            int mcdrCommandPrefixLength = mcdrCommandPrefix.length();
             // 初始化根据 MCDR 命令长度来截取玩家消息
             String playerMessageSubMcdrCommandPrefix = null;
             // 有可能会发生字符串下标越界异常，需要简单的处理一下
@@ -52,7 +53,7 @@ public class PlayerChatListener {
             // 如果截取玩家消息不为为空并且截取玩家的消息和 MCDR 命令前缀相同
             if (playerMessageSubMcdrCommandPrefix != null && playerMessageSubMcdrCommandPrefix.equals(mcdrCommandPrefix)) {
                 // 获取 MCDR 命令前缀
-                finalMcdrCommandPrefix = mcdrCommandPrefix.toString();
+                finalMcdrCommandPrefix = mcdrCommandPrefix;
             }
         }
         // 如果迭代后的 MCDR 命令前缀为空
@@ -60,17 +61,15 @@ public class PlayerChatListener {
             // 取消消息发送
             playerChatEvent.setResult(PlayerChatEvent.ChatResult.denied());
             // 获取配置文件的主前缀
-            String mainPrefix = loadConfig.getMainPrefix();
+            String mainPrefix = config.getMain_prefix();
             // 获取所有配置文件的子服名称和子服前缀
-            Map<String, Object> configServerList = loadConfig.getConfigServerList();
-            // 获取配置文件中服务器所有子服名称
-            Set<String> configServers = configServerList.keySet();
+            Toml configServerList = config.getSub_prefix();
             // 如果配置文件的服务器名称包含玩家所连接服务器的名称
-            if (configServers.contains(serverName)) {
+            if (configServerList.contains(serverName)) {
                 // 获取子服的前缀
-                Object subPrefix = configServerList.get(serverName);
+                String subPrefix = configServerList.getString(serverName);
                 // 向所有服务器发送处理后的玩家消息
-                proxyServer.getAllServers().forEach(registeredServer -> registeredServer.sendMessage(Component.text(subPrefix + " " + mainPrefix + " §r<" + playerUsername + "> " + playerMessage)));
+                proxyServer.getAllServers().forEach(registeredServer -> registeredServer.sendMessage(Component.text(subPrefix + mainPrefix + "§r<" + playerUsername + "> " + playerMessage)));
             }
         }
     }

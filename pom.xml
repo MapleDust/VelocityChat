@@ -9,7 +9,7 @@
     <version>1.2.0</version>
 
     <properties>
-        <!-- 设置 JDK 版本为 11 -->
+        <!-- 设置 JDK 版本为 17 -->
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <!-- 设置编码为 UTF-8 -->

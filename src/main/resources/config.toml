@@ -1,3 +1,4 @@
+version = "1.0.0"
 # 主前缀
 main_prefix = "§8[§6testServerName§8]"
 
@@ -7,3 +8,6 @@ mcdr_command_prefix = ["!!"]
 # 子服前缀
 [sub_prefix]
 lobby = "§8[§alobby§8]"
+
+# 聊天格式
+chat_format = "${main_prefix}${sub_prefix}§r<${player_name}> ${chat_message}"
