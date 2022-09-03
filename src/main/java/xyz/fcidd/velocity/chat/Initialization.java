@@ -1,12 +1,10 @@
 package xyz.fcidd.velocity.chat;
 
-import com.moandjiezana.toml.Toml;
 import lombok.SneakyThrows;
-import xyz.fcidd.velocity.chat.config.VCCConfig;
+import xyz.fcidd.velocity.chat.config.ConfigManager;
 
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.Map;
 import java.util.Objects;
 
 import static xyz.fcidd.velocity.chat.config.ConfigManager.*;
@@ -24,11 +22,15 @@ public class Initialization {
 			// 创建配置文件夹
 			CONFIG_FOLDER.mkdirs();
 			CONFIG_FILE.createNewFile();
-			try (FileOutputStream fos = new FileOutputStream(CONFIG_FILE); InputStream configResource = Initialization.class.getClassLoader().getResourceAsStream("config.toml")) {
+			try (InputStream configResource = Initialization.class.getClassLoader().getResourceAsStream("config.toml");
+				 FileOutputStream fos = new FileOutputStream(CONFIG_FILE)) {
 				Objects.requireNonNull(configResource);
-				byte[] data = new byte[1024 * 10];
-				while (configResource.read(data) >= 0) fos.write(data);
+				byte[] data = new byte[1024];
+				int len;
+				while ((len = configResource.read(data)) != -1) fos.write(data, 0, len);
 			}
+		} else {
+			ConfigManager.reload();
 		}
 	}
 }

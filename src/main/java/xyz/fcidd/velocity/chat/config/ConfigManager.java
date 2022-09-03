@@ -1,20 +1,19 @@
 package xyz.fcidd.velocity.chat.config;
 
 import com.moandjiezana.toml.Toml;
-import com.moandjiezana.toml.TomlWriter;
 import xyz.fcidd.velocity.chat.Initialization;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static xyz.fcidd.velocity.chat.util.ILogger.LOGGER;
+import static xyz.fcidd.velocity.chat.VelocityChatPlugin.DATA_DIRECTORY;
 
 public class ConfigManager {
 	// 配置文件目录
-	public static final File CONFIG_FILE = new File("./plugins/velocitychat/config.toml");
+	public static final File CONFIG_FILE = DATA_DIRECTORY.resolve("config.toml").toFile();
 	// 配置文件夹
-	public static final File CONFIG_FOLDER = new File("./plugins/velocitychat/");
+	public static final File CONFIG_FOLDER = DATA_DIRECTORY.toFile();
 	private static Toml toml;
 	private static VCCConfig config;
 
@@ -22,11 +21,12 @@ public class ConfigManager {
 	 * 重载配置文件
 	 */
 	public static void reload() {
-		reloadToml();
-		config.loadConfig(toml);
+		readToml();
+		if (config == null) getConfig();
+		else config.reloadConfig(toml);
 	}
 
-	private static void reloadToml() {
+	private static void readToml() {
 		toml = new Toml().read(CONFIG_FILE);
 	}
 
@@ -35,7 +35,7 @@ public class ConfigManager {
 	 */
 	public static VCCConfig getConfig() {
 		if (config == null) {
-			if (toml == null) reloadToml();
+			if (toml == null) readToml();
 			return config = new VCCConfig(toml, defaultToml(), CONFIG_FILE);
 		}
 		return config;
@@ -47,12 +47,5 @@ public class ConfigManager {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	/**
-	 * 保存配置文件
-	 */
-	public static void save() {
-		config.save();
 	}
 }
