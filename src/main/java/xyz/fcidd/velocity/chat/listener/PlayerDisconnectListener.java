@@ -11,11 +11,11 @@ public class PlayerDisconnectListener {
 	private final ProxyServer proxyServer = VelocityChatPlugin.getProxyServer();
 
 	@Subscribe
-	public EventTask onPlayerDisconnectedAsync(DisconnectEvent event) {
-		return EventTask.async(() -> onPlayerDisconnected(event));
+	public EventTask onPlayerDisconnectAsync(DisconnectEvent event) {
+		return EventTask.async(() -> onPlayerDisconnect(event));
 	}
 
-	public void onPlayerDisconnected(DisconnectEvent event) {
+	public void onPlayerDisconnect(DisconnectEvent event) {
 		// 获取玩家昵称
 		String playerUsername = event.getPlayer().getUsername();
 		// 将玩家退出群组的消息发送给所有人

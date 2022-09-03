@@ -8,6 +8,7 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import xyz.fcidd.velocity.chat.VelocityChatPlugin;
 import xyz.fcidd.velocity.chat.config.ConfigManager;
 import xyz.fcidd.velocity.chat.config.VCCConfig;
@@ -65,8 +66,15 @@ public class PlayerChatListener {
 			String playerUsername = player.getUsername();
 			// 如果打印玩家消息日志
 			CHAT_LOGGER.info("[{}]<{}> {}", serverName, playerUsername, playerMessage);
-			// 处理后的玩家消息
-			Component modifiedMessage = Component.text(config.getMainPrefix() + subPrefix + "§r<" + playerUsername + "> " + playerMessage);
+			// 处理后的玩家消息，Velocity API 居然把玩家队伍颜色阻断掉了，导致不能显示玩家队伍颜色
+			Component modifiedMessage = Component.text(config.getMainPrefix() + subPrefix + "§r<")
+					.append(Component.text(playerUsername)
+							.hoverEvent(player.asHoverEvent())
+							.clickEvent(ClickEvent.clickEvent(
+									ClickEvent.Action.SUGGEST_COMMAND,
+									"/tell " + playerUsername + " "
+							)))
+					.append(Component.text("§r> " + playerMessage));
 			// 向所有服务器发送处理后的玩家消息
 			proxyServer.getAllServers().forEach(registeredServer -> registeredServer.sendMessage(modifiedMessage));
 		}
