@@ -11,11 +11,17 @@
 - 本插件配置文件 `config.toml` 初始内容
 
   ```toml
-  # 主前缀
-  main_prefix = "§8[§6testServerName§8]"
-
   # 在此处填写 MCDR 命令的前缀,支持多个MCDR命令前缀，如果没有使用 MCDR 开服的请保持默认，如果使用 MCDR 开服请根据实际情况填写
   mcdr_command_prefix = ["!!"]
+
+  # 聊天格式
+  chat_format = "${main_prefix}${sub_prefix}§r<${player_name}> ${chat_message}"
+
+  # 是否打印玩家命令日志
+  log_player_command = true
+  
+  # 主前缀
+  main_prefix = "§8[§6testServerName§8]"
 
   # 子服前缀
   [sub_prefix]
