@@ -115,10 +115,8 @@ public class TomlConfigs {
 			// 迭代所有参数
 			for (Field field : fields) {
 				int modifiers = field.getModifiers();
-				// (static && final) || (!static && !transient)
-				if (Modifier.isFinal(modifiers)
-						&& Modifier.isStatic(modifiers)
-						|| !Modifier.isStatic(modifiers)
+				// !static && !transient
+				if (!Modifier.isStatic(modifiers)
 						&& !field.isSynthetic() // 甭管它
 						&& !Modifier.isTransient(modifiers)
 				) {

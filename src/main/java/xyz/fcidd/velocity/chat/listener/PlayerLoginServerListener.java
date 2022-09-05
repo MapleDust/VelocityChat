@@ -27,7 +27,7 @@ public class PlayerLoginServerListener {
 		// 获取玩家昵称
 		String playerUsername = player.getUsername();
 		// 获取配置文件的服务器名称及前缀
-		Toml configServerList = config.getSubPrefix();
+		Toml configServerList = config.getServerNames();
 		// 获取玩家连接的服务器的名称
 		String serverName = event.getServer().getServerInfo().getName();
 		// 获取上一个服务器

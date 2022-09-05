@@ -13,26 +13,29 @@ import java.util.Objects;
 @TomlConfig
 @Comment("配置文件")
 public class VelocityChatConfig extends AbstractTomlConfig {
+	private static final String latestVersion = "1.1.0";
 	@Getter
-	@Comment("暂时无卵用，但请务必不要修改它")
-	private String version = "1.0.0";
+	@Comment("请务必不要修改它")
+	private String version = latestVersion;
 	@Getter
 	@Comment("在此处填写 MCDR 命令的前缀,支持多个MCDR命令前缀，如果没有使用 MCDR 开服请保持默认，如果使用 MCDR 开服请根据实际情况填写")
 	private List<String> mcdrCommandPrefix = List.of("!!");
 	@Getter
-	@Comment("聊天格式，暂时没用")
-	private String chatFormat = "${main_prefix}${sub_prefix}§r<${player_name}> ${chat_message}";
+	@Comment("聊天格式")
+	private String chatFormat = "§8[${main_prefix}§8][${sub_prefix}§8]§r<${player_name}§r> ${chat_message}";
+	@Getter
+	private transient String[] chatFormatArray = splitChatFormat();
 	@Getter
 	@Comment("是否打印玩家命令日志")
 	private boolean logPlayerCommand = true;
 	@Getter
-	@Comment("主前缀")
-	private String mainPrefix = "§8[§6群组§8]";
+	@Comment("群组名称")
+	private String proxyName = "§6群组";
 	@Getter
-	@Comment("子服前缀")
-	private Toml subPrefix = new Toml().read("""
-			[sub_prefix]
-			lobby = "§8[§a大厅§8]"
+	@Comment("子服务器名称")
+	private Toml serverNames = new Toml().read("""
+			[server_names]
+			lobby = "§a大厅"
 			""");
 
 	VelocityChatConfig(Toml config, Path tomlPath) {
@@ -51,38 +54,59 @@ public class VelocityChatConfig extends AbstractTomlConfig {
 	/**
 	 * 加载/重载配置文件
 	 *
-	 * @return 输入的 Toml 缺键时为true，否则为false
+	 * @return 是否需要保存
 	 */
 	@SneakyThrows
 	public boolean load() {
 		if (toml.isEmpty()) return true;
 
-		boolean hasNull = false;
+		boolean shouldSave = false;
+
 		String version = this.getString("version");
-		if (version == null) hasNull = true;
+		if (version == null) shouldSave = true;
 		else this.version = version;
 
-		String mainPrefix = this.getString("main_prefix");
-		if (mainPrefix == null) hasNull = true;
-		else this.mainPrefix = mainPrefix;
+		String proxyName = this.getString("proxy_name");
+		if (proxyName == null) shouldSave = true;
+		else this.proxyName = proxyName;
 
-		Toml subPrefix = this.getTable("sub_prefix");
-		if (subPrefix == null) hasNull = true;
-		else this.subPrefix = subPrefix;
+		Toml serverNames = this.getTable("server_names");
+		if (serverNames == null) shouldSave = true;
+		else this.serverNames = serverNames;
 
 		List<String> mcdrCommandPrefix = this.getList("mcdr_command_prefix");
-		if (mcdrCommandPrefix == null) hasNull = true;
+		if (mcdrCommandPrefix == null) shouldSave = true;
 		else this.mcdrCommandPrefix = mcdrCommandPrefix;
 
 		String chatFormat = this.getString("chat_format");
-		if (chatFormat == null) hasNull = true;
-		else this.chatFormat = chatFormat;
+		if (chatFormat == null) shouldSave = true;
+		else {
+			this.chatFormat = chatFormat;
+			this.chatFormatArray = splitChatFormat();
+		}
 
 		Boolean logPlayerCommand = this.getBoolean("log_player_command");
-		if (logPlayerCommand == null) hasNull = true;
+		if (logPlayerCommand == null) shouldSave = true;
 		else this.logPlayerCommand = logPlayerCommand;
 
-		return hasNull;
+		switch (this.version) {
+			case latestVersion -> {
+				return shouldSave;
+			}
+			case "1.0.0" -> {
+				serverNames = this.getTable("sub_prefix");
+				if (serverNames != null) this.serverNames = serverNames;
+				proxyName = this.getString("main_prefix");
+				if (proxyName != null) this.proxyName = proxyName;
+			}
+			default -> throw new IllegalArgumentException("未识别的配置文件版本号！" + version);
+		}
+		this.version = latestVersion;
+		return true;
+	}
+
+	private String[] splitChatFormat() {
+		return chatFormat.split("\\$(?=\\{)|(?<=\\$\\{[^}]+})");
 	}
 
 	@Override
@@ -96,8 +120,8 @@ public class VelocityChatConfig extends AbstractTomlConfig {
 		if (!Objects.equals(mcdrCommandPrefix, vccConfig.mcdrCommandPrefix))
 			return false;
 		if (!Objects.equals(chatFormat, vccConfig.chatFormat)) return false;
-		if (!Objects.equals(mainPrefix, vccConfig.mainPrefix)) return false;
-		return Objects.equals(subPrefix, vccConfig.subPrefix);
+		if (!Objects.equals(proxyName, vccConfig.proxyName)) return false;
+		return Objects.equals(serverNames, vccConfig.serverNames);
 	}
 
 	@Override
@@ -107,8 +131,8 @@ public class VelocityChatConfig extends AbstractTomlConfig {
 		result = 31 * result + (mcdrCommandPrefix != null ? mcdrCommandPrefix.hashCode() : 0);
 		result = 31 * result + (chatFormat != null ? chatFormat.hashCode() : 0);
 		result = 31 * result + (logPlayerCommand ? 1 : 0);
-		result = 31 * result + (mainPrefix != null ? mainPrefix.hashCode() : 0);
-		result = 31 * result + (subPrefix != null ? subPrefix.hashCode() : 0);
+		result = 31 * result + (proxyName != null ? proxyName.hashCode() : 0);
+		result = 31 * result + (serverNames != null ? serverNames.hashCode() : 0);
 		return result;
 	}
 }

@@ -11,6 +11,7 @@ import net.kyori.adventure.text.event.ClickEvent;
 import xyz.fcidd.velocity.chat.VelocityChatPlugin;
 import xyz.fcidd.velocity.chat.config.ConfigManager;
 import xyz.fcidd.velocity.chat.config.VelocityChatConfig;
+import xyz.fcidd.velocity.chat.util.BasicUtil;
 import xyz.fcidd.velocity.chat.util.FutureUtil;
 import xyz.fcidd.velocity.chat.util.MinecraftColorCodeUtil;
 
@@ -30,53 +31,60 @@ public class PlayerChatListener {
 	private void onPlayerChatImpl(PlayerChatEvent event) {
 		// 获取玩家发送的消息
 		String playerMessage = MinecraftColorCodeUtil.replaceColorCode(event.getMessage());
-		// 获取玩家消息的长度
-		int playerMessageLength = playerMessage.length();
-		// 初始化迭代后的 MCDR 命令前缀
-		String finalMcdrCommandPrefix = null;
-		// 将 MCDR 命令前缀列表进行迭代
-		for (String mcdrCommandPrefix : config.getMcdrCommandPrefix()) {
-			// 有可能会发生字符串下标越界异常，需要简单的处理一下
-			if (playerMessageLength > mcdrCommandPrefix.length()
-					&& playerMessage.startsWith(mcdrCommandPrefix)) {
-				// 获取 MCDR 命令前缀
-				finalMcdrCommandPrefix = mcdrCommandPrefix;
-			}
-		}
-		// 如果迭代后的 MCDR 命令前缀为空
-		if (finalMcdrCommandPrefix == null) {
-			// 取消消息发送
-			event.setResult(PlayerChatEvent.ChatResult.denied());
-			// 获取所有配置文件的子服名称和子服前缀
-			Toml configServerList = config.getSubPrefix();
-			// 获取玩家信息
-			Player player = event.getPlayer();
-			// 获取服务器昵称
-			String serverName;
-			Optional<ServerConnection> currentServer = player.getCurrentServer();
-			if (currentServer.isEmpty()) {
-				serverName = "NULL";
-			} else {
-				serverName = currentServer.get().getServer().getServerInfo().getName();
-			}
+
+		// 如果是MCDR命令直接返回
+		if (BasicUtil.startsWithAny(playerMessage, config.getMcdrCommandPrefix())) return;
+
+		// 取消消息发送
+		event.setResult(PlayerChatEvent.ChatResult.denied());
+		// 获取所有配置文件的子服名称和子服前缀
+		Toml configServerList = config.getServerNames();
+		// 获取玩家信息
+		Player player = event.getPlayer();
+		// 获取服务器昵称
+		String serverId;
+		String serverName;
+		Optional<ServerConnection> currentServer = player.getCurrentServer();
+		if (currentServer.isEmpty()) {
+			serverId = "NULL";
+			serverName = serverId;
+		} else {
+			serverId = currentServer.get().getServer().getServerInfo().getName();
 			// 获取子服的前缀
-			String subPrefix = configServerList.getString(serverName);
-			if (subPrefix == null) subPrefix = "§8[§r" + serverName + "§8]";
-			// 获取玩家昵称
-			String playerUsername = player.getUsername();
-			// 如果打印玩家消息日志
-			CHAT_LOGGER.info("[{}]<{}> {}", serverName, playerUsername, playerMessage);
-			// 处理后的玩家消息，Velocity API 居然把玩家队伍颜色阻断掉了，导致不能显示玩家队伍颜色
-			Component modifiedMessage = Component.text(config.getMainPrefix() + subPrefix + "§r<")
-					.append(Component.text(playerUsername)
-							.hoverEvent(player.asHoverEvent())
-							.clickEvent(ClickEvent.clickEvent(
-									ClickEvent.Action.SUGGEST_COMMAND,
-									"/tell " + playerUsername + " "
-							)))
-					.append(Component.text("§r> " + playerMessage));
-			// 向所有服务器发送处理后的玩家消息
-			proxyServer.getAllServers().forEach(registeredServer -> registeredServer.sendMessage(modifiedMessage));
+			serverName = configServerList.getString(serverId);
+			if (serverName == null) serverName = "§8[§r" + serverId + "§8]";
 		}
+		// 获取玩家昵称
+		String playerUsername = player.getUsername();
+		// 如果打印玩家消息日志
+		CHAT_LOGGER.info("[{}]<{}> {}", serverId, playerUsername, playerMessage);
+		String[] chatFormat = config.getChatFormatArray();
+		Component formattedChat = Component.empty();
+		// 玩家名
+		Component playerNameComponent = Component.text(playerUsername)
+				.hoverEvent(player.asHoverEvent())
+				.clickEvent(ClickEvent.clickEvent(
+						ClickEvent.Action.SUGGEST_COMMAND,
+						"/tell " + playerUsername + " "
+				));
+		// 构建玩家消息，Velocity API 居然把玩家队伍颜色阻断掉了，导致不能显示玩家队伍颜色
+		for (int i = 0; i < chatFormat.length; i++) {
+			String s = chatFormat[i];
+			if (s.contains("$\\")) s = s.replace("$\\", "$");
+			if (i == 0) {
+				formattedChat = formattedChat.append(Component.text(s));
+				continue;
+			}
+			formattedChat = switch (s) {
+				case "{main_prefix}" -> formattedChat.append(Component.text(config.getProxyName()));
+				case "{sub_prefix}" -> formattedChat.append(Component.text(serverName));
+				case "{player_name}" -> formattedChat.append(playerNameComponent);
+				case "{chat_message}" -> formattedChat.append(Component.text(playerMessage));
+				default -> formattedChat.append(Component.text(s));
+			};
+		}
+		// 向所有服务器发送处理后的玩家消息
+		final Component finalFormattedChat = formattedChat;
+		proxyServer.getAllServers().forEach(registeredServer -> registeredServer.sendMessage(finalFormattedChat));
 	}
 }

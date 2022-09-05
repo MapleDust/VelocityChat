@@ -1,5 +1,7 @@
 package xyz.fcidd.velocity.chat.util;
 
+import java.util.List;
+
 public class BasicUtil {
     /**
      * char数组中包含目标字符
@@ -29,6 +31,20 @@ public class BasicUtil {
             if (str.equals(s)) {
                 return true;
             }
+        }
+        return false;
+    }
+
+    public static boolean startsWithAny(String s, String[] strs) {
+        for (String str : strs) {
+            if (s.startsWith(str)) return true;
+        }
+        return false;
+    }
+
+    public static boolean startsWithAny(String s, List<String> strs) {
+        for (String str : strs) {
+            if (s.startsWith(str)) return true;
         }
         return false;
     }
