@@ -9,16 +9,16 @@ import com.velocitypowered.api.proxy.server.RegisteredServer;
 import net.kyori.adventure.text.Component;
 import xyz.fcidd.velocity.chat.VelocityChatPlugin;
 import xyz.fcidd.velocity.chat.config.ConfigManager;
-import xyz.fcidd.velocity.chat.config.VCCConfig;
-import xyz.fcidd.velocity.chat.util.FutureUtils;
+import xyz.fcidd.velocity.chat.config.VelocityChatConfig;
+import xyz.fcidd.velocity.chat.util.FutureUtil;
 
 public class PlayerLoginServerListener {
 	private final ProxyServer proxyServer = VelocityChatPlugin.getProxyServer();
-	private final VCCConfig config = ConfigManager.getConfig();
+	private final VelocityChatConfig config = ConfigManager.getConfig();
 
 	@Subscribe
 	public void onPlayerConnectedAsync(ServerConnectedEvent event) {
-		FutureUtils.thenRun(() -> onPlayerConnected(event));
+		FutureUtil.thenRun(() -> onPlayerConnected(event));
 	}
 
 	public void onPlayerConnected(ServerConnectedEvent event) {

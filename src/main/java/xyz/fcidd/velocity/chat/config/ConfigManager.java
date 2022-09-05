@@ -16,7 +16,7 @@ public class ConfigManager {
 	// 配置文件夹
 	public static final File CONFIG_FOLDER = DATA_DIRECTORY.toFile();
 	private static Toml toml;
-	private static VCCConfig config;
+	private static VelocityChatConfig config;
 
 	/**
 	 * 加载/重载配置文件
@@ -25,7 +25,7 @@ public class ConfigManager {
 		if (config == null) {
 			// 加载
 			if (toml == null) readToml();
-			config = new VCCConfig(toml, CONFIG_PATH);
+			config = new VelocityChatConfig(toml, CONFIG_PATH);
 		} else {
 			// 重载
 			readToml();
@@ -51,7 +51,7 @@ public class ConfigManager {
 	/**
 	 * 获取配置文件
 	 */
-	public static VCCConfig getConfig() {
+	public static VelocityChatConfig getConfig() {
 		if (config == null) load();
 		return config;
 	}
@@ -59,7 +59,14 @@ public class ConfigManager {
 	/**
 	 * 异步保存
 	 */
-	public static void save() {
+	public static void saveAsync() {
 		CompletableFuture.runAsync(config::save);
+	}
+
+	/**
+	 * 保存，非异步，仅当在退出时调用！
+	 */
+	public static void save() {
+		config.save();
 	}
 }

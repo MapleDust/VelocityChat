@@ -12,7 +12,7 @@ import java.util.Objects;
 
 @TomlConfig
 @Comment("配置文件")
-public class VCCConfig extends AbstractTomlConfig {
+public class VelocityChatConfig extends AbstractTomlConfig {
 	@Getter
 	@Comment("暂时无卵用，但请务必不要修改它")
 	private String version = "1.0.0";
@@ -35,7 +35,7 @@ public class VCCConfig extends AbstractTomlConfig {
 			lobby = "§8[§a大厅§8]"
 			""");
 
-	VCCConfig(Toml config, Path tomlPath) {
+	VelocityChatConfig(Toml config, Path tomlPath) {
 		super(config, tomlPath);
 		if (load()) save();
 	}
@@ -88,7 +88,7 @@ public class VCCConfig extends AbstractTomlConfig {
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (!(o instanceof VCCConfig vccConfig)) return false;
+		if (!(o instanceof VelocityChatConfig vccConfig)) return false;
 		if (!super.equals(o)) return false;
 
 		if (logPlayerCommand != vccConfig.logPlayerCommand) return false;

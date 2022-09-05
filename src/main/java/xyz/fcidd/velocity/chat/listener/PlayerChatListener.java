@@ -10,8 +10,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import xyz.fcidd.velocity.chat.VelocityChatPlugin;
 import xyz.fcidd.velocity.chat.config.ConfigManager;
-import xyz.fcidd.velocity.chat.config.VCCConfig;
-import xyz.fcidd.velocity.chat.util.FutureUtils;
+import xyz.fcidd.velocity.chat.config.VelocityChatConfig;
+import xyz.fcidd.velocity.chat.util.FutureUtil;
 import xyz.fcidd.velocity.chat.util.MinecraftColorCodeUtil;
 
 import java.util.Optional;
@@ -20,11 +20,11 @@ import static xyz.fcidd.velocity.chat.util.ILogger.*;
 
 public class PlayerChatListener {
 	private final ProxyServer proxyServer = VelocityChatPlugin.getProxyServer();
-	private final VCCConfig config = ConfigManager.getConfig();
+	private final VelocityChatConfig config = ConfigManager.getConfig();
 
 	@Subscribe
 	public void onPlayerChat(PlayerChatEvent event) {
-		FutureUtils.thenRun(() -> onPlayerChatImpl(event));
+		FutureUtil.thenRun(() -> onPlayerChatImpl(event));
 	}
 
 	private void onPlayerChatImpl(PlayerChatEvent event) {

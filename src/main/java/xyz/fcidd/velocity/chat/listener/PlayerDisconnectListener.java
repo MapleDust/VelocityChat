@@ -1,19 +1,18 @@
 package xyz.fcidd.velocity.chat.listener;
 
-import com.velocitypowered.api.event.EventTask;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import xyz.fcidd.velocity.chat.VelocityChatPlugin;
-import xyz.fcidd.velocity.chat.util.FutureUtils;
+import xyz.fcidd.velocity.chat.util.FutureUtil;
 
 public class PlayerDisconnectListener {
 	private final ProxyServer proxyServer = VelocityChatPlugin.getProxyServer();
 
 	@Subscribe
 	public void onPlayerDisconnectAsync(DisconnectEvent event) {
-		FutureUtils.thenRun(() -> onPlayerDisconnect(event));
+		FutureUtil.thenRun(() -> onPlayerDisconnect(event));
 	}
 
 	public void onPlayerDisconnect(DisconnectEvent event) {
