@@ -1,16 +1,14 @@
 package xyz.fcidd.velocity.chat;
 
 import com.google.inject.Inject;
+import com.velocitypowered.api.event.EventManager;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import lombok.Getter;
 import org.slf4j.Logger;
-import xyz.fcidd.velocity.chat.listener.CommandExecuteListener;
-import xyz.fcidd.velocity.chat.listener.PlayerChatListener;
-import xyz.fcidd.velocity.chat.listener.PlayerDisconnectListener;
-import xyz.fcidd.velocity.chat.listener.PlayerLoginServerListener;
+import xyz.fcidd.velocity.chat.listener.*;
 
 import java.nio.file.Path;
 
@@ -34,13 +32,18 @@ public class VelocityChatPlugin {
 
 	@Subscribe
 	public void onInitialize(ProxyInitializeEvent event) {
-		// 命令执行监听器
-		proxyServer.getEventManager().register(this, new CommandExecuteListener());
-		// 玩家聊天消息监听器
-		proxyServer.getEventManager().register(this, new PlayerChatListener());
-		// 玩家连接服务器监听器
-		proxyServer.getEventManager().register(this, new PlayerLoginServerListener());
-		// 玩家断开服务器监听器
-		proxyServer.getEventManager().register(this, new PlayerDisconnectListener());
+		EventManager eventManager = proxyServer.getEventManager();
+		// 命令执行
+		eventManager.register(this, new CommandExecuteListener());
+		// 玩家聊天消息
+		eventManager.register(this, new PlayerChatListener());
+		// 玩家连接服务器
+		eventManager.register(this, new PlayerLoginServerListener());
+		// 玩家断开服务器
+		eventManager.register(this, new PlayerDisconnectListener());
+		// 群组重载
+		eventManager.register(this, new ProxyReloadListener());
+		// 群组关闭
+		eventManager.register(this, new ProxyShutdownListener());
 	}
 }
