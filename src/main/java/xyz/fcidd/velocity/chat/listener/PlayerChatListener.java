@@ -76,8 +76,8 @@ public class PlayerChatListener {
 				continue;
 			}
 			formattedChat = switch (s) {
-				case "{main_prefix}" -> formattedChat.append(Component.text(config.getProxyName()));
-				case "{sub_prefix}" -> formattedChat.append(Component.text(serverName));
+				case "{proxy_name}" -> formattedChat.append(Component.text(config.getProxyName()));
+				case "{server_name}" -> formattedChat.append(Component.text(serverName));
 				case "{player_name}" -> formattedChat.append(playerNameComponent);
 				case "{chat_message}" -> formattedChat.append(Component.text(playerMessage));
 				default -> formattedChat.append(Component.text(s));

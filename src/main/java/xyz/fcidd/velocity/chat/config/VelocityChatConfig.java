@@ -22,7 +22,7 @@ public class VelocityChatConfig extends AbstractTomlConfig {
 	private List<String> mcdrCommandPrefix = List.of("!!");
 	@Getter
 	@Comment("聊天格式")
-	private String chatFormat = "§8[${main_prefix}§8][${sub_prefix}§8]§r<${player_name}§r> ${chat_message}";
+	private String chatFormat = "§8[${proxy_name}§8][${server_name}§8]§r<${player_name}§r> ${chat_message}";
 	@Getter
 	private transient String[] chatFormatArray = splitChatFormat();
 	@Getter
@@ -89,6 +89,7 @@ public class VelocityChatConfig extends AbstractTomlConfig {
 		if (logPlayerCommand == null) shouldSave = true;
 		else this.logPlayerCommand = logPlayerCommand;
 
+		// 升级
 		switch (this.version) {
 			case latestVersion -> {
 				return shouldSave;
