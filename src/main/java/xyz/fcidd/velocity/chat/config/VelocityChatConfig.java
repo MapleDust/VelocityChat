@@ -66,10 +66,10 @@ public class VelocityChatConfig {
 				.concurrent() // 线程安全
 				.preserveInsertionOrder() // 保留插入顺序，无卵用，因为已在静态块设置过了
 				.onFileNotFound(((file, configFormat) -> {
-					file.getParent().toFile().mkdirs();
-					file.toFile().createNewFile();
-					configFormat.initEmptyFile(file);
-					return false;
+					file.getParent().toFile().mkdirs(); // 创建父目录
+					file.toFile().createNewFile(); // 创建文件
+					configFormat.initEmptyFile(file); // 获取文件格式
+					return false; // 阻断后续操作，因为文件为空
 				}))
 				.charset(StandardCharsets.UTF_8)
 				.parsingMode(ParsingMode.MERGE)
