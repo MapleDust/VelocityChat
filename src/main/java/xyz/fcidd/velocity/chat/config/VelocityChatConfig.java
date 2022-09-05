@@ -16,7 +16,7 @@ public class VelocityChatConfig extends AbstractTomlConfig {
 	private static final String latestVersion = "1.1.0";
 	@Getter
 	@Comment("请务必不要修改它")
-	private String version = latestVersion;
+	private String version = "1.0.0";
 	@Getter
 	@Comment("在此处填写 MCDR 命令的前缀,支持多个MCDR命令前缀，如果没有使用 MCDR 开服请保持默认，如果使用 MCDR 开服请根据实际情况填写")
 	private List<String> mcdrCommandPrefix = List.of("!!");
@@ -96,7 +96,6 @@ public class VelocityChatConfig extends AbstractTomlConfig {
 		else this.logPlayerCommand = logPlayerCommand;
 
 		// 升级
-		if (this.version == null) this.version = "1.0.0";
 		switch (this.version) {
 			case latestVersion -> {
 				return shouldSave;
