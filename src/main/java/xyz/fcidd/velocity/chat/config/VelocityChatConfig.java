@@ -96,6 +96,7 @@ public class VelocityChatConfig extends AbstractTomlConfig {
 		else this.logPlayerCommand = logPlayerCommand;
 
 		// 升级
+		if (this.version == null) this.version = "1.0.0";
 		switch (this.version) {
 			case latestVersion -> {
 				return shouldSave;
