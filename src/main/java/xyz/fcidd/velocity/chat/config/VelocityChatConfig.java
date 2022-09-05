@@ -28,7 +28,7 @@ public class VelocityChatConfig extends AbstractTomlConfig {
 			"${player_name}: 玩家名",
 			"${chat_message}: 聊天内容"
 	})
-	private String chatFormat = "§8[${proxy_name}§8][${server_name}§8]§r<${player_name}§r> ${chat_message}";
+	private String chatFormat = "${proxy_name}${server_name}§r<${player_name}§r> ${chat_message}";
 	@Getter
 	private transient String[] chatFormatArray = splitChatFormat();
 	@Getter
@@ -36,12 +36,12 @@ public class VelocityChatConfig extends AbstractTomlConfig {
 	private boolean logPlayerCommand = true;
 	@Getter
 	@Comment("群组名称")
-	private String proxyName = "§6群组";
+	private String proxyName = "§8[§6群组§8]";
 	@Getter
 	@Comment("子服务器名称")
 	private Toml serverNames = new Toml().read("""
 			[server_names]
-			lobby = "§a大厅"
+			lobby = "§8[§a大厅§8]"
 			""");
 
 	VelocityChatConfig(Toml config, Path tomlPath) {
