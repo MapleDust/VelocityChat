@@ -10,6 +10,7 @@ public class MinecraftColorCodeUtil {
 	 * @return 处理过后的玩家消息
 	 */
 	public static String replaceColorCode(String message) {
+		// 性能优化，不包含则直接返回自身
 		if (!message.contains("&")) return message;
 
 		StringBuilder builder = new StringBuilder();

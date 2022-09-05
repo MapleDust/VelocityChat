@@ -1,7 +1,6 @@
 package xyz.fcidd.velocity.chat.listener;
 
 import com.moandjiezana.toml.Toml;
-import com.velocitypowered.api.event.EventTask;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.proxy.Player;
@@ -11,14 +10,15 @@ import net.kyori.adventure.text.Component;
 import xyz.fcidd.velocity.chat.VelocityChatPlugin;
 import xyz.fcidd.velocity.chat.config.ConfigManager;
 import xyz.fcidd.velocity.chat.config.VCCConfig;
+import xyz.fcidd.velocity.chat.util.FutureUtils;
 
 public class PlayerLoginServerListener {
 	private final ProxyServer proxyServer = VelocityChatPlugin.getProxyServer();
-	private final VCCConfig config = ConfigManager.getConfig();
+	private final VCCConfig config = ConfigManager.load();
 
 	@Subscribe
-	public EventTask onPlayerConnectedAsync(ServerConnectedEvent event) {
-		return EventTask.async(() -> onPlayerConnected(event));
+	public void onPlayerConnectedAsync(ServerConnectedEvent event) {
+		FutureUtils.thenRun(() -> onPlayerConnected(event));
 	}
 
 	public void onPlayerConnected(ServerConnectedEvent event) {

@@ -1,25 +1,23 @@
 package xyz.fcidd.velocity.chat.listener;
 
-import com.velocitypowered.api.event.EventTask;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.command.CommandExecuteEvent;
 import com.velocitypowered.api.proxy.Player;
 import xyz.fcidd.velocity.chat.config.ConfigManager;
 import xyz.fcidd.velocity.chat.config.VCCConfig;
+import xyz.fcidd.velocity.chat.util.FutureUtils;
 
 import static xyz.fcidd.velocity.chat.util.ILogger.COMMAND_LOGGER;
-import static xyz.fcidd.velocity.chat.util.ILogger.LOGGER;
 
 public class CommandExecuteListener {
-	private final VCCConfig config = ConfigManager.getConfig();
+	private final VCCConfig config = ConfigManager.load();
 
 	@Subscribe
-	public EventTask onCommandExecuteAsync(CommandExecuteEvent event) {
-		if (config.isLogPlayerCommand()) return EventTask.async(() -> onCommandExecute(event));
-		return null;
+	public void onCommandExecute(CommandExecuteEvent event) {
+		if (config.isLogPlayerCommand()) FutureUtils.thenRun(() -> onCommandExecuteImpl(event));
 	}
 
-	private void onCommandExecute(CommandExecuteEvent event) {
+	private void onCommandExecuteImpl(CommandExecuteEvent event) {
 		if (event.getCommandSource() instanceof Player player) {
 			player.getCurrentServer().ifPresent(server -> COMMAND_LOGGER.info("[{}]<{}> /{}",
 					server.getServer().getServerInfo().getName(),

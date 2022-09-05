@@ -1,7 +1,6 @@
 package xyz.fcidd.velocity.chat.listener;
 
 import com.moandjiezana.toml.Toml;
-import com.velocitypowered.api.event.EventTask;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.proxy.Player;
@@ -12,6 +11,7 @@ import net.kyori.adventure.text.event.ClickEvent;
 import xyz.fcidd.velocity.chat.VelocityChatPlugin;
 import xyz.fcidd.velocity.chat.config.ConfigManager;
 import xyz.fcidd.velocity.chat.config.VCCConfig;
+import xyz.fcidd.velocity.chat.util.FutureUtils;
 import xyz.fcidd.velocity.chat.util.MinecraftColorCodeUtil;
 
 import java.util.Optional;
@@ -20,14 +20,14 @@ import static xyz.fcidd.velocity.chat.util.ILogger.*;
 
 public class PlayerChatListener {
 	private final ProxyServer proxyServer = VelocityChatPlugin.getProxyServer();
-	private final VCCConfig config = ConfigManager.getConfig();
+	private final VCCConfig config = ConfigManager.load();
 
 	@Subscribe
-	public EventTask onPlayerChatAsync(PlayerChatEvent event) {
-		return EventTask.async(() -> onPlayerChat(event));
+	public void onPlayerChat(PlayerChatEvent event) {
+		FutureUtils.thenRun(() -> onPlayerChatImpl(event));
 	}
 
-	private void onPlayerChat(PlayerChatEvent event) {
+	private void onPlayerChatImpl(PlayerChatEvent event) {
 		// 获取玩家发送的消息
 		String playerMessage = MinecraftColorCodeUtil.replaceColorCode(event.getMessage());
 		// 获取玩家消息的长度

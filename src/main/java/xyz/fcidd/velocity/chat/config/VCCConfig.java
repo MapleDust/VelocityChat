@@ -1,51 +1,112 @@
 package xyz.fcidd.velocity.chat.config;
 
 import com.moandjiezana.toml.Toml;
-import lombok.Data;
-import lombok.Setter;
+import lombok.Getter;
+import lombok.SneakyThrows;
+import xyz.fcidd.velocity.chat.config.annotation.Comment;
+import xyz.fcidd.velocity.chat.config.annotation.TomlConfig;
 
-import java.io.*;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 
-@Data
-public class VCCConfig implements Serializable {
-	private transient final Toml defaultToml;
-	private transient final String defaultVersion;
-	private transient final File tomlFile;
-	@Setter
-	private transient Toml toml;
-	private String version;
-	private String mainPrefix;
-	private Toml subPrefix;
-	private List<String> mcdrCommandPrefix;
-	private String chatFormat;
-	private boolean logPlayerCommand;
+@TomlConfig
+@Comment("这是一条头部注释")
+public class VCCConfig extends AbstractTomlConfig {
+	@Getter
+	@Comment("暂时无卵用，但请务必不要修改它")
+	private String version = "1.0.0";
+	@Getter
+	@Comment("在此处填写 MCDR 命令的前缀,支持多个MCDR命令前缀，如果没有使用 MCDR 开服请保持默认，如果使用 MCDR 开服请根据实际情况填写")
+	private List<String> mcdrCommandPrefix = List.of("!!");
+	@Getter
+	@Comment("聊天格式")
+	private String chatFormat = "${main_prefix}${sub_prefix}§r<${player_name}> ${chat_message}";
+	@Getter
+	@Comment("是否打印玩家命令日志")
+	private boolean logPlayerCommand = true;
+	@Getter
+	@Comment("主前缀")
+	private String mainPrefix = "§8[§6testServerName§8]";
+	@Getter
+	@Comment("子服前缀")
+	private Toml subPrefix = new Toml().read("""
+			[sub_prefix]
+			lobby = "§8[§alobby§8]"
+			""");
 
-	VCCConfig(Toml config, Toml defaultConfig, File tomlFile) {
-		this.toml = config;
-		this.defaultToml = defaultConfig;
-		this.defaultVersion = defaultConfig.getString("version");
-		this.tomlFile = tomlFile;
-		loadConfig();
+	VCCConfig(Toml config, Path tomlPath) {
+		super(config, tomlPath);
+		if (load()) save();
 	}
 
 	/**
 	 * 根据输入的Toml重载配置文件
 	 */
-	public void reloadConfig(Toml toml) {
-		this.toml = toml;
-		loadConfig();
+	public void reload(Toml config) {
+		this.toml = Objects.requireNonNull(config);
+		load();
 	}
 
 	/**
 	 * 加载/重载配置文件
 	 */
-	public void loadConfig() {
-		version = toml.getString("version");
-		mainPrefix = toml.getString("main_prefix");
-		subPrefix = toml.getTable("sub_prefix");
-		mcdrCommandPrefix = toml.getList("mcdr_command_prefix");
-		chatFormat = toml.getString("chat_format");
-		logPlayerCommand = toml.getBoolean("log_player_command");
+	@SneakyThrows
+	public boolean load() {
+		if (toml.isEmpty()) return true;
+
+		boolean hasNull = false;
+		String version = getString("version");
+		if (version == null) hasNull = true;
+		else this.version = version;
+
+		String mainPrefix = getString("main_prefix");
+		if (mainPrefix == null) hasNull = true;
+		else this.mainPrefix = mainPrefix;
+
+		Toml subPrefix = getTable("sub_prefix");
+		if (subPrefix == null) hasNull = true;
+		else this.subPrefix = subPrefix;
+
+		List<String> mcdrCommandPrefix = getList("mcdr_command_prefix");
+		if (mcdrCommandPrefix == null) hasNull = true;
+		else this.mcdrCommandPrefix = mcdrCommandPrefix;
+
+		String chatFormat = getString("chat_format");
+		if (chatFormat == null) hasNull = true;
+		else this.chatFormat = chatFormat;
+
+		Boolean logPlayerCommand = getBoolean("log_player_command");
+		if (logPlayerCommand == null) hasNull = true;
+		else this.logPlayerCommand = logPlayerCommand;
+
+		return hasNull;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof VCCConfig vccConfig)) return false;
+		if (!super.equals(o)) return false;
+
+		if (logPlayerCommand != vccConfig.logPlayerCommand) return false;
+		if (!Objects.equals(version, vccConfig.version)) return false;
+		if (!Objects.equals(mcdrCommandPrefix, vccConfig.mcdrCommandPrefix))
+			return false;
+		if (!Objects.equals(chatFormat, vccConfig.chatFormat)) return false;
+		if (!Objects.equals(mainPrefix, vccConfig.mainPrefix)) return false;
+		return Objects.equals(subPrefix, vccConfig.subPrefix);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		result = 31 * result + (version != null ? version.hashCode() : 0);
+		result = 31 * result + (mcdrCommandPrefix != null ? mcdrCommandPrefix.hashCode() : 0);
+		result = 31 * result + (chatFormat != null ? chatFormat.hashCode() : 0);
+		result = 31 * result + (logPlayerCommand ? 1 : 0);
+		result = 31 * result + (mainPrefix != null ? mainPrefix.hashCode() : 0);
+		result = 31 * result + (subPrefix != null ? subPrefix.hashCode() : 0);
+		return result;
 	}
 }
