@@ -1,6 +1,6 @@
 package xyz.fcidd.velocity.chat.listener;
 
-import com.moandjiezana.toml.Toml;
+import com.electronwill.nightconfig.core.Config;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.proxy.Player;
@@ -38,7 +38,7 @@ public class PlayerChatListener {
 		// 取消消息发送
 		event.setResult(PlayerChatEvent.ChatResult.denied());
 		// 获取所有配置文件的子服名称和子服前缀
-		Toml configServerList = config.getServerNames();
+		Config configServerList = config.getServerNames();
 		// 获取玩家信息
 		Player player = event.getPlayer();
 		// 获取服务器昵称
@@ -51,7 +51,7 @@ public class PlayerChatListener {
 		} else {
 			serverId = currentServer.get().getServer().getServerInfo().getName();
 			// 获取子服的前缀
-			serverName = configServerList.getString(serverId);
+			serverName = configServerList.get(serverId);
 			if (serverName == null) serverName = "§8[§r" + serverId + "§8]";
 		}
 		// 获取玩家昵称

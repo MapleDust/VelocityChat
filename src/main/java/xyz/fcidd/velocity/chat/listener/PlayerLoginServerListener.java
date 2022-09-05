@@ -1,6 +1,6 @@
 package xyz.fcidd.velocity.chat.listener;
 
-import com.moandjiezana.toml.Toml;
+import com.electronwill.nightconfig.core.Config;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.proxy.Player;
@@ -27,7 +27,7 @@ public class PlayerLoginServerListener {
 		// 获取玩家昵称
 		String playerUsername = player.getUsername();
 		// 获取配置文件的服务器名称及前缀
-		Toml configServerList = config.getServerNames();
+		Config configServerList = config.getServerNames();
 		// 获取玩家连接的服务器的名称
 		String serverName = event.getServer().getServerInfo().getName();
 		// 获取上一个服务器
@@ -39,7 +39,7 @@ public class PlayerLoginServerListener {
 		}
 		if (previousServerName == null) {
 			// 获取子服前缀
-			String subPrefix = configServerList.getString(serverName);
+			String subPrefix = configServerList.get(serverName);
 			if (subPrefix == null) subPrefix = serverName;
 			// 玩家连接到服务器的消息
 			String connectionMessage = "§8[§2+§8]§r " + playerUsername + " §2通过群组加入了§r " + subPrefix;
@@ -48,10 +48,10 @@ public class PlayerLoginServerListener {
 			player.sendMessage(Component.text("§8[§2+§8]§r " + playerUsername + " §2通过群组加入了§r " + subPrefix));
 		} else {
 			// 获取连接的子服前缀
-			String subPrefix = configServerList.getString(serverName);
+			String subPrefix = configServerList.get(serverName);
 			if (subPrefix == null) subPrefix = serverName;
 			// 获取上一个连接的子服前缀
-			String previousServerSubPrefix = configServerList.getString(previousServerName);
+			String previousServerSubPrefix = configServerList.get(previousServerName);
 			if (subPrefix == null) previousServerSubPrefix = previousServerName;
 			// 玩家切换服务器的消息
 			Component connectionMessage = Component.text("§8[§b⇄§8]§r " + playerUsername + " §2从§r " + previousServerSubPrefix + " §2切换到§r " + subPrefix);

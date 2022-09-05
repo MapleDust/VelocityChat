@@ -17,8 +17,4 @@ public class VelocityChatLifecycle {
 	public static void reload() {
 		ConfigManager.load();
 	}
-
-	public static void shutdown() {
-		ConfigManager.save();
-	}
 }

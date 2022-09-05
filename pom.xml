@@ -24,6 +24,7 @@
         <!--框架管理-->
         <velocity-api.version>3.1.1</velocity-api.version>
         <lombok.version>1.18.24</lombok.version>
+        <night-confi.version>3.6.6</night-confi.version>
     </properties>
 
     <repositories>
@@ -34,6 +35,11 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>com.electronwill.night-config</groupId>
+            <artifactId>toml</artifactId>
+            <version>${night-confi.version}</version>
+        </dependency>
         <!--lombok-->
         <dependency>
             <groupId>org.projectlombok</groupId>

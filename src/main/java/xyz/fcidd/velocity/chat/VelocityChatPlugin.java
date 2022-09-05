@@ -43,7 +43,5 @@ public class VelocityChatPlugin {
 		eventManager.register(this, new PlayerDisconnectListener());
 		// 群组重载
 		eventManager.register(this, new ProxyReloadListener());
-		// 群组关闭
-		eventManager.register(this, new ProxyShutdownListener());
 	}
 }
