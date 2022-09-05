@@ -10,7 +10,7 @@ import xyz.fcidd.velocity.chat.util.FutureUtils;
 import static xyz.fcidd.velocity.chat.util.ILogger.COMMAND_LOGGER;
 
 public class CommandExecuteListener {
-	private final VCCConfig config = ConfigManager.load();
+	private final VCCConfig config = ConfigManager.getConfig();
 
 	@Subscribe
 	public void onCommandExecute(CommandExecuteEvent event) {

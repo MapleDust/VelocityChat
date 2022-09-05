@@ -20,7 +20,7 @@ import static xyz.fcidd.velocity.chat.util.ILogger.*;
 
 public class PlayerChatListener {
 	private final ProxyServer proxyServer = VelocityChatPlugin.getProxyServer();
-	private final VCCConfig config = ConfigManager.load();
+	private final VCCConfig config = ConfigManager.getConfig();
 
 	@Subscribe
 	public void onPlayerChat(PlayerChatEvent event) {

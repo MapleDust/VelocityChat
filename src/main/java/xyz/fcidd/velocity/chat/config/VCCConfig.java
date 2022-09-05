@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 @TomlConfig
-@Comment("这是一条头部注释")
+@Comment("配置文件")
 public class VCCConfig extends AbstractTomlConfig {
 	@Getter
 	@Comment("暂时无卵用，但请务必不要修改它")
@@ -50,33 +50,35 @@ public class VCCConfig extends AbstractTomlConfig {
 
 	/**
 	 * 加载/重载配置文件
+	 *
+	 * @return 输入的 Toml 缺键时为true，否则为false
 	 */
 	@SneakyThrows
 	public boolean load() {
 		if (toml.isEmpty()) return true;
 
 		boolean hasNull = false;
-		String version = getString("version");
+		String version = this.getString("version");
 		if (version == null) hasNull = true;
 		else this.version = version;
 
-		String mainPrefix = getString("main_prefix");
+		String mainPrefix = this.getString("main_prefix");
 		if (mainPrefix == null) hasNull = true;
 		else this.mainPrefix = mainPrefix;
 
-		Toml subPrefix = getTable("sub_prefix");
+		Toml subPrefix = this.getTable("sub_prefix");
 		if (subPrefix == null) hasNull = true;
 		else this.subPrefix = subPrefix;
 
-		List<String> mcdrCommandPrefix = getList("mcdr_command_prefix");
+		List<String> mcdrCommandPrefix = this.getList("mcdr_command_prefix");
 		if (mcdrCommandPrefix == null) hasNull = true;
 		else this.mcdrCommandPrefix = mcdrCommandPrefix;
 
-		String chatFormat = getString("chat_format");
+		String chatFormat = this.getString("chat_format");
 		if (chatFormat == null) hasNull = true;
 		else this.chatFormat = chatFormat;
 
-		Boolean logPlayerCommand = getBoolean("log_player_command");
+		Boolean logPlayerCommand = this.getBoolean("log_player_command");
 		if (logPlayerCommand == null) hasNull = true;
 		else this.logPlayerCommand = logPlayerCommand;
 

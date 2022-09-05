@@ -11,6 +11,6 @@ public class Initializer {
 	@SneakyThrows
 	static void init() {
 		// 读取配置文件
-		ConfigManager.load();
+		ConfigManager.getConfig();
 	}
 }

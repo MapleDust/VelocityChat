@@ -19,12 +19,18 @@ public class ConfigManager {
 	private static VCCConfig config;
 
 	/**
-	 * 重载配置文件
+	 * 加载/重载配置文件
 	 */
-	public static void reload() {
-		readToml();
-		if (config == null) load();
-		else config.reload(toml);
+	public static void load() {
+		if (config == null) {
+			// 加载
+			if (toml == null) readToml();
+			config = new VCCConfig(toml, CONFIG_PATH);
+		} else {
+			// 重载
+			readToml();
+			config.reload(toml);
+		}
 	}
 
 	@SuppressWarnings("ResultOfMethodCallIgnored")
@@ -43,16 +49,16 @@ public class ConfigManager {
 	}
 
 	/**
-	 * 获取配置文件容器
+	 * 获取配置文件
 	 */
-	public static VCCConfig load() {
-		if (config == null) {
-			if (toml == null) readToml();
-			return config = new VCCConfig(toml, CONFIG_PATH);
-		}
+	public static VCCConfig getConfig() {
+		if (config == null) load();
 		return config;
 	}
 
+	/**
+	 * 异步保存
+	 */
 	public static void save() {
 		CompletableFuture.runAsync(config::save);
 	}

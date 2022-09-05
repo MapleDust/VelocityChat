@@ -14,7 +14,7 @@ import xyz.fcidd.velocity.chat.util.FutureUtils;
 
 public class PlayerLoginServerListener {
 	private final ProxyServer proxyServer = VelocityChatPlugin.getProxyServer();
-	private final VCCConfig config = ConfigManager.load();
+	private final VCCConfig config = ConfigManager.getConfig();
 
 	@Subscribe
 	public void onPlayerConnectedAsync(ServerConnectedEvent event) {
