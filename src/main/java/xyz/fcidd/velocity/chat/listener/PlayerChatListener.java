@@ -61,7 +61,7 @@ public class PlayerChatListener {
 			}
 			// 获取子服的前缀
 			String subPrefix = configServerList.getString(serverName);
-			if (subPrefix == null) subPrefix = serverName;
+			if (subPrefix == null) subPrefix = "§8[§r" + serverName + "§8]";
 			// 获取玩家昵称
 			String playerUsername = player.getUsername();
 			// 如果打印玩家消息日志

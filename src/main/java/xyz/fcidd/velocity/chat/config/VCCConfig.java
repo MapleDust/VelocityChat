@@ -20,19 +20,19 @@ public class VCCConfig extends AbstractTomlConfig {
 	@Comment("在此处填写 MCDR 命令的前缀,支持多个MCDR命令前缀，如果没有使用 MCDR 开服请保持默认，如果使用 MCDR 开服请根据实际情况填写")
 	private List<String> mcdrCommandPrefix = List.of("!!");
 	@Getter
-	@Comment("聊天格式")
+	@Comment("聊天格式，暂时没用")
 	private String chatFormat = "${main_prefix}${sub_prefix}§r<${player_name}> ${chat_message}";
 	@Getter
 	@Comment("是否打印玩家命令日志")
 	private boolean logPlayerCommand = true;
 	@Getter
 	@Comment("主前缀")
-	private String mainPrefix = "§8[§6testServerName§8]";
+	private String mainPrefix = "§8[§6群组§8]";
 	@Getter
 	@Comment("子服前缀")
 	private Toml subPrefix = new Toml().read("""
 			[sub_prefix]
-			lobby = "§8[§alobby§8]"
+			lobby = "§8[§a大厅§8]"
 			""");
 
 	VCCConfig(Toml config, Path tomlPath) {
