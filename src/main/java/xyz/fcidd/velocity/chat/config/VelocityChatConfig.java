@@ -21,7 +21,13 @@ public class VelocityChatConfig extends AbstractTomlConfig {
 	@Comment("在此处填写 MCDR 命令的前缀,支持多个MCDR命令前缀，如果没有使用 MCDR 开服请保持默认，如果使用 MCDR 开服请根据实际情况填写")
 	private List<String> mcdrCommandPrefix = List.of("!!");
 	@Getter
-	@Comment("聊天格式")
+	@Comment({
+			"聊天格式",
+			"${proxy_name}: 群组名称",
+			"${server_name}: 服务器名称",
+			"${player_name}: 玩家名",
+			"${chat_message}: 聊天内容"
+	})
 	private String chatFormat = "§8[${proxy_name}§8][${server_name}§8]§r<${player_name}§r> ${chat_message}";
 	@Getter
 	private transient String[] chatFormatArray = splitChatFormat();
