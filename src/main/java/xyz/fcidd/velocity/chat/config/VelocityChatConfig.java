@@ -35,10 +35,10 @@ public class VelocityChatConfig {
 	/* 检查器默认值 */
 	static {
 		configSpec.define(VERSION, "1.0.0");
-		configSpec.define(PROXY_NAME, "§8[§6群组§8]");
-		configSpec.define(CHAT_FORMAT, "${proxy_name}${server_name}§r<${player_name}§r> ${chat_message}");
-		configSpec.define(LOG_PLAYER_COMMAND, true);
 		configSpec.define(MCDR_COMMAND_PREFIX, List.of("!!"));
+		configSpec.define(LOG_PLAYER_COMMAND, true);
+		configSpec.define(CHAT_FORMAT, "${proxy_name}${server_name}§r<${player_name}§r> ${chat_message}");
+		configSpec.define(PROXY_NAME, "§8[§6群组§8]");
 		configSpec.define(SERVER_NAMES, Config.wrap(Map.of("lobby", "§8[§a大厅§8]"), Config.inMemory().configFormat()));
 	}
 
@@ -46,11 +46,11 @@ public class VelocityChatConfig {
 	@Getter
 	private List<String> mcdrCommandPrefix;
 	@Getter
+	private boolean logPlayerCommand;
+	@Getter
 	private String chatFormat;
 	@Getter
 	private String[] chatFormatArray;
-	@Getter
-	private boolean logPlayerCommand;
 	@Getter
 	private String proxyName;
 	@Getter
@@ -87,11 +87,11 @@ public class VelocityChatConfig {
 		configSpec.correct(config);
 
 		version = config.get(VERSION);
-		proxyName = config.get(PROXY_NAME);
-		chatFormat = config.get(CHAT_FORMAT);
-		chatFormatArray = splitChatFormat(chatFormat);
 		logPlayerCommand = config.get(LOG_PLAYER_COMMAND);
 		mcdrCommandPrefix = config.get(MCDR_COMMAND_PREFIX);
+		chatFormat = config.get(CHAT_FORMAT);
+		chatFormatArray = splitChatFormat(chatFormat);
+		proxyName = config.get(PROXY_NAME);
 		serverNames = config.get(SERVER_NAMES);
 
 		// 如果没有注释则写入默认注释
