@@ -27,7 +27,7 @@ public class VelocityChatPlugin {
 		VelocityChatPlugin.logger = logger;
 		// 初始化插件
 		VelocityChatLifecycle.init();
-		logger.info("§aVelocityChat 已载入完成,项目地址 https://github.com/MapleDust/VelocityChat");
+		logger.info("§aVelocityChat 已加载！项目地址：https://github.com/MapleDust/VelocityChat");
 	}
 
 	@Subscribe

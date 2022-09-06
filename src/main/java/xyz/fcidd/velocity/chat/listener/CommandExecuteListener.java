@@ -7,7 +7,7 @@ import xyz.fcidd.velocity.chat.config.ConfigManager;
 import xyz.fcidd.velocity.chat.config.VelocityChatConfig;
 import xyz.fcidd.velocity.chat.util.FutureUtil;
 
-import static xyz.fcidd.velocity.chat.util.ILogger.COMMAND_LOGGER;
+import static xyz.fcidd.velocity.chat.util.ILogger.LOGGER;
 
 public class CommandExecuteListener {
 	private final VelocityChatConfig config = ConfigManager.getConfig();
@@ -19,7 +19,7 @@ public class CommandExecuteListener {
 
 	private void onCommandExecuteImpl(CommandExecuteEvent event) {
 		if (event.getCommandSource() instanceof Player player) {
-			player.getCurrentServer().ifPresent(server -> COMMAND_LOGGER.info("[{}]<{}> /{}",
+			player.getCurrentServer().ifPresent(server -> LOGGER.info("[cmd][{}]<{}> /{}",
 					server.getServer().getServerInfo().getName(),
 					player.getUsername(),
 					event.getCommand()));

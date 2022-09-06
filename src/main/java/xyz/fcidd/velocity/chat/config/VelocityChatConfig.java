@@ -1,12 +1,14 @@
 package xyz.fcidd.velocity.chat.config;
 
+import com.electronwill.nightconfig.core.CommentedConfig;
 import com.electronwill.nightconfig.core.Config;
-import com.electronwill.nightconfig.core.ConfigSpec;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.ParsingMode;
 import com.electronwill.nightconfig.core.io.WritingMode;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import xyz.fcidd.velocity.chat.config.annotation.ConfigKey;
+import xyz.fcidd.velocity.chat.config.annotation.ConfigObject;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -14,57 +16,50 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class VelocityChatConfig {
+@ConfigObject
+@SuppressWarnings("FieldMayBeFinal")
+public class VelocityChatConfig extends AbstractVelocityChatConfig {
 	private static final String LATEST_VERSION = "1.1.0";
-	private static final String VERSION = "version";
-	private static final String MCDR_COMMAND_PREFIX = "mcdr_command_prefix";
-	private static final String CHAT_FORMAT = "chat_format";
-	private static final String LOG_PLAYER_COMMAND = "log_player_command";
-	private static final String PROXY_NAME = "proxy_name";
-	private static final String SERVER_NAMES = "server_names";
 
-	/* 在创建创建检查器之前设置保持插入顺序 */
-	static {
-		// 保持插入顺序
-		Config.setInsertionOrderPreserved(true);
-	}
-
-	/* 创建检查器 */
-	private static final ConfigSpec configSpec = new ConfigSpec();
-
-	/* 检查器默认值 */
-	static {
-		configSpec.define(VERSION, "1.0.0");
-		configSpec.define(MCDR_COMMAND_PREFIX, List.of("!!"));
-		configSpec.define(LOG_PLAYER_COMMAND, true);
-		configSpec.define(CHAT_FORMAT, "${proxy_name}${server_name}§r<${player_name}§r> ${chat_message}");
-		configSpec.define(PROXY_NAME, "§8[§6群组§8]");
-		configSpec.define(SERVER_NAMES, Config.wrap(Map.of("lobby", "§8[§a大厅§8]"), Config.inMemory().configFormat()));
-	}
-
-	private String version;
+	@ConfigKey(comment = "配置文件版本，请务必不要修改它")
+	private String version = "1.0.0";
 	@Getter
-	private List<String> mcdrCommandPrefix;
+	@ConfigKey(comment = """
+			在此处填写 MCDR 命令的前缀，支持多个MCDR命令前缀
+			如果没有使用 MCDR 开服请保持默认
+			如果使用 MCDR 开服请根据实际情况填写""")
+	private List<String> mcdrCommandPrefix = List.of("!!");
 	@Getter
-	private boolean logPlayerCommand;
+	@ConfigKey(comment = "是否打印玩家命令日志")
+	private boolean logPlayerCommand = true;
 	@Getter
-	private String chatFormat;
+	@ConfigKey(comment = """
+			聊天格式
+			#${proxy_name}: 群组名称
+			#${server_name}: 服务器名称
+			#${player_name}: 玩家名
+			#${chat_message}: 聊天内容""")
+	private String chatFormat = "${proxy_name}${server_name}§r<${player_name}§r> ${chat_message}";
 	@Getter
 	private String[] chatFormatArray;
 	@Getter
-	private String proxyName;
+	@ConfigKey(comment = "群组名称")
+	private String proxyName = "§8[§6群组§8]";
 	@Getter
-	private Config serverNames;
-	private final CommentedFileConfig config;
-
+	@ConfigKey(comment = "子服务器名称")
+	private Config serverNames = CommentedConfig // 必须带注释
+			.wrap(Map.of("lobby", List.of("登录服", "大厅")), Config
+					.inMemory()
+					.configFormat());
+	@ConfigKey(parent = "server_names", comment = "第一项为聊天中显示的名称，第二项为切换/进出服务器时显示的名称")
+	private static final List<String> lobby = null; // 无效，仅用来承载默认注释
 	@SuppressWarnings("ResultOfMethodCallIgnored")
 	@SneakyThrows
-	VelocityChatConfig(Path configPath) {
-		config = CommentedFileConfig
+	public VelocityChatConfig(Path configPath) {
+		super(CommentedFileConfig
 				.builder(configPath)
 				.autosave()
 				.concurrent() // 线程安全
-				.preserveInsertionOrder() // 保留插入顺序，无卵用，因为已在静态块设置过了
 				.onFileNotFound(((file, configFormat) -> {
 					file.getParent().toFile().mkdirs(); // 创建父目录
 					file.toFile().createNewFile(); // 创建文件
@@ -74,90 +69,52 @@ public class VelocityChatConfig {
 				.charset(StandardCharsets.UTF_8)
 				.parsingMode(ParsingMode.MERGE)
 				.writingMode(WritingMode.REPLACE)
-				.build();
+				.build());
 		load();
 	}
 
 	/**
 	 * 加载/重载配置文件
 	 */
+	@Override
 	@SneakyThrows
 	public void load() {
-		config.load();
-		configSpec.correct(config);
+		super.load();
+		this.chatFormatArray = chatFormat.split("\\$(?=\\{)|(?<=\\$\\{[^}]+})");
+		update();
+	}
 
-		version = config.get(VERSION);
-		logPlayerCommand = config.get(LOG_PLAYER_COMMAND);
-		mcdrCommandPrefix = config.get(MCDR_COMMAND_PREFIX);
-		chatFormat = config.get(CHAT_FORMAT);
-		chatFormatArray = splitChatFormat(chatFormat);
-		proxyName = config.get(PROXY_NAME);
-		serverNames = config.get(SERVER_NAMES);
-
-		// 如果没有注释则写入默认注释
-		if (config.getComment(VERSION) == null) {
-			config.setComment(VERSION,
-					"请务必不要修改它");
-		}
-		if (config.getComment(PROXY_NAME) == null) {
-			config.setComment(PROXY_NAME,
-					"群组名称");
-		}
-		if (config.getComment(SERVER_NAMES) == null) {
-			config.setComment(SERVER_NAMES,
-					"子服务器名称");
-		}
-		if (config.getComment(LOG_PLAYER_COMMAND) == null) {
-			config.setComment(LOG_PLAYER_COMMAND,
-					"是否打印玩家命令日志");
-		}
-		if (config.getComment(MCDR_COMMAND_PREFIX) == null) {
-			config.setComment(MCDR_COMMAND_PREFIX, """
-					在此处填写 MCDR 命令的前缀，支持多个MCDR命令前缀
-					如果没有使用 MCDR 开服请保持默认
-					如果使用 MCDR 开服请根据实际情况填写""");
-		}
-		if (config.getComment(CHAT_FORMAT) == null) {
-			config.setComment(CHAT_FORMAT, """
-					聊天格式
-					#${proxy_name}: 群组名称
-					#${server_name}: 服务器名称
-					#${player_name}: 玩家名
-					#${chat_message}: 聊天内容""");
-		}
-
+	private void update() {
 		// 升级
 		switch (this.version) {
 			case LATEST_VERSION -> {
 			}
 			case "1.0.0" -> {
-				Config serverNames = TomlConfigs.getTable(config, "sub_prefix");
+				Config serverNames = VelocityChatConfigs.getTable(config, "sub_prefix");
 				if (serverNames != null) {
 					// 恢复值
 					this.serverNames = serverNames;
-					config.set(SERVER_NAMES, serverNames);
+					config.set("server_names", serverNames);
 					// 恢复注释
 					String comment = config.getComment("sub_prefix");
-					config.setComment(SERVER_NAMES, Objects.requireNonNullElse(comment, "子服务器名称"));
+					config.setComment("server_names",
+							Objects.requireNonNullElse(comment, config.getComment("server_names")));
 				}
-				String proxyName = TomlConfigs.getString(config, "main_prefix");
+				String proxyName = VelocityChatConfigs.getString(config, "main_prefix");
 				if (proxyName != null) {
 					// 恢复值
 					this.proxyName = proxyName;
-					config.set(PROXY_NAME, proxyName);
+					config.set("proxy_name", proxyName);
 					// 恢复注释
 					String comment = config.getComment("main_prefix");
-					config.setComment(PROXY_NAME, Objects.requireNonNullElse(comment, "群组名称"));
+					config.setComment("proxy_name",
+							Objects.requireNonNullElse(comment, config.getComment("proxy_name")));
 				}
 			}
 			default -> throw new IllegalArgumentException("未识别的配置文件版本号！" + version);
 		}
 		this.version = LATEST_VERSION;
-		config.set(VERSION, LATEST_VERSION);
-	}
-
-	private String[] splitChatFormat(String chatFormat) {
-		return chatFormat.split("\\$(?=\\{)|(?<=\\$\\{[^}]+})");
+		config.set("version", LATEST_VERSION);
 	}
 
 	@Override

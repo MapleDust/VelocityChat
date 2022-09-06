@@ -7,14 +7,16 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
 import xyz.fcidd.velocity.chat.VelocityChatPlugin;
 import xyz.fcidd.velocity.chat.config.ConfigManager;
 import xyz.fcidd.velocity.chat.config.VelocityChatConfig;
+import xyz.fcidd.velocity.chat.config.VelocityChatConfigs;
 import xyz.fcidd.velocity.chat.util.BasicUtil;
 import xyz.fcidd.velocity.chat.util.FutureUtil;
 import xyz.fcidd.velocity.chat.util.MinecraftColorCodeUtil;
+import xyz.fcidd.velocity.chat.util.PlayerUtil;
 
+import java.util.List;
 import java.util.Optional;
 
 import static xyz.fcidd.velocity.chat.util.ILogger.*;
@@ -32,41 +34,51 @@ public class PlayerChatListener {
 		// 获取玩家发送的消息
 		String playerMessage = MinecraftColorCodeUtil.replaceColorCode(event.getMessage());
 
+		// 获取玩家信息
+		Player player = event.getPlayer();
+		// 获取玩家名称
+		String playerName = player.getUsername();
+		// 获取服务器ID
+		String serverId = null;
+		Optional<ServerConnection> currentServer = player.getCurrentServer();
+		if (currentServer.isPresent()) {
+			serverId = currentServer.get().getServer().getServerInfo().getName();
+		}
+
 		// 如果是MCDR命令直接返回
-		if (BasicUtil.startsWithAny(playerMessage, config.getMcdrCommandPrefix())) return;
+		List<String> mcdrCommandPrefixes = config.getMcdrCommandPrefix();
+		if (!mcdrCommandPrefixes.isEmpty()
+				&& BasicUtil.startsWithAny(playerMessage, mcdrCommandPrefixes)) {
+			if (config.isLogPlayerCommand()) {
+				LOGGER.info("[mcdr][{}]<{}> {}",
+						serverId,
+						playerName,
+						playerMessage);
+			}
+			return;
+		}
 
 		// 取消消息发送
 		event.setResult(PlayerChatEvent.ChatResult.denied());
 		// 获取所有配置文件的子服名称和子服前缀
-		Config configServerList = config.getServerNames();
-		// 获取玩家信息
-		Player player = event.getPlayer();
-		// 获取服务器昵称
-		String serverId;
+		Config serverNames = config.getServerNames();
+		// 获取服务器名称
 		String serverName;
-		Optional<ServerConnection> currentServer = player.getCurrentServer();
-		if (currentServer.isEmpty()) {
-			serverId = "NULL";
-			serverName = serverId;
+		if (serverId == null) {
+			serverName = "";
 		} else {
-			serverId = currentServer.get().getServer().getServerInfo().getName();
 			// 获取子服的前缀
-			serverName = configServerList.get(serverId);
-			if (serverName == null) serverName = "§8[§r" + serverId + "§8]";
+			List<String> list = VelocityChatConfigs.getList(serverNames, serverId);
+			if (list == null || list.isEmpty()) {
+				serverName = "§8[§r" + serverId + "§8]";
+			} else serverName = list.get(0); // 使用第一个，聊天中显示的名称
 		}
-		// 获取玩家昵称
-		String playerUsername = player.getUsername();
-		// 如果打印玩家消息日志
-		CHAT_LOGGER.info("[{}]<{}> {}", serverId, playerUsername, playerMessage);
+		// 打印玩家消息日志
+		LOGGER.info("[chat][{}]<{}> {}", serverId, playerName, playerMessage);
 		String[] chatFormat = config.getChatFormatArray();
 		Component formattedChat = Component.empty();
 		// 玩家名
-		Component playerNameComponent = Component.text(playerUsername)
-				.hoverEvent(player.asHoverEvent())
-				.clickEvent(ClickEvent.clickEvent(
-						ClickEvent.Action.SUGGEST_COMMAND,
-						"/tell " + playerUsername + " "
-				));
+		Component playerNameComponent = PlayerUtil.getPlayerComponent(player);
 		// 构建玩家消息，Velocity API 居然把玩家队伍颜色阻断掉了，导致不能显示玩家队伍颜色
 		for (int i = 0; i < chatFormat.length; i++) {
 			String s = chatFormat[i];
