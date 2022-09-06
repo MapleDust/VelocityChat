@@ -45,14 +45,18 @@ public class VelocityChatConfig extends AbstractVelocityChatConfig {
 	@Getter
 	@ConfigKey(comment = "群组名称")
 	private String proxyName = "§8[§6群组§8]";
+	@ConfigKey(parent = "server_names", comment = "第一项为聊天中显示的名称，第二项为切换/进出服务器时显示的名称")
+	private static final List<String> lobby = List.of("登录服", "大厅"); // 无效，仅用来承载默认注释
+	@ConfigKey(parent = "server_names", comment = "仅有一项时两种场景共用名称")
+	private static final List<String> survival = List.of("生存服"); // 无效，仅用来承载默认注释
 	@Getter
 	@ConfigKey(comment = "子服务器名称")
 	private Config serverNames = CommentedConfig // 必须带注释
-			.wrap(Map.of("lobby", List.of("登录服", "大厅")), Config
+			.wrap(Map.of("lobby", lobby,
+					"survival", survival), Config
 					.inMemory()
 					.configFormat());
-	@ConfigKey(parent = "server_names", comment = "第一项为聊天中显示的名称，第二项为切换/进出服务器时显示的名称")
-	private static final List<String> lobby = null; // 无效，仅用来承载默认注释
+
 	@SuppressWarnings("ResultOfMethodCallIgnored")
 	@SneakyThrows
 	public VelocityChatConfig(Path configPath) {
