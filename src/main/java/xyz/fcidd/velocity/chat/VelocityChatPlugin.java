@@ -12,7 +12,7 @@ import xyz.fcidd.velocity.chat.listener.*;
 
 import java.nio.file.Path;
 
-@Plugin(id = "velocity_chat", name = "VelocityChat", version = "1.3.0",
+@Plugin(id = "velocity_chat", name = "VelocityChat", version = "1.3.1",
 		authors = "MapleDust", url = "https://github.com/MapleDust/VelocityChat")
 public class VelocityChatPlugin {
 	@Getter
