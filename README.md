@@ -11,21 +11,29 @@
 - 本插件配置文件 `config.toml` 初始内容
 
   ```toml
-  # 在此处填写 MCDR 命令的前缀,支持多个MCDR命令前缀，如果没有使用 MCDR 开服的请保持默认，如果使用 MCDR 开服请根据实际情况填写
+  #配置文件版本，请务必不要修改它
+  version = "1.1.0"
+  #在此处填写 MCDR 命令的前缀，支持多个MCDR命令前缀
+  #如果没有使用 MCDR 开服请保持默认
+  #如果使用 MCDR 开服请根据实际情况填写
   mcdr_command_prefix = ["!!"]
-
-  # 聊天格式
-  chat_format = "${main_prefix}${sub_prefix}§r<${player_name}> ${chat_message}"
-
-  # 是否打印玩家命令日志
+  #是否打印玩家命令日志
   log_player_command = true
-  
-  # 主前缀
-  main_prefix = "§8[§6testServerName§8]"
+  #聊天格式占位符：
+  #${proxy_name}: 群组名称
+  #${server_name}: 服务器名称
+  #${player_name}: 玩家名
+  #${chat_message}: 聊天内容
+  chat_format = "${proxy_name}${server_name}§r<${player_name}§r> ${chat_message}"
+  #群组名称
+  proxy_name = "§8[§6群组§8]"
 
-  # 子服前缀
-  [sub_prefix]
-  lobby = "§8[§alobby§8]"
+  #子服务器名称
+  [server_names]
+  #第一项为聊天中显示的名称，第二项为切换/进出服务器时显示的名称
+  lobby = ["§8[§r登录服§8]", "大厅"]
+  #仅有一项时两种场景共用名称
+  survival = ["§8[§r生存服§8]"]
   ```
 
 ## 更新事项

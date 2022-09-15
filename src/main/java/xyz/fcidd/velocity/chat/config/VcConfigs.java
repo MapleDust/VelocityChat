@@ -15,7 +15,7 @@ import java.util.Map;
 
 import static xyz.fcidd.velocity.chat.util.ILogger.LOGGER;
 
-public class VelocityChatConfigs {
+public class VcConfigs {
 	private static final Map<String, String> CONFIG_KEY_CACHE = new HashMap<>();
 
 	public static String getString(Config config, String path) {
@@ -53,10 +53,10 @@ public class VelocityChatConfigs {
 
 	//		Config.setInsertionOrderPreserved(true);
 	@SneakyThrows
-	public static void load(Object configObject, CommentedFileConfig fileConfig) {
-		Class<?> clazz = configObject.getClass();
+	public static void load(Object vcConfigObject, CommentedFileConfig fileConfig) {
+		Class<?> clazz = vcConfigObject.getClass();
 		if (!clazz.isAnnotationPresent(ConfigObject.class)) {
-			throw new IllegalArgumentException(configObject.getClass().getName() + " is not config object!");
+			throw new IllegalArgumentException(vcConfigObject.getClass().getName() + " is not config object!");
 		}
 		// 清空
 		fileConfig.clear();
@@ -76,20 +76,20 @@ public class VelocityChatConfigs {
 			if (!"".equals(parentPath)) tomlPath = parentPath + "." + tomlPath;
 			// 如果不是 static 则赋值，static 修饰的参数仅用来承载默认注释
 			if (!Modifier.isStatic(modifiers)) {
-				try {
-					// 设置值
-					Object fileConfigValue = fileConfig.get(tomlPath);
-					if (fileConfigValue == null) {
-						// 为null则反客为主将内存中的写入文件
-						fileConfig.set(tomlPath, field.get(configObject));
-						continue; // 已经是null了就不必继续下面的操作了
+				// 设置值
+				Object fileConfigValue = fileConfig.get(tomlPath);
+				if (fileConfigValue == null) {
+					// 为null则反客为主将内存中的写入文件
+					fileConfig.set(tomlPath, field.get(vcConfigObject));
+				} else {
+					try {
+						field.set(vcConfigObject, fileConfigValue);
+						LOGGER.debug("将{}设为{}", tomlPath, fileConfigValue);
+					} catch (ClassCastException e) {
+						LOGGER.debug("{}的类型错误", tomlPath);
+						// 文件给出的类型不对则反客为主将内存中的写入文件
+						fileConfig.set(tomlPath, field.get(vcConfigObject));
 					}
-					field.set(configObject, fileConfigValue);
-					LOGGER.debug("将{}设为{}", tomlPath, fileConfigValue);
-				} catch (ClassCastException e) {
-					LOGGER.debug("{}的类型错误", tomlPath);
-					// 文件给出的类型不对则反客为主将内存中的写入文件
-					fileConfig.set(tomlPath, field.get(configObject));
 				}
 			}
 			String comment = annotation.comment();

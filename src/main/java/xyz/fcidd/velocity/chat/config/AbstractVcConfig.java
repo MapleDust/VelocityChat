@@ -1,16 +1,18 @@
 package xyz.fcidd.velocity.chat.config;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import xyz.fcidd.velocity.chat.config.annotation.ConfigObject;
 
-public abstract class AbstractVelocityChatConfig {
+@ConfigObject
+public abstract class AbstractVcConfig {
 	protected CommentedFileConfig config;
 
-	public AbstractVelocityChatConfig(CommentedFileConfig config) {
+	public AbstractVcConfig(CommentedFileConfig config) {
 		this.config = config;
 	}
 
 	public void load() {
-		VelocityChatConfigs.load(this, config);
+		VcConfigs.load(this, config);
 	}
 
 	protected void save() {

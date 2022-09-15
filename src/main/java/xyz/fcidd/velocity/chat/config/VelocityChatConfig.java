@@ -18,11 +18,11 @@ import java.util.Objects;
 
 @ConfigObject
 @SuppressWarnings("FieldMayBeFinal")
-public class VelocityChatConfig extends AbstractVelocityChatConfig {
+public class VelocityChatConfig extends AbstractVcConfig {
 	private static final String LATEST_VERSION = "1.1.0";
 
 	@ConfigKey(comment = "配置文件版本，请务必不要修改它")
-	private String version = "1.0.0";
+	private String version = LATEST_VERSION;
 	@Getter
 	@ConfigKey(comment = """
 			在此处填写 MCDR 命令的前缀，支持多个MCDR命令前缀
@@ -34,11 +34,11 @@ public class VelocityChatConfig extends AbstractVelocityChatConfig {
 	private boolean logPlayerCommand = true;
 	@Getter
 	@ConfigKey(comment = """
-			聊天格式
-			#${proxy_name}: 群组名称
-			#${server_name}: 服务器名称
-			#${player_name}: 玩家名
-			#${chat_message}: 聊天内容""")
+			聊天格式占位符：
+			${proxy_name}: 群组名称
+			${server_name}: 服务器名称
+			${player_name}: 玩家名
+			${chat_message}: 聊天内容""")
 	private String chatFormat = "${proxy_name}${server_name}§r<${player_name}§r> ${chat_message}";
 	@Getter
 	private String[] chatFormatArray;
@@ -47,15 +47,12 @@ public class VelocityChatConfig extends AbstractVelocityChatConfig {
 	private String proxyName = "§8[§6群组§8]";
 	@Getter
 	@ConfigKey(comment = "子服务器名称")
-	private Config serverNames = CommentedConfig // 必须带注释
-			.wrap(Map.of("lobby", lobby,
-					"survival", survival), Config
-					.inMemory()
-					.configFormat());
+	private Config serverNames = CommentedConfig // 必须CommentedConfig
+			.wrap(Map.of("lobby", lobby, "survival", survival), Config.inMemory().configFormat());
 	@ConfigKey(parent = "server_names", comment = "第一项为聊天中显示的名称，第二项为切换/进出服务器时显示的名称")
-	private static final List<String> lobby = List.of("登录服", "大厅"); // 无效，仅用来承载默认注释
+	private static final List<String> lobby = List.of("§8[§r登录服§8]", "大厅"); // 静态变量不会被序列化，仅用来承载默认注释
 	@ConfigKey(parent = "server_names", comment = "仅有一项时两种场景共用名称")
-	private static final List<String> survival = List.of("生存服"); // 无效，仅用来承载默认注释
+	private static final List<String> survival = List.of("生存服"); // 静态变量不会被序列化，仅用来承载默认注释
 
 	@SuppressWarnings("ResultOfMethodCallIgnored")
 	@SneakyThrows
@@ -84,7 +81,7 @@ public class VelocityChatConfig extends AbstractVelocityChatConfig {
 	@SneakyThrows
 	public void load() {
 		super.load();
-		this.chatFormatArray = chatFormat.split("\\$(?=\\{)|(?<=\\$\\{[^}]+})");
+		this.chatFormatArray = chatFormat.split("\\$(?=\\{)|(?<=\\$\\{[^}]+})"); // ${|}
 		update();
 	}
 
@@ -94,7 +91,7 @@ public class VelocityChatConfig extends AbstractVelocityChatConfig {
 			case LATEST_VERSION -> {
 			}
 			case "1.0.0" -> {
-				Config serverNames = VelocityChatConfigs.getTable(config, "sub_prefix");
+				Config serverNames = VcConfigs.getTable(config, "sub_prefix");
 				if (serverNames != null) {
 					// 恢复值
 					this.serverNames = serverNames;
@@ -104,7 +101,7 @@ public class VelocityChatConfig extends AbstractVelocityChatConfig {
 					config.setComment("server_names",
 							Objects.requireNonNullElse(comment, config.getComment("server_names")));
 				}
-				String proxyName = VelocityChatConfigs.getString(config, "main_prefix");
+				String proxyName = VcConfigs.getString(config, "main_prefix");
 				if (proxyName != null) {
 					// 恢复值
 					this.proxyName = proxyName;

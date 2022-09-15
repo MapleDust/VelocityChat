@@ -25,13 +25,13 @@ public class VelocityChatPlugin {
 	public VelocityChatPlugin(ProxyServer proxyServer, Logger logger) {
 		VelocityChatPlugin.proxyServer = proxyServer;
 		VelocityChatPlugin.logger = logger;
-		// 初始化插件
-		VelocityChatLifecycle.init();
-		logger.info("§aVelocityChat 已加载！项目地址：https://github.com/MapleDust/VelocityChat");
 	}
 
 	@Subscribe
 	public void onInitialize(ProxyInitializeEvent event) {
+		// 初始化插件
+		VelocityChatLifecycle.init();
+		// 注册事件
 		EventManager eventManager = proxyServer.getEventManager();
 		// 命令执行
 		eventManager.register(this, new CommandExecuteListener());
@@ -43,5 +43,6 @@ public class VelocityChatPlugin {
 		eventManager.register(this, new PlayerDisconnectListener());
 		// 群组重载
 		eventManager.register(this, new ProxyReloadListener());
+		logger.info("§aVelocityChat 已加载！项目地址：https://github.com/MapleDust/VelocityChat");
 	}
 }
