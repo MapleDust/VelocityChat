@@ -34,7 +34,7 @@ public final class ConfigManager {
 
 	public static String getServerSystemName(String serverId) {
 		String ServerName;
-		List<String> list = VcConfigs.getList(getConfig().getServerNames(), serverId);
+		List<String> list = Configs.getList(getConfig().getServerNames(), serverId);
 		if (list == null || list.isEmpty()) {
 			ServerName = serverId;
 		} else if (list.size() == 1) {
@@ -49,7 +49,7 @@ public final class ConfigManager {
 		// 获取服务器名称
 		String serverName;
 		// 获取子服的前缀
-		List<String> list = VcConfigs.getList(config.getServerNames(), serverId);
+		List<String> list = Configs.getList(config.getServerNames(), serverId);
 		if (list == null || list.isEmpty()) {
 			serverName = "§8[§r" + serverId + "§8]";
 		} else {

@@ -15,7 +15,7 @@ import java.util.Map;
 
 import static xyz.fcidd.velocity.chat.util.ILogger.LOGGER;
 
-public class VcConfigs {
+public class Configs {
 	private static final Map<String, String> CONFIG_KEY_CACHE = new HashMap<>();
 
 	public static String getString(Config config, String path) {

@@ -18,7 +18,7 @@ import java.util.Objects;
 
 @ConfigObject
 @SuppressWarnings("FieldMayBeFinal")
-public class VelocityChatConfig extends AbstractVcConfig {
+public class VelocityChatConfig extends AbstractConfig {
 	private static final String LATEST_VERSION = "1.1.0";
 
 	@ConfigKey(comment = "配置文件版本，请务必不要修改它")
@@ -55,11 +55,10 @@ public class VelocityChatConfig extends AbstractVcConfig {
 	private static final List<String> survival = List.of("生存服"); // 静态变量不会被序列化，仅用来承载默认注释
 
 	@SuppressWarnings("ResultOfMethodCallIgnored")
-	@SneakyThrows
 	public VelocityChatConfig(Path configPath) {
 		super(CommentedFileConfig
 				.builder(configPath)
-				.autosave()
+				.autosave() // 自动保存
 				.concurrent() // 线程安全
 				.onFileNotFound(((file, configFormat) -> {
 					file.getParent().toFile().mkdirs(); // 创建父目录
@@ -91,7 +90,7 @@ public class VelocityChatConfig extends AbstractVcConfig {
 			case LATEST_VERSION -> {
 			}
 			case "1.0.0" -> {
-				Config serverNames = VcConfigs.getTable(config, "sub_prefix");
+				Config serverNames = Configs.getTable(config, "sub_prefix");
 				if (serverNames != null) {
 					// 恢复值
 					this.serverNames = serverNames;
@@ -101,7 +100,7 @@ public class VelocityChatConfig extends AbstractVcConfig {
 					config.setComment("server_names",
 							Objects.requireNonNullElse(comment, config.getComment("server_names")));
 				}
-				String proxyName = VcConfigs.getString(config, "main_prefix");
+				String proxyName = Configs.getString(config, "main_prefix");
 				if (proxyName != null) {
 					// 恢复值
 					this.proxyName = proxyName;
@@ -135,8 +134,7 @@ public class VelocityChatConfig extends AbstractVcConfig {
 
 	@Override
 	public int hashCode() {
-		int result = super.hashCode();
-		result = 31 * result + (version != null ? version.hashCode() : 0);
+		int result = version != null ? version.hashCode() : 0;
 		result = 31 * result + (mcdrCommandPrefix != null ? mcdrCommandPrefix.hashCode() : 0);
 		result = 31 * result + (chatFormat != null ? chatFormat.hashCode() : 0);
 		result = 31 * result + (logPlayerCommand ? 1 : 0);
