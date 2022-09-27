@@ -12,6 +12,7 @@ import xyz.fcidd.velocity.chat.config.annotation.ConfigObject;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -19,7 +20,9 @@ import java.util.Objects;
 @ConfigObject
 @SuppressWarnings("FieldMayBeFinal")
 public class VelocityChatConfig extends AbstractConfig {
-	private static final String LATEST_VERSION = "1.1.0";
+	private static final String LATEST_VERSION = "1.2.0";
+	private static final String DEFAULT_CHAT_FORMAT = "§8[§r${proxy_name}§8][§r${server_name}§8]§r<${player_name}§r> ${chat_message}";
+	private static final String CHAT_FORMAT_REGEX = "\\$(?=\\{)|(?<=\\$\\{[^}]+})";
 
 	@ConfigKey(comment = "配置文件版本，请务必不要修改它")
 	private String version = LATEST_VERSION;
@@ -33,26 +36,36 @@ public class VelocityChatConfig extends AbstractConfig {
 	@ConfigKey(comment = "是否打印玩家命令日志")
 	private boolean logPlayerCommand = true;
 	@Getter
+	@ConfigKey(comment = "群组名称")
+	private String proxyName = "§6群组";
+	@Getter
+	@ConfigKey()
+	private CommentedConfig servers = CommentedConfig // 必须CommentedConfig
+			.wrap(Map.of(
+					"lobby", CommentedConfig.wrap(Map.of(
+									"name", "登录服",
+									"chat_format", DEFAULT_CHAT_FORMAT),
+							Config.inMemory().configFormat()),
+					"survival", CommentedConfig.wrap(Map.of(
+									"name", "生存服"),
+							Config.inMemory().configFormat())
+			), Config.inMemory().configFormat());
+	@ConfigKey(parent = "servers.lobby", comment = "子服务器名称")
+	private static final String name = null;
+	@ConfigKey(parent = "servers.lobby", comment = "留空以使用默认")
+	private static final String chatFormat = null;
+	@Getter
+	@ConfigKey(comment = "是否在ping时发送玩家列表")
+	private boolean sendPlayersOnPing = true;
 	@ConfigKey(comment = """
-			聊天格式占位符：
+			默认聊天格式
 			${proxy_name}: 群组名称
 			${server_name}: 服务器名称
 			${player_name}: 玩家名
 			${chat_message}: 聊天内容""")
-	private String chatFormat = "${proxy_name}${server_name}§r<${player_name}§r> ${chat_message}";
-	@Getter
-	private String[] chatFormatArray;
-	@Getter
-	@ConfigKey(comment = "群组名称")
-	private String proxyName = "§8[§6群组§8]";
-	@Getter
-	@ConfigKey(comment = "子服务器名称")
-	private Config serverNames = CommentedConfig // 必须CommentedConfig
-			.wrap(Map.of("lobby", lobby, "survival", survival), Config.inMemory().configFormat());
-	@ConfigKey(parent = "server_names", comment = "第一项为聊天中显示的名称，第二项为切换/进出服务器时显示的名称")
-	private static final List<String> lobby = List.of("§8[§r登录服§8]", "大厅"); // 静态变量不会被序列化，仅用来承载默认注释
-	@ConfigKey(parent = "server_names", comment = "仅有一项时两种场景共用名称")
-	private static final List<String> survival = List.of("生存服"); // 静态变量不会被序列化，仅用来承载默认注释
+	private String defaultChatFormat = DEFAULT_CHAT_FORMAT;
+	private String[] defaultChatFormatArray;
+	private final Map<String, String[]> chatFormatArrays = new HashMap<>();
 
 	@SuppressWarnings("ResultOfMethodCallIgnored")
 	public VelocityChatConfig(Path configPath) {
@@ -70,7 +83,16 @@ public class VelocityChatConfig extends AbstractConfig {
 				.parsingMode(ParsingMode.MERGE)
 				.writingMode(WritingMode.REPLACE)
 				.build());
-		load();
+	}
+
+	public String[] getChatFormat(String serverId) {
+		String[] chatFormat = chatFormatArrays.get(serverId);
+		return chatFormat == null ? defaultChatFormatArray : chatFormat;
+	}
+
+	public String getServerName(String serverId) {
+		CommentedConfig table = Configs.getTable(servers, serverId);
+		return table == null ? serverId : Objects.requireNonNull(Configs.getString(table, "name"));
 	}
 
 	/**
@@ -80,41 +102,61 @@ public class VelocityChatConfig extends AbstractConfig {
 	@SneakyThrows
 	public void load() {
 		super.load();
-		this.chatFormatArray = chatFormat.split("\\$(?=\\{)|(?<=\\$\\{[^}]+})"); // ${|}
+		servers.entrySet().forEach(entry -> {
+			String chatFormat = ((CommentedConfig) entry
+					.getValue())
+					.get("chat_format");
+			if (chatFormat != null) {
+				chatFormatArrays.put(entry.getKey(),
+						chatFormat.split(CHAT_FORMAT_REGEX));
+			}
+		});
+		defaultChatFormatArray = defaultChatFormat.split(CHAT_FORMAT_REGEX);
 		update();
 	}
 
 	private void update() {
 		// 升级
 		switch (this.version) {
-			case LATEST_VERSION -> {
-			}
-			case "1.0.0" -> {
-				Config serverNames = Configs.getTable(config, "sub_prefix");
-				if (serverNames != null) {
-					// 恢复值
-					this.serverNames = serverNames;
-					config.set("server_names", serverNames);
-					// 恢复注释
-					String comment = config.getComment("sub_prefix");
-					config.setComment("server_names",
-							Objects.requireNonNullElse(comment, config.getComment("server_names")));
-				}
-				String proxyName = Configs.getString(config, "main_prefix");
-				if (proxyName != null) {
-					// 恢复值
-					this.proxyName = proxyName;
-					config.set("proxy_name", proxyName);
-					// 恢复注释
-					String comment = config.getComment("main_prefix");
-					config.setComment("proxy_name",
-							Objects.requireNonNullElse(comment, config.getComment("proxy_name")));
-				}
-			}
-			default -> throw new IllegalArgumentException("未识别的配置文件版本号！" + version);
+			case LATEST_VERSION:
+				break;
+			case "1.0.0":
+				to1_1_0();
+			case "1.1.0":
+				to1_2_0();
+				break;
+			default:
+				throw new IllegalArgumentException("未识别的配置文件版本号！" + version);
 		}
 		this.version = LATEST_VERSION;
 		config.set("version", LATEST_VERSION);
+	}
+
+	private void to1_2_0() {
+		config.remove("server_name");
+	}
+
+	private void to1_1_0() {
+		CommentedConfig servers = Configs.getTable(config, "sub_prefix");
+		if (servers != null) {
+			// 恢复值
+			this.servers = servers;
+			config.set("server_names", servers);
+			// 恢复注释
+			String comment = config.getComment("sub_prefix");
+			config.setComment("server_names",
+					Objects.requireNonNullElse(comment, config.getComment("server_names")));
+		}
+		String proxyName = Configs.getString(config, "main_prefix");
+		if (proxyName != null) {
+			// 恢复值
+			this.proxyName = proxyName;
+			config.set("proxy_name", proxyName);
+			// 恢复注释
+			String comment = config.getComment("main_prefix");
+			config.setComment("proxy_name",
+					Objects.requireNonNullElse(comment, config.getComment("proxy_name")));
+		}
 	}
 
 	@Override
@@ -127,19 +169,17 @@ public class VelocityChatConfig extends AbstractConfig {
 		if (!Objects.equals(version, vccConfig.version)) return false;
 		if (!Objects.equals(mcdrCommandPrefix, vccConfig.mcdrCommandPrefix))
 			return false;
-		if (!Objects.equals(chatFormat, vccConfig.chatFormat)) return false;
 		if (!Objects.equals(proxyName, vccConfig.proxyName)) return false;
-		return Objects.equals(serverNames, vccConfig.serverNames);
+		return Objects.equals(servers, vccConfig.servers);
 	}
 
 	@Override
 	public int hashCode() {
 		int result = version != null ? version.hashCode() : 0;
 		result = 31 * result + (mcdrCommandPrefix != null ? mcdrCommandPrefix.hashCode() : 0);
-		result = 31 * result + (chatFormat != null ? chatFormat.hashCode() : 0);
 		result = 31 * result + (logPlayerCommand ? 1 : 0);
 		result = 31 * result + (proxyName != null ? proxyName.hashCode() : 0);
-		result = 31 * result + (serverNames != null ? serverNames.hashCode() : 0);
+		result = 31 * result + (servers != null ? servers.hashCode() : 0);
 		return result;
 	}
 }

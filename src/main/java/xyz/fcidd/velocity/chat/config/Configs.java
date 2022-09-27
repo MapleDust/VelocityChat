@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static xyz.fcidd.velocity.chat.util.ILogger.LOGGER;
+import static xyz.fcidd.velocity.chat.util.PluginUtil.LOGGER;
 
 public class Configs {
 	private static final Map<String, String> CONFIG_KEY_CACHE = new HashMap<>();
@@ -70,10 +70,15 @@ public class Configs {
 					|| Modifier.isTransient(modifiers)) {
 				continue;
 			}
+
 			String tomlPath = getTomlKey(field.getName());
 			ConfigKey annotation = field.getAnnotation(ConfigKey.class);
 			String parentPath = annotation.parent();
-			if (!"".equals(parentPath)) tomlPath = parentPath + "." + tomlPath;
+			if (!"".equals(parentPath)) {
+				if (!fileConfig.contains(parentPath)) continue;
+				tomlPath = parentPath + "." + tomlPath;
+			}
+
 			// 如果不是 static 则赋值，static 修饰的参数仅用来承载默认注释
 			if (!Modifier.isStatic(modifiers)) {
 				// 设置值
@@ -99,6 +104,7 @@ public class Configs {
 				fileConfig.setComment(tomlPath, comment);
 			}
 		}
+
 	}
 
 	private static String getTomlKey(String fieldName) {

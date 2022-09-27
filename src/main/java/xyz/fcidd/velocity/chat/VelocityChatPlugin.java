@@ -6,14 +6,19 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
+import fun.qu_an.velocity.serverstatus.BuildConstants;
 import lombok.Getter;
 import org.slf4j.Logger;
+import xyz.fcidd.velocity.chat.config.ConfigManager;
 import xyz.fcidd.velocity.chat.listener.*;
 
 import java.nio.file.Path;
 
-@Plugin(id = "velocity_chat", name = "VelocityChat", version = "1.3.1",
-		authors = {"MapleDust", "Harvey_Husky"}, url = "https://github.com/MapleDust/VelocityChat")
+@Plugin(id = BuildConstants.PLUGIN_ID,
+		name = BuildConstants.PLUGIN_NAME,
+		version = BuildConstants.VERSION,
+		authors = {"MapleDust", "Harvey_Husky"},
+		url = "https://github.com/MapleDust/VelocityChat")
 public class VelocityChatPlugin {
 	@Getter
 	private static ProxyServer proxyServer;
@@ -29,8 +34,7 @@ public class VelocityChatPlugin {
 
 	@Subscribe
 	public void onInitialize(ProxyInitializeEvent event) {
-		// 初始化插件
-		VelocityChatLifecycle.init();
+		ConfigManager.load();
 		// 注册事件
 		EventManager eventManager = proxyServer.getEventManager();
 		// 命令执行
@@ -43,6 +47,8 @@ public class VelocityChatPlugin {
 		eventManager.register(this, new PlayerDisconnectListener());
 		// 群组重载
 		eventManager.register(this, new ProxyReloadListener());
-		logger.info("§aVelocityChat 已加载！项目地址：https://github.com/MapleDust/VelocityChat");
+		eventManager.register(this, new ProxyPingListener());
+
+		logger.info("§aVelocityChat v" + BuildConstants.VERSION + " 已加载！项目地址：https://github.com/MapleDust/VelocityChat");
 	}
 }

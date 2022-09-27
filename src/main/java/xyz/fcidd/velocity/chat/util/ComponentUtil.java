@@ -11,6 +11,8 @@ import xyz.fcidd.velocity.chat.config.ConfigManager;
 import java.util.HashMap;
 import java.util.Map;
 
+import static xyz.fcidd.velocity.chat.config.ConfigManager.CONFIG;
+
 public class ComponentUtil {
 	private static final Map<String, Component> PLAYER_COMPONENT_CACHE = new HashMap<>();
 	private static final Component EMPTY_SERVER_CHAT_COMPONENT = Component.text("§8[ ]§r");
@@ -38,18 +40,14 @@ public class ComponentUtil {
 		PLAYER_COMPONENT_CACHE.remove(playerName);
 	}
 
-	public static Component getServerSystemComponent(RegisteredServer server) {
-		if (server == null) return Component.text(ConfigManager.getServerSystemName(""));
-		return getServerComponent(server, ConfigManager.getServerSystemName(server.getServerInfo().getName()), null);
+
+	public static Component getServerComponent(RegisteredServer server) {
+		return getServerComponent(server, null);
 	}
 
-	public static Component getServerChatComponent(RegisteredServer server) {
-		if (server == null) return Component.text(ConfigManager.getServerChatName(""));
-		return getServerComponent(server, ConfigManager.getServerChatName(server.getServerInfo().getName()), null);
-	}
-
-	public static Component getServerComponent(RegisteredServer server, String serverName, String currentServerId) {
+	public static Component getServerComponent(RegisteredServer server, String currentServerId) {
 		String serverId = server.getServerInfo().getName();
+		String serverName = CONFIG.getServerName(serverId);
 		TranslatableComponent playerCountComponent;
 		int onlinePlayers = server.getPlayersConnected().size();
 		if (onlinePlayers == 1) {
