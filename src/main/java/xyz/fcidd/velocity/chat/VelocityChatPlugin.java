@@ -11,7 +11,8 @@ import fun.qu_an.velocity.serverstatus.BuildConstants;
 import lombok.Getter;
 import org.slf4j.Logger;
 import xyz.fcidd.velocity.chat.listener.*;
-import xyz.fcidd.velocity.chat.translate.LanguageLoader;
+import xyz.fcidd.velocity.chat.component.Translates;
+import xyz.fcidd.velocity.chat.component.Components;
 
 import java.nio.file.Path;
 
@@ -20,8 +21,8 @@ import static xyz.fcidd.velocity.chat.config.VelocityChatConfig.CONFIG;
 @Plugin(id = BuildConstants.PLUGIN_ID,
 		name = BuildConstants.PLUGIN_NAME,
 		version = BuildConstants.VERSION,
-		authors = {"MapleDust", "Harvey_Husky"},
-		url = "https://github.com/MapleDust/VelocityChat")
+		authors = {"MapleDust", "Harvey_Husky"}
+)
 public class VelocityChatPlugin {
 	@Getter
 	private static VelocityChatPlugin instance;
@@ -41,7 +42,7 @@ public class VelocityChatPlugin {
 	@Subscribe
 	public void onInitialize(ProxyInitializeEvent event) {
 		// load
-		reload();
+		load();
 		// 注册事件
 		EventManager eventManager = proxyServer.getEventManager();
 		// 命令执行
@@ -63,8 +64,13 @@ public class VelocityChatPlugin {
 		reload();
 	}
 
-	private void reload() {
+	public static void reload() {
+		Components.resetCaches();
+		load();
+	}
+
+	private static void load() {
 		CONFIG.load();
-		LanguageLoader.load();
+		Translates.LANGUAGE_LOADER.load();
 	}
 }

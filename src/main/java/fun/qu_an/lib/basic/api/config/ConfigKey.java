@@ -1,4 +1,4 @@
-package xyz.fcidd.velocity.chat.api.config;
+package fun.qu_an.lib.basic.api.config;
 
 import java.lang.annotation.*;
 

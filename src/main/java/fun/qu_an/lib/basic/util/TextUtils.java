@@ -1,4 +1,4 @@
-package xyz.fcidd.velocity.chat.util;
+package fun.qu_an.lib.basic.util;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class TextUtil {
+public class TextUtils {
     /**
      * char数组中包含目标字符
      *
@@ -55,6 +55,23 @@ public class TextUtil {
     public static boolean startsWithAny(@NotNull String s, @NotNull List<String> strs) {
         for (String str : strs) {
             if (s.startsWith(str)) return true;
+        }
+        return false;
+    }
+
+    @Contract(pure = true)
+    public static boolean endsWithAny(@NotNull String s, String @NotNull ... strs) {
+        if (strs.length == 1) return s.startsWith(strs[0]);
+        for (String str : strs) {
+            if (s.endsWith(str)) return true;
+        }
+        return false;
+    }
+
+    @Contract(pure = true)
+    public static boolean endsWithAny(@NotNull String s, @NotNull List<String> strs) {
+        for (String str : strs) {
+            if (s.endsWith(str)) return true;
         }
         return false;
     }

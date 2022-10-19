@@ -8,36 +8,36 @@ import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerPing;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
+import fun.qu_an.lib.velocity.util.TaskUtils;
 import xyz.fcidd.velocity.chat.config.VelocityChatConfig;
-import xyz.fcidd.velocity.chat.util.ComponentUtil;
-import xyz.fcidd.velocity.chat.util.ScheduleUtil;
+import xyz.fcidd.velocity.chat.component.Components;
 import xyz.fcidd.velocity.chat.util.TabListUtil;
+import xyz.fcidd.velocity.chat.util.MessageTaskUtil;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import static xyz.fcidd.velocity.chat.util.PluginUtil.PLAYER_LIST;
-import static xyz.fcidd.velocity.chat.util.PluginUtil.PROXY_SERVER;
+import static fun.qu_an.lib.velocity.util.PluginUtils.PLAYER_LIST;
+import static fun.qu_an.lib.velocity.util.PluginUtils.PROXY_SERVER;
 
 public class ServerConnectedListener {
-	@Subscribe(order = PostOrder.LAST) // 避免后续插件阻塞事件，或导致事件触发剩余时间超过1s，错过tab列表更新
+	@Subscribe(order = PostOrder.LAST, async = false)
+	// 尽可能避免因异步执行导致事件处理时间超过1s，错过tab列表更新
 	public void onPlayerConnectedLast(ServerConnectedEvent event) {
 		if (VelocityChatConfig.CONFIG.isShowGlobalTabList()) {
-			ScheduleUtil.delay(TabListUtil::update, 1, TimeUnit.SECONDS);
+			TaskUtils.delay(1, TimeUnit.SECONDS, TabListUtil::update);
 		}
 	}
 
-	@Subscribe
-	public void onPlayerConnected(@NotNull ServerConnectedEvent event) {
-		ScheduleUtil.messageThread(() -> {
-			// 获取玩家信息
+	@Subscribe(order = PostOrder.FIRST, async = false) // 尽可能减少异步执行带来的输出顺序影响
+	public void onPlayerConnectedFirstSync(@NotNull ServerConnectedEvent event) {
+		MessageTaskUtil.runInMessageThread(() -> {
 			Player player = event.getPlayer();
-			// 获取目标服务器
 			RegisteredServer targetServer = event.getServer();
 			// 获取目标服务器消息组件
-			Component targetServerComponent = ComponentUtil.getServerComponent(targetServer);
+			Component targetServerComponent = Components.getServerComponent(targetServer);
 			// 玩家名
-			Component playerNameComponent = ComponentUtil.getPlayerComponent(player);
+			Component playerNameComponent = Components.getPlayerComponent(player);
 			// 获取来源服务器Optional
 			Optional<RegisteredServer> serverOptional = event.getPreviousServer();
 			// 判断是否刚刚连接至服务器（是否没有来源服务器）
@@ -51,7 +51,7 @@ public class ServerConnectedListener {
 				Component connectionMessage = Component
 					.text("§8[§2+§8]§r ")
 					.append(playerNameComponent)
-					.append(Component.text(" §2加入了§r"))
+					.append(Component.text(" §2加入了§r "))
 					.append(targetServerComponent);
 				// 向所有的服务器发送玩家连接到服务器的消息
 				PROXY_SERVER.sendMessage(connectionMessage);
@@ -61,10 +61,10 @@ public class ServerConnectedListener {
 				Component connectionMessage = Component
 					.text("§8[§b⇄§8]§r ")
 					.append(playerNameComponent)
-					.append(Component.text(" §2从§r"))
+					.append(Component.text(" §2从§r "))
 					// 来源服务器
-					.append(ComponentUtil.getServerComponent(sourceServer))
-					.append(Component.text("§2切换到了§r"))
+					.append(Components.getServerComponent(sourceServer))
+					.append(Component.text(" §2切换到了§r "))
 					// 目标服务器
 					.append(targetServerComponent);
 				// 向所有的服务器发送玩家切换服务器的消息

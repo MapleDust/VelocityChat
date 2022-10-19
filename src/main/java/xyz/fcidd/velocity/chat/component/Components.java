@@ -1,4 +1,4 @@
-package xyz.fcidd.velocity.chat.util;
+package xyz.fcidd.velocity.chat.component;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
@@ -12,37 +12,30 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-import static xyz.fcidd.velocity.chat.config.VelocityChatConfig.CONFIG;
-
 @SuppressWarnings("unused")
-public class ComponentUtil {
-	private static final Map<String, Component> PLAYER_COMPONENT_CACHE = new HashMap<>();
+public class Components {
+	private static final Map<Player, Component> PLAYER_COMPONENT_CACHE = new HashMap<>();
 
-	public static Component getPlayerComponent(@NotNull Player player) {
+	public static @NotNull Component getPlayerComponent(@NotNull Player player) {
+		Component component = PLAYER_COMPONENT_CACHE.get(player);
+		if (component != null) return component;
 		String playerName = player.getUsername();
-		if (PLAYER_COMPONENT_CACHE.containsKey(playerName)) {
-			return PLAYER_COMPONENT_CACHE.get(playerName);
-		}
 		Component playerComponent = Component.text(playerName)
 			.hoverEvent(player.asHoverEvent())
 			.clickEvent(ClickEvent.clickEvent(
 				ClickEvent.Action.SUGGEST_COMMAND,
 				"/tell " + playerName + " "
 			));
-		PLAYER_COMPONENT_CACHE.put(playerName, playerComponent);
+		PLAYER_COMPONENT_CACHE.put(player, playerComponent);
 		return playerComponent;
 	}
 
 	public static void removeFromCache(@NotNull Player player) {
-		removeFromCache(player.getUsername());
+		PLAYER_COMPONENT_CACHE.remove(player);
 	}
 
-	public static void removeFromCache(String playerName) {
-		PLAYER_COMPONENT_CACHE.remove(playerName);
-	}
-
-	private static final HashMap<RegisteredServer, Component> SERVER_COMPONENT_CACHE = new HashMap<>();
-	private static final HashMap<RegisteredServer, Component> CLICKABLE_SERVER_COMPONENT_CACHE = new HashMap<>();
+	private static final Map<RegisteredServer, Component> SERVER_COMPONENT_CACHE = new HashMap<>();
+	private static final Map<RegisteredServer, Component> CLICKABLE_SERVER_COMPONENT_CACHE = new HashMap<>();
 
 	public static @NotNull Component getServerComponent(@Nullable RegisteredServer server) {
 		if(server == null) return Component.empty();
@@ -52,13 +45,22 @@ public class ComponentUtil {
 
 	public static @NotNull Component getServerComponent(@Nullable RegisteredServer server, @NotNull String currentServerId){
 		if(server == null) return Component.empty();
-		Component component = SERVER_COMPONENT_CACHE.get(server);
-		return component == null ? getServerComponent0(server, currentServerId) : component;
+		return getServerComponent0(server, currentServerId);
 	}
 
 	private static @NotNull Component getServerComponent0(@NotNull RegisteredServer server, String currentServerId) {
 		String serverId = server.getServerInfo().getName();
-		String serverName = CONFIG.getServerName(serverId);
+		Component serverComponent;
+
+		// 优化
+		boolean sameServer = serverId.equals(currentServerId);
+		if (sameServer) {
+			serverComponent = SERVER_COMPONENT_CACHE.get(server);
+		} else {
+			serverComponent = CLICKABLE_SERVER_COMPONENT_CACHE.get(server);
+		}
+		if (serverComponent != null) return serverComponent;
+
 		TranslatableComponent playerCountComponent;
 		int onlinePlayers = server.getPlayersConnected().size();
 		if (onlinePlayers == 1) {
@@ -67,8 +69,9 @@ public class ComponentUtil {
 			playerCountComponent = Component.translatable("velocity.command.server-tooltip-players-online");
 		}
 		playerCountComponent = playerCountComponent.args(Component.text(onlinePlayers));
-		Component serverComponent = Component.text(serverName);
-		if (serverId.equals(currentServerId)) {
+		serverComponent = Component
+			.translatable(Translates.SERVER_NAME + serverId);
+		if (sameServer) {
 			serverComponent = serverComponent
 				.hoverEvent(HoverEvent
 					.showText(Component
@@ -87,5 +90,11 @@ public class ComponentUtil {
 			CLICKABLE_SERVER_COMPONENT_CACHE.put(server, serverComponent);
 		}
 		return serverComponent;
+	}
+
+	public static void resetCaches() {
+		PLAYER_COMPONENT_CACHE.clear();
+		CLICKABLE_SERVER_COMPONENT_CACHE.clear();
+		SERVER_COMPONENT_CACHE.clear();
 	}
 }

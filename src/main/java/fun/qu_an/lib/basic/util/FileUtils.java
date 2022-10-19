@@ -1,9 +1,8 @@
-package xyz.fcidd.velocity.chat.util;
+package fun.qu_an.lib.basic.util;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Enumeration;
@@ -14,18 +13,6 @@ import java.util.zip.ZipFile;
 
 @SuppressWarnings("unused")
 public class FileUtils {
-	private static final Method visitResources;
-
-	static {
-		try {
-			Class<?> fileSystemUtils = Class.forName("com.velocitypowered.proxy.util.FileSystemUtils");
-			visitResources = fileSystemUtils.getMethod("visitResources", Class.class, Consumer.class, String.class, String[].class);
-			visitResources.setAccessible(true);
-		} catch (ClassNotFoundException | NoSuchMethodException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	/**
 	 * 创建输入的文件和路径
 	 */
@@ -44,7 +31,7 @@ public class FileUtils {
 	/**
 	 * 将文本写入指定路径的文件
 	 */
-	public static void write(@NotNull Path path, String text) throws IOException {
+	public static void write(@NotNull Path path, @NotNull String text) throws IOException {
 		try (FileWriter fileWriter = new FileWriter(path.toFile())) {
 			fileWriter.write(text);
 		}
@@ -53,7 +40,7 @@ public class FileUtils {
 	/**
 	 * 遍历输入的路径下的所有文件
 	 */
-	public static void forEachChild(@NotNull Path folderPath, Consumer<File> fileConsumer) {
+	public static void forEachChild(@NotNull Path folderPath, @NotNull Consumer<File> fileConsumer) {
 		File[] files = folderPath.toFile().listFiles();
 		if (files == null) return;
 		for (File file : files) {
@@ -64,7 +51,7 @@ public class FileUtils {
 	/**
 	 * 遍历jar包中输入的路径下的所有文件
 	 */
-	public static void visitResourceFolder(@NotNull Class<?> target, String path, BiConsumer<ZipFile, ZipEntry> consumer) {
+	public static void visitResourceFolder(@NotNull Class<?> target, String path, @NotNull BiConsumer<ZipFile, ZipEntry> consumer) {
 		path = formatPath(path);
 		URL resource = target.getProtectionDomain().getCodeSource().getLocation();
 		String jar = resource.getFile();
@@ -109,7 +96,7 @@ public class FileUtils {
 	/**
 	 * 解压文件，不带缓存，一次性读取
 	 */
-	public static void unpackWithoutBuffer(ZipFile zipFile, @NotNull ZipEntry zipEntry, @NotNull File to) throws IOException {
+	public static void unpackWithoutBuffer(@NotNull ZipFile zipFile, @NotNull ZipEntry zipEntry, @NotNull File to) throws IOException {
 		if (!create(to)) return;
 		try (InputStream is = zipFile.getInputStream(zipEntry);
 			 OutputStream os = new FileOutputStream(to)) {

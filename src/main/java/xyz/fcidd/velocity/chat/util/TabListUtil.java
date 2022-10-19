@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.UUID;
 
-import static xyz.fcidd.velocity.chat.util.PluginUtil.PROXY_SERVER;
+import static fun.qu_an.lib.velocity.util.PluginUtils.PROXY_SERVER;
 
 public class TabListUtil {
 	public static void update() {

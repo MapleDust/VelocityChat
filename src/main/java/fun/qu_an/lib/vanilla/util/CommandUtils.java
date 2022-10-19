@@ -1,13 +1,12 @@
-package xyz.fcidd.velocity.chat.util;
+package fun.qu_an.lib.vanilla.util;
 
+import fun.qu_an.lib.basic.util.TextUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class CommandUtil {
-	public static final String[] TELEPORT = {"tp", "teleport"};
-	public static final String[] TELL = {"tell", "msg", "me"};
+public class CommandUtils {
 	public static final String[] EXECUTE = {"execute"};
 
 	public static int indexOfNode(@NotNull List<String> command, String @NotNull ... nodes) {
@@ -22,7 +21,7 @@ public class CommandUtil {
 		for (String root : roots) {
 			String s0 = command.get(0);
 			if (s0.equals(root)) return command.indexOf(root);
-			if (TextUtil.equalsAny(s0, EXECUTE)
+			if (TextUtils.equalsAny(s0, EXECUTE)
 				&& command.contains(root)) {
 				return command.indexOf(root);
 			}
@@ -34,7 +33,7 @@ public class CommandUtil {
 		for (String root : roots) {
 			String s0 = command.get(0);
 			if (s0.equals(root)) return true;
-			if (TextUtil.equalsAny(s0, EXECUTE)
+			if (TextUtils.equalsAny(s0, EXECUTE)
 				&& command.contains(root)) {
 				return true;
 			}

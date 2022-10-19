@@ -3,7 +3,7 @@ package xyz.fcidd.velocity.chat.listener;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyPingEvent;
 import org.jetbrains.annotations.NotNull;
-import xyz.fcidd.velocity.chat.util.PluginUtil;
+import fun.qu_an.lib.velocity.util.PluginUtils;
 
 import static xyz.fcidd.velocity.chat.config.VelocityChatConfig.CONFIG;
 
@@ -15,7 +15,7 @@ public class ProxyPingListener {
 				.getPing()
 				.asBuilder()
 				.clearSamplePlayers()
-				.samplePlayers(PluginUtil.getSamplePlayers())
+				.samplePlayers(PluginUtils.getSamplePlayers())
 				.build());
 		}
 	}
