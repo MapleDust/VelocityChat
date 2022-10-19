@@ -30,7 +30,7 @@ public class VelocityChatPlugin {
 	private static ProxyServer proxyServer;
 	@Getter
 	private static Logger logger;
-	public static final Path DATA_DIRECTORY = Path.of("./plugins/VelocityChat/");
+	public static final Path DATA_DIRECTORY = Path.of("plugins").resolve(BuildConstants.PLUGIN_NAME);
 
 	@Inject
 	public VelocityChatPlugin(ProxyServer proxyServer, Logger logger) {
@@ -56,7 +56,7 @@ public class VelocityChatPlugin {
 		// 玩家ping
 		eventManager.register(this, new ProxyPingListener());
 
-		logger.info("§aVelocityChat v" + BuildConstants.VERSION + " 已加载！");
+		logger.info("§a" + BuildConstants.PLUGIN_NAME + " v" + BuildConstants.VERSION + " 已加载！");
 	}
 
 	@Subscribe

@@ -57,9 +57,7 @@ public class ServerConnectedListener {
 				// 发送服务器切换消息
 				PROXY_SERVER.sendMessage(Translates.SERVER_SWITCH.args(
 					playerNameComponent,
-					// 来源服务器
 					Components.getServerComponent(sourceServer),
-					// 目标服务器
 					targetServerComponent)
 				);
 			}
