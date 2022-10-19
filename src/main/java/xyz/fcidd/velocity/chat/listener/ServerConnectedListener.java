@@ -9,6 +9,7 @@ import com.velocitypowered.api.proxy.server.ServerPing;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import fun.qu_an.lib.velocity.util.TaskUtils;
+import xyz.fcidd.velocity.chat.component.Translates;
 import xyz.fcidd.velocity.chat.config.VelocityChatConfig;
 import xyz.fcidd.velocity.chat.component.Components;
 import xyz.fcidd.velocity.chat.util.TabListUtil;
@@ -46,29 +47,21 @@ public class ServerConnectedListener {
 				PLAYER_LIST.put(player, new ServerPing.SamplePlayer(
 					player.getUsername(),
 					player.getUniqueId()));
-				// 获取子服前缀
-				// 玩家连接到服务器的消息
-				Component connectionMessage = Component
-					.text("§8[§2+§8]§r ")
-					.append(playerNameComponent)
-					.append(Component.text(" §2加入了§r "))
-					.append(targetServerComponent);
-				// 向所有的服务器发送玩家连接到服务器的消息
-				PROXY_SERVER.sendMessage(connectionMessage);
+				// 发送服务器连接消息
+				PROXY_SERVER.sendMessage(Translates.CONNECTED.args(
+					playerNameComponent,
+					targetServerComponent
+				));
 			} else {
 				RegisteredServer sourceServer = serverOptional.get();
-				// 玩家切换服务器的消息
-				Component connectionMessage = Component
-					.text("§8[§b⇄§8]§r ")
-					.append(playerNameComponent)
-					.append(Component.text(" §2从§r "))
+				// 发送服务器切换消息
+				PROXY_SERVER.sendMessage(Translates.SERVER_SWITCH.args(
+					playerNameComponent,
 					// 来源服务器
-					.append(Components.getServerComponent(sourceServer))
-					.append(Component.text(" §2切换到了§r "))
+					Components.getServerComponent(sourceServer),
 					// 目标服务器
-					.append(targetServerComponent);
-				// 向所有的服务器发送玩家切换服务器的消息
-				PROXY_SERVER.sendMessage(connectionMessage);
+					targetServerComponent)
+				);
 			}
 		});
 	}
