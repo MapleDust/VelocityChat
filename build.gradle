@@ -29,8 +29,8 @@ dependencies {
 def targetJavaVersion = 17
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
     if (JavaVersion.current() < javaVersion) {
         toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }

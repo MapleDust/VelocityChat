@@ -1,8 +1,12 @@
 package xyz.fcidd.velocity.chat.util;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
-public class BasicUtil {
+@SuppressWarnings("unused")
+public class TextUtil {
     /**
      * char数组中包含目标字符
      *
@@ -10,7 +14,8 @@ public class BasicUtil {
      * @param chars char数组
      * @return 判断的结果
      */
-    public static boolean matchAny(char c, char[] chars){
+    @Contract(pure = true)
+    public static boolean equalsAny(char c, char @NotNull ... chars){
         for (char aChar : chars) {
             if (c == aChar) {
                 return true;
@@ -26,7 +31,9 @@ public class BasicUtil {
      * @param strs String数组
      * @return 判断结果
      */
-    public static boolean matchAny(String s, String[] strs){
+    @Contract(pure = true)
+    public static boolean equalsAny(@NotNull String s, String @NotNull ... strs){
+        if (strs.length == 1) return s.startsWith(strs[0]);
         for (String str : strs) {
             if (str.equals(s)) {
                 return true;
@@ -35,14 +42,17 @@ public class BasicUtil {
         return false;
     }
 
-    public static boolean startsWithAny(String s, String[] strs) {
+    @Contract(pure = true)
+    public static boolean startsWithAny(@NotNull String s, String @NotNull ... strs) {
+        if (strs.length == 1) return s.startsWith(strs[0]);
         for (String str : strs) {
             if (s.startsWith(str)) return true;
         }
         return false;
     }
 
-    public static boolean startsWithAny(String s, List<String> strs) {
+    @Contract(pure = true)
+    public static boolean startsWithAny(@NotNull String s, @NotNull List<String> strs) {
         for (String str : strs) {
             if (s.startsWith(str)) return true;
         }

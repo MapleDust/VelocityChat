@@ -1,4 +1,4 @@
-package xyz.fcidd.velocity.chat.config.annotation;
+package xyz.fcidd.velocity.chat.api.config;
 
 import java.lang.annotation.*;
 
@@ -8,5 +8,5 @@ import java.lang.annotation.*;
 public @interface ConfigKey {
 	String comment() default "";
 
-	String parent() default "";
+	String path() default "";
 }
