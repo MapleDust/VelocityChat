@@ -2,8 +2,8 @@ package fun.qu_an.minecraft.velocity.api;
 
 import com.velocitypowered.api.proxy.ProxyServer;
 import fun.qu_an.minecraft.velocity.api.language.LanguageLoader;
-import fun.qu_an.minecraft.velocity.api.util.ProxyUtil;
-import fun.qu_an.minecraft.velocity.api.util.TaskUtil;
+import fun.qu_an.minecraft.velocity.api.util.ApiPlayerUtil;
+import fun.qu_an.minecraft.velocity.api.util.ApiTaskUtil;
 import fun.qu_an.minecraft.velocity.api.util.Utils;
 import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.Contract;
@@ -42,11 +42,11 @@ public class Qu_anVelocityApi {
 		return plugin;
 	}
 
-	public ProxyUtil getProxyUtil() {
+	public ApiPlayerUtil getProxyUtil() {
 		return utils.getProxyUtil();
 	}
 
-	public TaskUtil getTaskUtil() {
+	public ApiTaskUtil getTaskUtil() {
 		return utils.getTaskUtil();
 	}
 

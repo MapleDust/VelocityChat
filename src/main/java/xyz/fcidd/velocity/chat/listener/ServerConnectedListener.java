@@ -16,15 +16,15 @@ import xyz.fcidd.velocity.chat.util.TabListUtils;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import static xyz.fcidd.velocity.chat.util.PluginUtils.PROXY_SERVER;
-import static xyz.fcidd.velocity.chat.util.PluginUtils.TASK_UTIL;
+import static xyz.fcidd.velocity.chat.util.ApiUtils.PROXY_SERVER;
+import static xyz.fcidd.velocity.chat.util.ApiUtils.API_TASK_UTIL;
 
 public class ServerConnectedListener {
 	@Subscribe(order = PostOrder.LAST, async = false)
 	// 尽可能避免因异步执行导致事件处理时间超过1s，错过tab列表更新
 	public void onPlayerConnectedLast(ServerConnectedEvent event) {
 		if (VelocityChatConfig.CONFIG.isShowGlobalTabList()) {
-			TASK_UTIL.delay(1, TimeUnit.SECONDS, TabListUtils::update);
+			API_TASK_UTIL.delay(1, TimeUnit.SECONDS, TabListUtils::update);
 		}
 	}
 

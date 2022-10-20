@@ -8,11 +8,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings({"UnusedReturnValue", "unused"})
-public class TaskUtil {
+public class ApiTaskUtil {
 	private final ProxyServer proxyServer;
 	private final Object plugin;
 
-	TaskUtil(@NotNull Qu_anVelocityApi qu_anVelocityApi) {
+	ApiTaskUtil(@NotNull Qu_anVelocityApi qu_anVelocityApi) {
 		this.proxyServer = qu_anVelocityApi.getProxyServer();
 		this.plugin = qu_anVelocityApi.getPlugin();
 	}

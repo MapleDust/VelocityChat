@@ -6,7 +6,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TranslatableComponent;
 
 import static xyz.fcidd.velocity.chat.VelocityChatPlugin.DATA_DIRECTORY;
-import static xyz.fcidd.velocity.chat.util.PluginUtils.QU_AN_API;
+import static xyz.fcidd.velocity.chat.util.ApiUtils.QU_AN_API;
 
 public class Translates {
 	// 私聊消息

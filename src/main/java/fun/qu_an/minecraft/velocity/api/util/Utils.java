@@ -4,19 +4,19 @@ import fun.qu_an.minecraft.velocity.api.Qu_anVelocityApi;
 import org.jetbrains.annotations.NotNull;
 
 public class Utils {
-	private final @NotNull ProxyUtil proxyUtil;
-	private final @NotNull TaskUtil taskUtil;
+	private final @NotNull ApiPlayerUtil apiPlayerUtil;
+	private final @NotNull ApiTaskUtil apiTaskUtil;
 
 	public Utils(@NotNull Qu_anVelocityApi qu_anVelocityApi) {
-		proxyUtil = new ProxyUtil(qu_anVelocityApi);
-		taskUtil = new TaskUtil(qu_anVelocityApi);
+		apiPlayerUtil = new ApiPlayerUtil(qu_anVelocityApi);
+		apiTaskUtil = new ApiTaskUtil(qu_anVelocityApi);
 	}
 
-	public @NotNull ProxyUtil getProxyUtil() {
-		return proxyUtil;
+	public @NotNull ApiPlayerUtil getProxyUtil() {
+		return apiPlayerUtil;
 	}
 
-	public @NotNull TaskUtil getTaskUtil() {
-		return taskUtil;
+	public @NotNull ApiTaskUtil getTaskUtil() {
+		return apiTaskUtil;
 	}
 }

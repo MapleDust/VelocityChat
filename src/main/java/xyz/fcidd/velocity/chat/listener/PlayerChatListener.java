@@ -21,7 +21,7 @@ import java.util.Optional;
 import static com.velocitypowered.api.event.player.PlayerChatEvent.ChatResult.denied;
 import static xyz.fcidd.velocity.chat.config.VelocityChatConfig.CONFIG;
 import static xyz.fcidd.velocity.chat.util.LogUtils.LOGGER;
-import static xyz.fcidd.velocity.chat.util.PluginUtils.PROXY_SERVER;
+import static xyz.fcidd.velocity.chat.util.ApiUtils.PROXY_SERVER;
 
 public class PlayerChatListener {
 	@Subscribe(order = PostOrder.FIRST, async = false) // 尽可能减少异步执行带来的输出顺序影响

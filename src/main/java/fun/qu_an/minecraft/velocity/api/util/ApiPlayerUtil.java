@@ -15,24 +15,24 @@ import java.util.HashMap;
 import java.util.Optional;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
-public class ProxyUtil {
+public class ApiPlayerUtil {
 	private final HashMap<Player, ServerPing.SamplePlayer> playerList = new HashMap<>();
 	private final ProxyServer proxyServer;
 
-	ProxyUtil(@NotNull Qu_anVelocityApi qu_anVelocityApi) {
+	ApiPlayerUtil(@NotNull Qu_anVelocityApi qu_anVelocityApi) {
 		this.proxyServer = qu_anVelocityApi.getProxyServer();
 		proxyServer.getEventManager().register(qu_anVelocityApi.getPlugin(),
 			new Object() {
 				@Subscribe
 				public void onPlayerLogin(@NotNull LoginEvent event) {
 					Player player = event.getPlayer();
-					ProxyUtil.this.playerList.put(player,
+					ApiPlayerUtil.this.playerList.put(player,
 						new ServerPing.SamplePlayer(player.getUsername(), player.getUniqueId()));
 				}
 
 				@Subscribe
 				public void onPlayerDisconnect(@NotNull DisconnectEvent event) {
-					ProxyUtil.this.playerList.remove(event.getPlayer());
+					ApiPlayerUtil.this.playerList.remove(event.getPlayer());
 				}
 			});
 	}

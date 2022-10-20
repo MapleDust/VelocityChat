@@ -12,7 +12,7 @@ import xyz.fcidd.velocity.chat.util.MessageTaskUtils;
 import xyz.fcidd.velocity.chat.util.TabListUtils;
 
 import static xyz.fcidd.velocity.chat.config.VelocityChatConfig.CONFIG;
-import static xyz.fcidd.velocity.chat.util.PluginUtils.PROXY_SERVER;
+import static xyz.fcidd.velocity.chat.util.ApiUtils.PROXY_SERVER;
 
 public class DisconnectListener {
 	@Subscribe(order = PostOrder.FIRST, async = false) // 尽可能减少异步执行带来的输出顺序影响
