@@ -5,10 +5,9 @@ import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import com.velocitypowered.api.proxy.ServerConnection;
-import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerPing;
 import fun.qu_an.minecraft.velocity.api.Qu_anVelocityApi;
+import fun.qu_an.minecraft.velocity.util.PlayerUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -26,8 +25,7 @@ public class ApiPlayerUtil {
 				@Subscribe
 				public void onPlayerLogin(@NotNull LoginEvent event) {
 					Player player = event.getPlayer();
-					ApiPlayerUtil.this.playerList.put(player,
-						new ServerPing.SamplePlayer(player.getUsername(), player.getUniqueId()));
+					ApiPlayerUtil.this.playerList.put(player, PlayerUtils.createSamplePlayer(player));
 				}
 
 				@Subscribe
@@ -51,17 +49,5 @@ public class ApiPlayerUtil {
 
 	public ServerPing.SamplePlayer @NotNull [] getSamplePlayers() {
 		return playerList.values().toArray(PLAYER_ARRAY_TEMPLATE);
-	}
-
-	public boolean hasSameServer(@NotNull Player sourcePlayer, @NotNull Player targetPlayer) {
-		Optional<RegisteredServer> sourceServerOptional = sourcePlayer
-			.getCurrentServer()
-			.map(ServerConnection::getServer);
-		if (sourceServerOptional.isEmpty()) return false;
-		Optional<RegisteredServer> targetServerOptional = targetPlayer
-			.getCurrentServer()
-			.map(ServerConnection::getServer);
-		return targetServerOptional.isPresent()
-			&& sourceServerOptional.get().equals(targetServerOptional.get());
 	}
 }
