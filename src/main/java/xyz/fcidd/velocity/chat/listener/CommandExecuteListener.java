@@ -6,28 +6,28 @@ import com.velocitypowered.api.event.command.CommandExecuteEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
+import fun.qu_an.minecraft.vanilla.util.CommandUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.jetbrains.annotations.NotNull;
 import xyz.fcidd.velocity.chat.command.Commands;
-import xyz.fcidd.velocity.chat.component.Translates;
-import fun.qu_an.lib.vanilla.util.CommandUtils;
 import xyz.fcidd.velocity.chat.component.Components;
-import fun.qu_an.lib.velocity.util.PluginUtils;
-import xyz.fcidd.velocity.chat.util.MessageTaskUtil;
+import xyz.fcidd.velocity.chat.component.Translates;
+import xyz.fcidd.velocity.chat.util.MessageTaskUtils;
 
 import java.util.List;
 import java.util.Optional;
 
 import static com.velocitypowered.api.event.command.CommandExecuteEvent.CommandResult.denied;
 import static xyz.fcidd.velocity.chat.config.VelocityChatConfig.CONFIG;
-import static xyz.fcidd.velocity.chat.util.LogUtil.LOGGER;
-import static fun.qu_an.lib.velocity.util.PluginUtils.PROXY_SERVER;
+import static xyz.fcidd.velocity.chat.util.LogUtils.LOGGER;
+import static xyz.fcidd.velocity.chat.util.PluginUtils.PROXY_SERVER;
+import static xyz.fcidd.velocity.chat.util.PluginUtils.PROXY_UTIL;
 
 public class CommandExecuteListener {
 	@Subscribe(order = PostOrder.FIRST, async = false) // 尽可能减少异步执行带来的输出顺序影响
 	public void onCommandExecuteSyncFirst(@NotNull CommandExecuteEvent event) {
-		MessageTaskUtil.runInMessageThread(() -> {
+		MessageTaskUtils.runInMessageThread(() -> {
 			if (!event.getResult().isAllowed()
 				|| !(event.getCommandSource() instanceof Player sourcePlayer)) {
 				return;
@@ -78,9 +78,9 @@ public class CommandExecuteListener {
 		int j = CommandUtils.indexOfRoot(command, Commands.TELL);
 		if (j == 0 // 非execute
 			&& j <= size - 3) { // /tell <target> <message>...
-			PluginUtils.getPlayerByName(command.get(j + 1)).ifPresent(targetPlayer -> {
+			PROXY_UTIL.getPlayerByName(command.get(j + 1)).ifPresent(targetPlayer -> {
 				// 如果不在同个服务器则接管该指令的执行
-				if (!PluginUtils.hasSameServer(sourcePlayer, targetPlayer)) {
+				if (!PROXY_UTIL.hasSameServer(sourcePlayer, targetPlayer)) {
 					event.setResult(denied());
 					TextComponent tellMessage = Component.text(String.join(" ", command.subList(2, size - 1)));
 					// 发送私聊
@@ -99,7 +99,7 @@ public class CommandExecuteListener {
 	}
 
 	private void tpWithServerSwitch(@NotNull CommandExecuteEvent event, @NotNull Player sourcePlayer, @NotNull String targetPlayerName) {
-		PluginUtils.getPlayerByName(targetPlayerName).ifPresent(targetPlayer -> {
+		PROXY_UTIL.getPlayerByName(targetPlayerName).ifPresent(targetPlayer -> {
 			if (switchToTargetPlayer(sourcePlayer, targetPlayer)) {
 				event.setResult(denied());
 				// 运行指令以tp

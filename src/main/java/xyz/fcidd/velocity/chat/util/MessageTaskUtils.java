@@ -8,7 +8,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 @SuppressWarnings({"UnusedReturnValue", "unused"})
-public class MessageTaskUtil {
+public class MessageTaskUtils {
 	private static final Executor MESSAGE_SINGLE_THREAD_EXECUTOR = Executors.newSingleThreadExecutor();
 
 	@Contract("_ -> new")

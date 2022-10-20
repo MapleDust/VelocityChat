@@ -6,8 +6,8 @@ import com.electronwill.nightconfig.core.io.WritingMode;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
-import fun.qu_an.lib.basic.api.config.AbstractAnnotationConfig;
-import fun.qu_an.lib.basic.api.config.ConfigKey;
+import fun.qu_an.basic.api.config.AbstractAnnotationConfig;
+import fun.qu_an.basic.api.config.ConfigKey;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -15,7 +15,7 @@ import java.util.List;
 
 import static xyz.fcidd.velocity.chat.VelocityChatPlugin.DATA_DIRECTORY;
 
-@SuppressWarnings("FieldMayBeFinal")
+@SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
 public class VelocityChatConfig extends AbstractAnnotationConfig {
 	public static final VelocityChatConfig CONFIG = new VelocityChatConfig(DATA_DIRECTORY.resolve("config.toml"));
 
@@ -37,9 +37,7 @@ public class VelocityChatConfig extends AbstractAnnotationConfig {
 	@ConfigKey(comment = "是否在ping时发送玩家列表")
 	boolean sendPlayersOnPing = true;
 	@Getter
-	@ConfigKey(comment = """
-		Tab列表是否显示全部群组玩家
-		** 暂不推荐使用，会影响指令提示 **""")
+	@ConfigKey(comment = "Tab列表是否显示全部群组玩家")
 	boolean showGlobalTabList = false;
 
 	@SuppressWarnings("ResultOfMethodCallIgnored")

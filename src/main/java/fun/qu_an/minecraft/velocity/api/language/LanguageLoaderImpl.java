@@ -1,11 +1,11 @@
-package fun.qu_an.lib.velocity.api.language;
+package fun.qu_an.minecraft.velocity.api.language;
 
+import fun.qu_an.basic.util.FileUtils;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fun.qu_an.lib.basic.util.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -14,33 +14,39 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import static xyz.fcidd.velocity.chat.VelocityChatPlugin.DATA_DIRECTORY;
-
+@SuppressWarnings("unused")
 public final class LanguageLoaderImpl implements LanguageLoader {
-	private final String langsFolderInJar;
-	private TranslationRegistry registry;
+	private final Class<?> pluginClass;
+	private final Key translationKey;
 	private final Path langsFolder;
+	private final Path parent;
+	private final String langsPathInJar;
+	private TranslationRegistry registry;
 
-	LanguageLoaderImpl(Path langsFolder, String langsFolderInJar) {
+	LanguageLoaderImpl(@NotNull Object plugin, Key translationKey, @NotNull Path langsFolder, String langsPathInJar) {
+		this.pluginClass = plugin.getClass();
+		this.translationKey = translationKey;
 		this.langsFolder = langsFolder;
-		this.langsFolderInJar = langsFolderInJar;
+		this.parent = langsFolder.getParent();
+		this.langsPathInJar = langsPathInJar;
 	}
 
 	@Override
-	public void load() {
-		this.registry = TranslationRegistry.create(Key.key("qu_an", "whitelist"));
+	public void loadOrReload() {
+		if (registry != null) GlobalTranslator.get().removeSource(registry); // 删除旧的
+		registry = TranslationRegistry.create(translationKey); // 新建注册表
 		// 已存在的语言文件
 		List<String> existLangFiles = new ArrayList<>();
 		FileUtils.forEachChild(langsFolder, file -> existLangFiles.add(file.getName()));
 
 		// 如果该文件不存在则从jar中读取并复制到插件语言文件目录
-		FileUtils.visitResourceFolder(LanguageLoaderImpl.class, langsFolderInJar, (zipFile, zipEntry) -> {
+		FileUtils.visitResourceFolder(pluginClass, langsPathInJar, (zipFile, zipEntry) -> {
 			String zipEntryName = zipEntry.getName();
 			if (!existLangFiles.contains(zipEntryName)) try {
 				FileUtils.unpackWithoutBuffer(
 					zipFile,
 					zipEntry,
-					DATA_DIRECTORY.resolve(zipEntryName).toFile());
+					parent.resolve(zipEntryName).toFile());
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
@@ -54,7 +60,7 @@ public final class LanguageLoaderImpl implements LanguageLoader {
 			Locale locale = Locale.forLanguageTag(localeName);
 			registry.registerAll(locale, file.toPath(), false);
 		});
-		GlobalTranslator.get().addSource(registry);
+		GlobalTranslator.get().addSource(registry); // 添加新的
 	}
 
 	@Override

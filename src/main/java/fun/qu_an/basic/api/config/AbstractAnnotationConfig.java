@@ -1,4 +1,4 @@
-package fun.qu_an.lib.basic.api.config;
+package fun.qu_an.basic.api.config;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import org.jetbrains.annotations.NotNull;

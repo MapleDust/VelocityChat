@@ -1,4 +1,4 @@
-package fun.qu_an.lib.basic.util;
+package fun.qu_an.basic.util;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -51,7 +51,7 @@ public class SerializeUtils {
 		}
 	}
 
-	public static Object deserialize(byte[] bytes) throws IOException, ClassNotFoundException {
+	public static Object deserialize(byte @NotNull [] bytes) throws IOException, ClassNotFoundException {
 		try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
 			 ObjectInputStream ois = new ObjectInputStream(bais)) {
 			return ois.readObject();

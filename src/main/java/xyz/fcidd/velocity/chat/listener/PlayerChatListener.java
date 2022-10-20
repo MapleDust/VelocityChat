@@ -6,29 +6,29 @@ import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
+import fun.qu_an.basic.util.TextUtils;
+import fun.qu_an.minecraft.vanilla.util.FormattingCodeUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.jetbrains.annotations.NotNull;
-import xyz.fcidd.velocity.chat.component.Translates;
 import xyz.fcidd.velocity.chat.component.Components;
-import fun.qu_an.lib.vanilla.util.FormattingCodeUtils;
-import xyz.fcidd.velocity.chat.util.MessageTaskUtil;
-import fun.qu_an.lib.basic.util.TextUtils;
+import xyz.fcidd.velocity.chat.component.Translates;
+import xyz.fcidd.velocity.chat.util.MessageTaskUtils;
 
 import java.util.List;
 import java.util.Optional;
 
 import static com.velocitypowered.api.event.player.PlayerChatEvent.ChatResult.denied;
 import static xyz.fcidd.velocity.chat.config.VelocityChatConfig.CONFIG;
-import static xyz.fcidd.velocity.chat.util.LogUtil.LOGGER;
-import static fun.qu_an.lib.velocity.util.PluginUtils.PROXY_SERVER;
+import static xyz.fcidd.velocity.chat.util.LogUtils.LOGGER;
+import static xyz.fcidd.velocity.chat.util.PluginUtils.PROXY_SERVER;
 
 public class PlayerChatListener {
 	@Subscribe(order = PostOrder.FIRST, async = false) // 尽可能减少异步执行带来的输出顺序影响
 	public void onPlayerChatSyncFirst(@NotNull PlayerChatEvent event) {
 		// 必须先取消消息发送再交给消息线程！
 		event.setResult(denied());
-		MessageTaskUtil.runInMessageThread(() -> {
+		MessageTaskUtils.runInMessageThread(() -> {
 			// 获取玩家发送的消息
 			String playerMessage = FormattingCodeUtils.replaceFormattingChar(event.getMessage());
 

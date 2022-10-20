@@ -1,4 +1,4 @@
-package fun.qu_an.lib.basic.util;
+package fun.qu_an.basic.util;
 
 import org.jetbrains.annotations.NotNull;
 

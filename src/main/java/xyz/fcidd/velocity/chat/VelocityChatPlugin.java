@@ -10,12 +10,12 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import fun.qu_an.velocity.serverstatus.BuildConstants;
 import lombok.Getter;
 import org.slf4j.Logger;
-import xyz.fcidd.velocity.chat.listener.*;
-import xyz.fcidd.velocity.chat.component.Translates;
 import xyz.fcidd.velocity.chat.component.Components;
+import xyz.fcidd.velocity.chat.listener.*;
 
 import java.nio.file.Path;
 
+import static xyz.fcidd.velocity.chat.component.Translates.LANGUAGE_LOADER;
 import static xyz.fcidd.velocity.chat.config.VelocityChatConfig.CONFIG;
 
 @Plugin(id = BuildConstants.PLUGIN_ID,
@@ -41,7 +41,7 @@ public class VelocityChatPlugin {
 
 	@Subscribe
 	public void onInitialize(ProxyInitializeEvent event) {
-		// load
+		// create
 		load();
 		// 注册事件
 		EventManager eventManager = proxyServer.getEventManager();
@@ -71,6 +71,6 @@ public class VelocityChatPlugin {
 
 	private static void load() {
 		CONFIG.load();
-		Translates.LANGUAGE_LOADER.load();
+		LANGUAGE_LOADER.loadOrReload();
 	}
 }

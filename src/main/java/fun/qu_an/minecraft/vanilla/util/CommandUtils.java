@@ -1,6 +1,6 @@
-package fun.qu_an.lib.vanilla.util;
+package fun.qu_an.minecraft.vanilla.util;
 
-import fun.qu_an.lib.basic.util.TextUtils;
+import fun.qu_an.basic.util.TextUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package fun.qu_an.lib.vanilla.util;
+package fun.qu_an.minecraft.vanilla.util;
 
 import org.jetbrains.annotations.NotNull;
 

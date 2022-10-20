@@ -14,9 +14,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.UUID;
 
-import static fun.qu_an.lib.velocity.util.PluginUtils.PROXY_SERVER;
+import static xyz.fcidd.velocity.chat.util.PluginUtils.PROXY_SERVER;
 
-public class TabListUtil {
+public class TabListUtils {
 	public static void update() {
 		PROXY_SERVER.getAllPlayers().forEach(player1 -> {
 			TabList tabList = player1.getTabList();
