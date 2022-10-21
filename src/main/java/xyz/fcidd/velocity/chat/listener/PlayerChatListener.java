@@ -39,7 +39,7 @@ public class PlayerChatListener {
 			// 获取服务器ID
 			Optional<ServerConnection> currentServerOptional = player.getCurrentServer();
 			RegisteredServer currentServer = null;
-			String serverId = null;
+			String serverId = "";
 			if (currentServerOptional.isPresent()) {
 				currentServer = currentServerOptional.get().getServer();
 				serverId = currentServer.getServerInfo().getName();

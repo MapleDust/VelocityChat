@@ -71,11 +71,10 @@ public class PlayerUtils {
 	}
 
 	public static ServerPing.SamplePlayer @NotNull [] getSamplePlayers() {
-		return (ServerPing.SamplePlayer[]) proxyServer
-			.getAllPlayers()
+		return proxyServer.getAllPlayers()
 			.stream()
 			.map(PlayerUtils::toSamplePlayer)
-			.toArray();
+			.toArray(ServerPing.SamplePlayer[]::new);
 	}
 
 	@Contract("_ -> new")

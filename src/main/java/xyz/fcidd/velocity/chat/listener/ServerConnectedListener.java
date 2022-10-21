@@ -14,7 +14,6 @@ import xyz.fcidd.velocity.chat.config.VelocityChatConfig;
 import xyz.fcidd.velocity.chat.util.MessageTaskUtils;
 import xyz.fcidd.velocity.chat.util.TabListUtils;
 
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static fun.qu_an.lib.minecraft.velocity.util.ProxyUtils.PROXY_SERVER;
@@ -37,24 +36,23 @@ public class ServerConnectedListener {
 			Component targetServerComponent = Components.getServerComponent(targetServer);
 			// 玩家名
 			Component playerNameComponent = Components.getPlayerComponent(player);
-			// 获取来源服务器Optional
-			Optional<RegisteredServer> serverOptional = event.getPreviousServer();
 			// 判断是否刚刚连接至服务器（是否没有来源服务器）
-			if (serverOptional.isEmpty()) {
-				// 发送服务器连接消息
-				PROXY_SERVER.sendMessage(Translates.CONNECTED.args(
-					playerNameComponent,
-					targetServerComponent
-				));
-			} else {
-				RegisteredServer sourceServer = serverOptional.get();
-				// 发送服务器切换消息
-				PROXY_SERVER.sendMessage(Translates.SERVER_SWITCH.args(
-					playerNameComponent,
-					Components.getServerComponent(sourceServer),
-					targetServerComponent)
-				);
-			}
+			event.getPreviousServer().ifPresentOrElse(
+				server -> {
+					// 发送服务器切换消息
+					PROXY_SERVER.sendMessage(Translates.SERVER_SWITCH.args(
+						playerNameComponent,
+						Components.getServerComponent(server),
+						targetServerComponent)
+					);
+				}, () -> {
+					// 发送服务器连接消息
+					PROXY_SERVER.sendMessage(Translates.CONNECTED.args(
+						playerNameComponent,
+						targetServerComponent
+					));
+				}
+			);
 		});
 	}
 }
