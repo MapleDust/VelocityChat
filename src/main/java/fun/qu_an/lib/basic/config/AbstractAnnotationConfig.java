@@ -18,12 +18,18 @@ public abstract class AbstractAnnotationConfig {
 		this.fileConfig = fileConfig;
 	}
 
+	/**
+	 * 加载配置文件
+	 */
 	protected void load() {
 		AnnotationConfigs.load(this, fileConfig);
 	}
 
 	private CompletableFuture<Void> lastFuture;
 
+	/**
+	 * 异步保存配置文件
+	 */
 	protected void saveAsync() {
 		synchronized (this) {
 			if (lastFuture == null) {
@@ -33,6 +39,9 @@ public abstract class AbstractAnnotationConfig {
 		}
 	}
 
+	/**
+	 * 保存配置文件
+	 */
 	protected void save() {
 		AnnotationConfigs.save(this, fileConfig);
 	}

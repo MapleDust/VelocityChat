@@ -61,7 +61,7 @@ public class PlayerChatListener {
 			TextComponent chatMessage = Component.text(playerMessage);
 			// 发送消息
 			String serverChatKey = Translates.SERVER_CHAT + serverId;
-			if (Translates.LANGUAGE_LOADER.contains(serverChatKey)) {
+			if (Translates.LANGUAGE_MANAGER.contains(serverChatKey)) {
 				PROXY_SERVER.sendMessage(Component.translatable(
 					serverChatKey, // 追加子服务器id
 					Translates.PROXY_NAME, // 群组名称

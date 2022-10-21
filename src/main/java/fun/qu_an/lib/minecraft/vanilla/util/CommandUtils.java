@@ -11,10 +11,20 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * 游戏命令相关工具
+ */
 @SuppressWarnings("unused")
 public class CommandUtils {
 	public static final String[] EXECUTE = {"execute"};
 
+	/**
+	 * 获取指定节点在命令中第一次出现的节点索引
+	 *
+	 * @param command 包含每个命令节点的列表
+	 * @param nodes   命令节点
+	 * @return 命令中没有指定节点时返回 -1 ，否则返回指定节点在命令节点中第一次出现时的节点索引
+	 */
 	public static int indexOfNode(@NotNull List<String> command, String @NotNull ... nodes) {
 		for (String node : nodes) {
 			int i = command.indexOf(node);
@@ -23,6 +33,13 @@ public class CommandUtils {
 		return -1;
 	}
 
+	/**
+	 * 获取根命令节点在命令中第一次出现的节点索引，一般用于判断 execute 指令中使用的根命令的索引
+	 *
+	 * @param command 包含每个命令节点的列表
+	 * @param roots   根命令节点
+	 * @return 命令中没有指定节点时返回 -1 ，否则返回指定节点在命令节点中第一次出现时的节点索引
+	 */
 	public static int indexOfRoot(@NotNull List<String> command, String @NotNull ... roots) {
 		for (String root : roots) {
 			String s0 = command.get(0);
@@ -35,6 +52,13 @@ public class CommandUtils {
 		return -1;
 	}
 
+	/**
+	 * 判断输入的命令是否是指定的根命令，包括在 execute 命令中使用的情况
+	 *
+	 * @param command 包含每个命令节点的列表
+	 * @param roots   根命令节点
+	 * @return 输入的命令是指定的根命令时返回 true ，否则返回 false
+	 */
 	public static boolean is(@NotNull List<String> command, String @NotNull ... roots) {
 		for (String root : roots) {
 			String s0 = command.get(0);

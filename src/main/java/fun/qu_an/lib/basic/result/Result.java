@@ -1,5 +1,6 @@
 package fun.qu_an.lib.basic.result;
 
+import com.google.common.annotations.Beta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -7,6 +8,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
+/**
+ * 返回值容器，可以同时容纳执行结束状态和结果
+ */
+@Beta
 @SuppressWarnings("unused")
 public class Result {
 	private static final Result SUCCEED = new Result(null, Action.SUCCEED);

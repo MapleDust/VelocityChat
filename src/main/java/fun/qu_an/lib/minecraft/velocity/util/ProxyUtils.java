@@ -5,6 +5,9 @@ import fun.qu_an.lib.minecraft.velocity.Qu_anVelocityLib;
 
 @SuppressWarnings("unused")
 public class ProxyUtils {
+	/**
+	 * 群组服务器API
+	 */
 	public static final ProxyServer PROXY_SERVER = Qu_anVelocityLib.getProxyServer();
 
 	/**

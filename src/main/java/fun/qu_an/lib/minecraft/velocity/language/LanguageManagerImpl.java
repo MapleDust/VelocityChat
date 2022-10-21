@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Locale;
 
 @SuppressWarnings("unused")
-public final class LanguageLoaderImpl implements LanguageLoader {
+public final class LanguageManagerImpl implements LanguageManager {
 	private final Class<?> pluginClass;
 	private final Key translationKey;
 	private final Path langsFolder;
@@ -23,7 +23,7 @@ public final class LanguageLoaderImpl implements LanguageLoader {
 	private final String langsPathInJar;
 	private TranslationRegistry registry;
 
-	LanguageLoaderImpl(@NotNull Object plugin, Key translationKey, @NotNull Path langsFolder, String langsPathInJar) {
+	LanguageManagerImpl(@NotNull Object plugin, Key translationKey, @NotNull Path langsFolder, String langsPathInJar) {
 		this.pluginClass = plugin.getClass();
 		this.translationKey = translationKey;
 		this.langsFolder = langsFolder;
@@ -33,8 +33,10 @@ public final class LanguageLoaderImpl implements LanguageLoader {
 
 	@Override
 	public void loadOrReload() {
-		if (registry != null) GlobalTranslator.get().removeSource(registry); // 删除旧的
-		registry = TranslationRegistry.create(translationKey); // 新建注册表
+		if (registry != null) { // 首次加载时需要注册翻译器
+			registry = TranslationRegistry.create(translationKey);
+			GlobalTranslator.get().addSource(this);
+		}
 		// 已存在的语言文件
 		List<String> existLangFiles = new ArrayList<>();
 		FileUtils.forEachChild(langsFolder, file -> existLangFiles.add(file.getName()));
@@ -60,7 +62,6 @@ public final class LanguageLoaderImpl implements LanguageLoader {
 			Locale locale = Locale.forLanguageTag(localeName);
 			registry.registerAll(locale, file.toPath(), false);
 		});
-		GlobalTranslator.get().addSource(registry); // 添加新的
 	}
 
 	@Override

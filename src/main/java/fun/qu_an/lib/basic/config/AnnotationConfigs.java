@@ -23,40 +23,74 @@ import java.util.concurrent.Executors;
 public final class AnnotationConfigs {
 	private static final Map<String, String> CONFIG_KEY_CACHE = new WeakHashMap<>();
 
+	/**
+	 * 从配置文件的指定路径获取字符串
+	 *
+	 * @param config 配置文件
+	 * @param path   键路径
+	 * @return 不存在或出现任意错误时返回 null ，否则返回获取的字符串
+	 */
 	public static @Nullable String getString(@NotNull Config config, String path) {
 		try {
 			return config.get(path);
-		} catch (RuntimeException e) {
+		} catch (Exception e) {
 			return null;
 		}
 	}
 
+	/**
+	 * 从配置文件的指定路径获取布尔值
+	 *
+	 * @param config 配置文件
+	 * @param path   键路径
+	 * @return 不存在或出现任意错误时返回 null ，否则返回获取的布尔值
+	 */
 	public static @Nullable Boolean getBoolean(@NotNull Config config, String path) {
 		try {
 			return config.get(path);
-		} catch (RuntimeException e) {
+		} catch (Exception e) {
 			return null;
 		}
 	}
 
+	/**
+	 * 从配置文件的指定路径获取列表
+	 *
+	 * @param config 配置文件
+	 * @param path   键路径
+	 * @return 不存在或出现任意错误时返回 null ，否则返回获取的列表
+	 */
 	public static <T> @Nullable List<T> getList(@NotNull Config config, String path) {
 		try {
 			return config.get(path);
-		} catch (RuntimeException e) {
+		} catch (Exception e) {
 			return null;
 		}
 	}
 
+	/**
+	 * 从配置文件的指定路径获取映射表
+	 *
+	 * @param config 配置文件
+	 * @param path   键路径
+	 * @return 不存在或出现任意错误时返回 null ，否则返回获取的映射表
+	 */
 	public static @Nullable <T extends Config> T getTable(@NotNull T config, String path) {
 		try {
 			return config.get(path);
-		} catch (RuntimeException e) {
+		} catch (Exception e) {
 			return null;
 		}
 	}
 
 	private static final Executor SINGLE_THREAD_EXECUTOR = Executors.newSingleThreadExecutor();
 
+	/**
+	 * 获取带有默认设置的配置文件构建器
+	 *
+	 * @param path 配置文件路径
+	 * @return 带有默认设置的配置文件构建器
+	 */
 	@SuppressWarnings("ResultOfMethodCallIgnored")
 	public static GenericBuilder<CommentedConfig, CommentedFileConfig> defaultConfigBuilder(@NotNull Path path) {
 		return CommentedFileConfig
@@ -74,6 +108,12 @@ public final class AnnotationConfigs {
 			.writingMode(WritingMode.REPLACE);
 	}
 
+	/**
+	 * 保存配置文件内容
+	 *
+	 * @param annotationConfig 带注解的配置文件实例
+	 * @param fileConfig       内部使用的配置文件实例
+	 */
 	static void save(@NotNull AbstractAnnotationConfig annotationConfig, @NotNull final CommentedFileConfig fileConfig) {
 		synchronized (fileConfig) {
 			fileConfig.clear();
@@ -84,6 +124,12 @@ public final class AnnotationConfigs {
 		}
 	}
 
+	/**
+	 * 加载配置文件内容
+	 *
+	 * @param annotationConfig 带注解的配置文件实例
+	 * @param fileConfig       内部使用的配置文件实例
+	 */
 	//		VelocityWhitelistConfig.setInsertionOrderPreserved(true);
 	static void load(@NotNull AbstractAnnotationConfig annotationConfig, @NotNull CommentedFileConfig fileConfig) {
 		synchronized (fileConfig) {
@@ -168,12 +214,18 @@ public final class AnnotationConfigs {
 		void accept(FieldAccessor field, String path, String comment, Boolean isStatic);
 	}
 
-	record FieldAccessor(Object parentObj, Field field) {
-		FieldAccessor(Object parentObj, @NotNull Field field) {
-			this.field = field;
-			this.parentObj = parentObj;
-		}
-
+	/**
+	 * 字段访问器，字段无法访问时会抛出运行时异常
+	 *
+	 * @param parentObj 字段所在的实例，可为空
+	 * @param field     字段
+	 */
+	record FieldAccessor(@Nullable Object parentObj, @NotNull Field field) {
+		/**
+		 * 获取字段的值，字段无法访问时会抛出运行时异常
+		 *
+		 * @return 字段的值
+		 */
 		public Object get() {
 			try {
 				return field.get(parentObj);
@@ -182,6 +234,11 @@ public final class AnnotationConfigs {
 			}
 		}
 
+		/**
+		 * 设置字段的值，字段无法访问时会抛出运行时异常
+		 *
+		 * @param value 字段的值
+		 */
 		public void set(Object value) {
 			synchronized (this) {
 				try {

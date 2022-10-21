@@ -8,6 +8,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * 集合相关工具
+ */
 @SuppressWarnings("unused")
 public class CollectionUtils {
 	/**

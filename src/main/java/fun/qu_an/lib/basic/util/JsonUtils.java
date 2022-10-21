@@ -7,9 +7,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.FileSystemException;
 import java.nio.file.Path;
 
+/**
+ * json相关工具
+ */
 @SuppressWarnings("unused")
 public class JsonUtils {
 	public static final Gson FORMATTED_GSON = new GsonBuilder()
@@ -40,18 +42,7 @@ public class JsonUtils {
 	 * 将Json写入指定文件
 	 */
 	public static void write(@NotNull Path path, Object json) throws IOException {
-		File jsonFile = path.toFile();
-		File parentFile = jsonFile.getParentFile();
-		if (!jsonFile.exists()
-			&& !parentFile.exists()
-			&& !parentFile.mkdirs()
-			&& !jsonFile.createNewFile()) {
-			throw new FileSystemException("创建失败");
-		} else if (!jsonFile.isFile()
-			&& !jsonFile.delete()
-			&& !jsonFile.createNewFile()) {
-			throw new FileSystemException("创建失败");
-		}
+		FileUtils.createFileAndDirs(path);
 		String jsonString = FORMATTED_GSON.toJson(json);
 		FileUtils.write(path, jsonString);
 	}

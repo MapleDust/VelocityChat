@@ -15,7 +15,7 @@ import xyz.fcidd.velocity.chat.listener.*;
 import java.nio.file.Path;
 
 import static xyz.fcidd.velocity.chat.BuildConstants.*;
-import static xyz.fcidd.velocity.chat.component.Translates.LANGUAGE_LOADER;
+import static xyz.fcidd.velocity.chat.component.Translates.LANGUAGE_MANAGER;
 import static xyz.fcidd.velocity.chat.config.VelocityChatConfig.CONFIG;
 
 @Plugin(id = PLUGIN_ID,
@@ -71,6 +71,6 @@ public class VelocityChatPlugin {
 
 	private static void load() {
 		CONFIG.load();
-		LANGUAGE_LOADER.loadOrReload();
+		LANGUAGE_MANAGER.loadOrReload();
 	}
 }

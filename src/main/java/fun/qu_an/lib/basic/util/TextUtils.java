@@ -5,6 +5,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * 文本相关工具
+ */
 @SuppressWarnings("unused")
 public class TextUtils {
     /**
@@ -25,11 +28,11 @@ public class TextUtils {
     }
 
     /**
-     * String数组中包含目标字符串
+     * 判断字符串是否与任意给定的字符串相同
      *
-     * @param s 目标字符串
-     * @param strs String数组
-     * @return 判断结果
+     * @param s 待判断的字符串
+     * @param strs 定的字符串
+     * @return 字符串是否与任意给定的字符串相同
      */
     @Contract(pure = true)
     public static boolean equalsAny(@NotNull String s, String @NotNull ... strs){
@@ -42,6 +45,13 @@ public class TextUtils {
         return false;
     }
 
+    /**
+     * 判断字符串是否以任意给定的字符串开头
+     *
+     * @param s 待判断的字符串
+     * @param strs 定的字符串
+     * @return 字符串是否以任意给定的字符串开头
+     */
     @Contract(pure = true)
     public static boolean startsWithAny(@NotNull String s, String @NotNull ... strs) {
         if (strs.length == 1) return s.startsWith(strs[0]);
@@ -51,6 +61,14 @@ public class TextUtils {
         return false;
     }
 
+
+    /**
+     * 判断字符串是否以任意给定的字符串开头
+     *
+     * @param s 待判断的字符串
+     * @param strs 定的字符串
+     * @return 字符串是否以任意给定的字符串开头
+     */
     @Contract(pure = true)
     public static boolean startsWithAny(@NotNull String s, @NotNull List<String> strs) {
         for (String str : strs) {
@@ -59,6 +77,13 @@ public class TextUtils {
         return false;
     }
 
+    /**
+     * 判断字符串是否以任意给定的字符串结尾
+     *
+     * @param s 待判断的字符串
+     * @param strs 定的字符串
+     * @return 字符串是否以任意给定的字符串结尾
+     */
     @Contract(pure = true)
     public static boolean endsWithAny(@NotNull String s, String @NotNull ... strs) {
         if (strs.length == 1) return s.startsWith(strs[0]);
@@ -68,6 +93,13 @@ public class TextUtils {
         return false;
     }
 
+    /**
+     * 判断字符串是否以任意给定的字符串结尾
+     *
+     * @param s 待判断的字符串
+     * @param strs 定的字符串
+     * @return 字符串是否以任意给定的字符串结尾
+     */
     @Contract(pure = true)
     public static boolean endsWithAny(@NotNull String s, @NotNull List<String> strs) {
         for (String str : strs) {

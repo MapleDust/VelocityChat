@@ -11,21 +11,23 @@ import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+/**
+ * 文件操作工具
+ */
 @SuppressWarnings("unused")
 public class FileUtils {
 	/**
 	 * 创建输入的文件和路径
 	 */
+	public static void createFileAndDirs(@NotNull Path path) throws IOException {
+		createFileAndDirs(path.toFile());
+	}
+
 	@SuppressWarnings("ResultOfMethodCallIgnored")
-	public static void createFileAndDirs(@NotNull Path path) {
-		File file = path.toFile();
+	public static void createFileAndDirs(@NotNull File file) throws IOException {
 		if (file.exists()) return;
 		file.getParentFile().mkdirs();
-		try {
-			file.createNewFile();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		file.createNewFile();
 	}
 
 	/**

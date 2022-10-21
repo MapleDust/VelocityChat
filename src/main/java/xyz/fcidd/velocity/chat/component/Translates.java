@@ -1,6 +1,6 @@
 package xyz.fcidd.velocity.chat.component;
 
-import fun.qu_an.lib.minecraft.velocity.language.LanguageLoader;
+import fun.qu_an.lib.minecraft.velocity.language.LanguageManager;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TranslatableComponent;
@@ -38,7 +38,7 @@ public class Translates {
 
 	public static final String SERVER_NAME = "qu_an.chat.server.name.";
 
-	public static final LanguageLoader LANGUAGE_LOADER = LanguageLoader.create(
+	public static final LanguageManager LANGUAGE_MANAGER = LanguageManager.create(
 		VelocityChatPlugin.getInstance(),
 		Key.key("qu_an", "chat"),
 		DATA_DIRECTORY.resolve("langs"),

@@ -1,15 +1,11 @@
 package xyz.fcidd.velocity.chat.config;
 
-import com.electronwill.nightconfig.core.file.CommentedFileConfig;
-import com.electronwill.nightconfig.core.io.ParsingMode;
-import com.electronwill.nightconfig.core.io.WritingMode;
+import fun.qu_an.lib.basic.config.AbstractAnnotationConfig;
+import fun.qu_an.lib.basic.config.ConfigKey;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
-import fun.qu_an.lib.basic.config.AbstractAnnotationConfig;
-import fun.qu_an.lib.basic.config.ConfigKey;
 
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -40,22 +36,8 @@ public class VelocityChatConfig extends AbstractAnnotationConfig {
 	@ConfigKey(comment = "Tab列表是否显示全部群组玩家")
 	boolean showGlobalTabList = false;
 
-	@SuppressWarnings("ResultOfMethodCallIgnored")
 	public VelocityChatConfig(@NotNull Path configPath) {
-		super(CommentedFileConfig
-			.builder(configPath)
-			.autosave() // 自动保存
-			.concurrent() // 线程安全
-			.onFileNotFound(((file, configFormat) -> {
-				file.getParent().toFile().mkdirs(); // 创建父目录
-				file.toFile().createNewFile(); // 创建文件
-				configFormat.initEmptyFile(file); // 获取文件格式
-				return false; // 阻断后续操作，因为文件为空
-			}))
-			.charset(StandardCharsets.UTF_8)
-			.parsingMode(ParsingMode.MERGE)
-			.writingMode(WritingMode.REPLACE)
-			.build());
+		super(configPath);
 	}
 
 	/**
