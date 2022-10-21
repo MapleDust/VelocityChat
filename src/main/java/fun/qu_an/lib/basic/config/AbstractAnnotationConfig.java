@@ -4,6 +4,7 @@ import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
 
 @SuppressWarnings("unused")
 public abstract class AbstractAnnotationConfig {
@@ -19,6 +20,17 @@ public abstract class AbstractAnnotationConfig {
 
 	protected void load() {
 		AnnotationConfigs.load(this, fileConfig);
+	}
+
+	private CompletableFuture<Void> lastFuture;
+
+	protected void saveAsync() {
+		synchronized (this) {
+			if (lastFuture == null) {
+				lastFuture = CompletableFuture.completedFuture(null);
+			}
+			lastFuture = lastFuture.thenRun(() -> AnnotationConfigs.save(this, fileConfig));
+		}
 	}
 
 	protected void save() {

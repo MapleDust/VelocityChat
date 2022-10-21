@@ -16,6 +16,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public final class AnnotationConfigs {
@@ -53,6 +55,8 @@ public final class AnnotationConfigs {
 		}
 	}
 
+	private static final Executor SINGLE_THREAD_EXECUTOR = Executors.newSingleThreadExecutor();
+
 	@SuppressWarnings("ResultOfMethodCallIgnored")
 	public static GenericBuilder<CommentedConfig, CommentedFileConfig> defaultConfigBuilder(@NotNull Path path) {
 		return CommentedFileConfig
@@ -72,6 +76,7 @@ public final class AnnotationConfigs {
 
 	static void save(@NotNull AbstractAnnotationConfig annotationConfig, @NotNull final CommentedFileConfig fileConfig) {
 		synchronized (fileConfig) {
+			fileConfig.clear();
 			forEachLegalFields(annotationConfig, ((field, path, comment, isStatic) -> {
 				if (!isStatic) fileConfig.set(path, field.get());
 			}));
