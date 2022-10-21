@@ -16,9 +16,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
-import java.util.concurrent.CompletableFuture;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "UnusedReturnValue"})
 public final class AnnotationConfigs {
 	private static final Map<String, String> CONFIG_KEY_CACHE = new WeakHashMap<>();
 
@@ -54,8 +53,6 @@ public final class AnnotationConfigs {
 		}
 	}
 
-	private static CompletableFuture<Void> future = CompletableFuture.completedFuture(null);
-
 	@SuppressWarnings("ResultOfMethodCallIgnored")
 	public static GenericBuilder<CommentedConfig, CommentedFileConfig> defaultConfigBuilder(@NotNull Path path) {
 		return CommentedFileConfig
@@ -73,47 +70,49 @@ public final class AnnotationConfigs {
 			.writingMode(WritingMode.REPLACE);
 	}
 
-	static synchronized void save(@NotNull AbstractAnnotationConfig annotationConfig, @NotNull CommentedFileConfig fileConfig) {
-		future = future.thenRun(() -> {
+	static void save(@NotNull AbstractAnnotationConfig annotationConfig, @NotNull final CommentedFileConfig fileConfig) {
+		synchronized (fileConfig) {
 			forEachLegalFields(annotationConfig, ((field, path, comment, isStatic) -> {
 				if (!isStatic) fileConfig.set(path, field.get());
 			}));
 			fileConfig.save();
-		});
+		}
 	}
 
 	//		VelocityWhitelistConfig.setInsertionOrderPreserved(true);
-	static synchronized void load(@NotNull AbstractAnnotationConfig annotationConfig, @NotNull CommentedFileConfig fileConfig) {
-		// 清空
-		fileConfig.clear();
-		// 加载
-		fileConfig.load();
-		forEachLegalFields(annotationConfig, (field, path, comment, isStatic) -> {
-			// 如果不是 static 则赋值，static 修饰的参数仅用来承载注释
-			if (!isStatic) {
-				// 设置值
-				Object fileConfigValue = fileConfig.get(path);
-				if (fileConfigValue == null) {
-					// 为null则反客为主将内存中的写入文件
-					Object value = field.get();
-					if (value == null) throw new IllegalArgumentException("默认值不能为null！");
-					fileConfig.set(path, value);
-				} else try {
-					field.set(fileConfigValue);
-				} catch (ClassCastException e) {
-					// 文件给出的类型不对则反客为主将内存中的写入文件
-					Object value = field.get();
-					if (value == null) throw new IllegalArgumentException("默认值不能为null！");
-					fileConfig.set(path, value);
+	static void load(@NotNull AbstractAnnotationConfig annotationConfig, @NotNull CommentedFileConfig fileConfig) {
+		synchronized (fileConfig) {
+			// 清空
+			fileConfig.clear();
+			// 加载
+			fileConfig.load();
+			forEachLegalFields(annotationConfig, (field, path, comment, isStatic) -> {
+				// 如果不是 static 则赋值，static 修饰的参数仅用来承载注释
+				if (!isStatic) {
+					// 设置值
+					Object fileConfigValue = fileConfig.get(path);
+					if (fileConfigValue == null) {
+						// 为null则反客为主将内存中的写入文件
+						Object value = field.get();
+						if (value == null) throw new IllegalArgumentException("默认值不能为null！");
+						fileConfig.set(path, value);
+					} else try {
+						field.set(fileConfigValue);
+					} catch (ClassCastException e) {
+						// 文件给出的类型不对则反客为主将内存中的写入文件
+						Object value = field.get();
+						if (value == null) throw new IllegalArgumentException("默认值不能为null！");
+						fileConfig.set(path, value);
+					}
 				}
-			}
-			// 设置注释
-			if (!"".equals(comment)
+				// 设置注释
+				if (!"".equals(comment)
 					&& fileConfig.getComment(path) == null) {
-				fileConfig.setComment(path, comment);
-			}
-		});
-		fileConfig.save();
+					fileConfig.setComment(path, comment);
+				}
+			});
+			fileConfig.save();
+		}
 	}
 
 	private static @NotNull String getTomlKey(@NotNull String fieldName) {
@@ -122,8 +121,7 @@ public final class AnnotationConfigs {
 			StringBuilder sb = new StringBuilder();
 			for (char c : fieldName.toCharArray()) {
 				if (Character.isUpperCase(c)) {
-					sb.append('_');
-					sb.append(Character.toLowerCase(c));
+					sb.append('_').append(Character.toLowerCase(c));
 				} else {
 					sb.append(c);
 				}
@@ -146,7 +144,7 @@ public final class AnnotationConfigs {
 			// 设为可访问
 			field.setAccessible(true);
 			if (!field.isAnnotationPresent(ConfigKey.class)
-					|| Modifier.isTransient(modifiers)) {
+				|| Modifier.isTransient(modifiers)) {
 				continue;
 			}
 			ConfigKey annotation = field.getAnnotation(ConfigKey.class);
@@ -166,26 +164,27 @@ public final class AnnotationConfigs {
 	}
 
 	record FieldAccessor(Object parentObj, Field field) {
-			FieldAccessor(Object parentObj, @NotNull Field field) {
-				field.setAccessible(true);
-				this.field = field;
-				this.parentObj = parentObj;
-			}
+		FieldAccessor(Object parentObj, @NotNull Field field) {
+			this.field = field;
+			this.parentObj = parentObj;
+		}
 
-			public Object get() {
-				try {
-					return field.get(parentObj);
-				} catch (IllegalAccessException e) {
-					throw new RuntimeException(e); // 不可达
-				}
+		public Object get() {
+			try {
+				return field.get(parentObj);
+			} catch (IllegalAccessException e) {
+				throw new RuntimeException(e);
 			}
+		}
 
-			public void set(Object value) {
+		public void set(Object value) {
+			synchronized (this) {
 				try {
 					field.set(parentObj, value);
 				} catch (IllegalAccessException e) {
-					throw new RuntimeException(e); // 不可达
+					throw new RuntimeException(e);
 				}
 			}
 		}
+	}
 }
