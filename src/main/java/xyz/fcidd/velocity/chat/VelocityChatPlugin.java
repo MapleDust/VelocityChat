@@ -7,7 +7,6 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyReloadEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
-import fun.qu_an.velocity.serverstatus.BuildConstants;
 import lombok.Getter;
 import org.slf4j.Logger;
 import xyz.fcidd.velocity.chat.component.Components;
@@ -15,12 +14,13 @@ import xyz.fcidd.velocity.chat.listener.*;
 
 import java.nio.file.Path;
 
+import static xyz.fcidd.velocity.chat.BuildConstants.*;
 import static xyz.fcidd.velocity.chat.component.Translates.LANGUAGE_LOADER;
 import static xyz.fcidd.velocity.chat.config.VelocityChatConfig.CONFIG;
 
-@Plugin(id = BuildConstants.PLUGIN_ID,
-		name = BuildConstants.PLUGIN_NAME,
-		version = BuildConstants.VERSION,
+@Plugin(id = PLUGIN_ID,
+		name = PLUGIN_NAME,
+		version = VERSION,
 		authors = {"MapleDust", "Harvey_Husky"}
 )
 public class VelocityChatPlugin {
@@ -30,7 +30,7 @@ public class VelocityChatPlugin {
 	private static ProxyServer proxyServer;
 	@Getter
 	private static Logger logger;
-	public static final Path DATA_DIRECTORY = Path.of("plugins").resolve(BuildConstants.PLUGIN_NAME);
+	public static final Path DATA_DIRECTORY = Path.of("plugins").resolve(PLUGIN_NAME);
 
 	@Inject
 	public VelocityChatPlugin(ProxyServer proxyServer, Logger logger) {
@@ -56,7 +56,7 @@ public class VelocityChatPlugin {
 		// 玩家ping
 		eventManager.register(this, new ProxyPingListener());
 
-		logger.info("§a" + BuildConstants.PLUGIN_NAME + " v" + BuildConstants.VERSION + " 已加载！");
+		logger.info("§a" + PLUGIN_NAME + " v" + VERSION + " 已加载！");
 	}
 
 	@Subscribe
@@ -65,7 +65,7 @@ public class VelocityChatPlugin {
 	}
 
 	public static void reload() {
-		Components.resetCaches();
+		Components.resetCache();
 		load();
 	}
 

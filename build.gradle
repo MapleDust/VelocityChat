@@ -8,6 +8,7 @@ group = properties.get('plugin_group')
 version = properties.get('plugin_version')
 def plugin_name = properties.get('plugin_name')
 def plugin_id = properties.get('plugin_id')
+def lib_version = properties.get('lib_version')
 
 repositories {
     mavenLocal()
@@ -24,6 +25,10 @@ dependencies {
     implementation 'com.electronwill.night-config:toml:3.6.6'
     implementation 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    // 暂时不打算引入依赖
+//    implementation("fun.qu-an.minecraft.lib.velocity:Qu_anVelocityLib:${lib_version}") {
+//        changing = true
+//    }
 }
 
 def targetJavaVersion = 17

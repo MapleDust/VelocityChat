@@ -4,7 +4,8 @@ import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.command.CommandExecuteEvent;
 import com.velocitypowered.api.proxy.Player;
-import fun.qu_an.minecraft.vanilla.util.CommandUtils;
+import fun.qu_an.lib.minecraft.vanilla.util.CommandUtils;
+import fun.qu_an.lib.minecraft.velocity.util.PlayerUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.jetbrains.annotations.NotNull;
@@ -12,14 +13,12 @@ import xyz.fcidd.velocity.chat.command.Commands;
 import xyz.fcidd.velocity.chat.component.Components;
 import xyz.fcidd.velocity.chat.component.Translates;
 import xyz.fcidd.velocity.chat.util.MessageTaskUtils;
-import fun.qu_an.minecraft.velocity.util.PlayerUtils;
 
 import java.util.List;
 
 import static com.velocitypowered.api.event.command.CommandExecuteEvent.CommandResult.denied;
 import static xyz.fcidd.velocity.chat.config.VelocityChatConfig.CONFIG;
 import static xyz.fcidd.velocity.chat.util.LogUtils.LOGGER;
-import static xyz.fcidd.velocity.chat.util.ApiUtils.API_PLAYER_UTIL;
 
 public class CommandExecuteListener {
 	@Subscribe(order = PostOrder.FIRST, async = false) // 尽可能减少异步执行带来的输出顺序影响
@@ -77,7 +76,7 @@ public class CommandExecuteListener {
 		int j = CommandUtils.indexOfRoot(command, Commands.TELL);
 		if (j == 0 // 非execute
 			&& j <= size - 3) { // /tell <target> <message>...
-			API_PLAYER_UTIL.getPlayerByName(command.get(j + 1)).ifPresent(targetPlayer -> {
+			PlayerUtils.getPlayerByName(command.get(j + 1)).ifPresent(targetPlayer -> {
 				// 如果不在同个服务器则接管该指令的执行
 				if (!PlayerUtils.hasTheSameServer(sourcePlayer, targetPlayer)) {
 					event.setResult(denied());

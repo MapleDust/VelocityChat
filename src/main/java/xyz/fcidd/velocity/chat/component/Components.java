@@ -34,13 +34,9 @@ public class Components {
 		PLAYER_COMPONENT_CACHE.remove(player);
 	}
 
-	private static final Map<RegisteredServer, Component> SERVER_COMPONENT_CACHE = new HashMap<>();
-	private static final Map<RegisteredServer, Component> CLICKABLE_SERVER_COMPONENT_CACHE = new HashMap<>();
-
 	public static @NotNull Component getServerComponent(@Nullable RegisteredServer server) {
 		if(server == null) return Component.empty();
-		Component component = CLICKABLE_SERVER_COMPONENT_CACHE.get(server);
-		return component == null ? getServerComponent0(server, null) : component;
+		return getServerComponent0(server, null);
 	}
 
 	public static @NotNull Component getServerComponent(@Nullable RegisteredServer server, @NotNull String currentServerId){
@@ -52,15 +48,6 @@ public class Components {
 		String serverId = server.getServerInfo().getName();
 		Component serverComponent;
 
-		// 优化
-		boolean sameServer = serverId.equals(currentServerId);
-		if (sameServer) {
-			serverComponent = SERVER_COMPONENT_CACHE.get(server);
-		} else {
-			serverComponent = CLICKABLE_SERVER_COMPONENT_CACHE.get(server);
-		}
-		if (serverComponent != null) return serverComponent;
-
 		TranslatableComponent playerCountComponent;
 		int onlinePlayers = server.getPlayersConnected().size();
 		if (onlinePlayers == 1) {
@@ -71,14 +58,13 @@ public class Components {
 		playerCountComponent = playerCountComponent.args(Component.text(onlinePlayers));
 		serverComponent = Component
 			.translatable(Translates.SERVER_NAME + serverId);
-		if (sameServer) {
+		if (serverId.equals(currentServerId)) {
 			serverComponent = serverComponent
 				.hoverEvent(HoverEvent
 					.showText(Component
 						.translatable("velocity.command.server-tooltip-current-server")
 						.append(Component.newline())
 						.append(playerCountComponent)));
-			SERVER_COMPONENT_CACHE.put(server, serverComponent);
 		} else {
 			serverComponent = serverComponent
 				.clickEvent(ClickEvent.runCommand("/server " + serverId))
@@ -87,14 +73,11 @@ public class Components {
 						.translatable("velocity.command.server-tooltip-offer-connect-server")
 						.append(Component.newline())
 						.append(playerCountComponent)));
-			CLICKABLE_SERVER_COMPONENT_CACHE.put(server, serverComponent);
 		}
 		return serverComponent;
 	}
 
-	public static void resetCaches() {
+	public static void resetCache() {
 		PLAYER_COMPONENT_CACHE.clear();
-		CLICKABLE_SERVER_COMPONENT_CACHE.clear();
-		SERVER_COMPONENT_CACHE.clear();
 	}
 }

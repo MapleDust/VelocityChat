@@ -6,8 +6,8 @@ import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import fun.qu_an.basic.util.TextUtils;
-import fun.qu_an.minecraft.vanilla.util.FormattingCodeUtils;
+import fun.qu_an.lib.basic.util.TextUtils;
+import fun.qu_an.lib.minecraft.vanilla.util.FormattingCodeUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +21,7 @@ import java.util.Optional;
 import static com.velocitypowered.api.event.player.PlayerChatEvent.ChatResult.denied;
 import static xyz.fcidd.velocity.chat.config.VelocityChatConfig.CONFIG;
 import static xyz.fcidd.velocity.chat.util.LogUtils.LOGGER;
-import static xyz.fcidd.velocity.chat.util.ApiUtils.PROXY_SERVER;
+import static fun.qu_an.lib.minecraft.velocity.util.ProxyUtils.PROXY_SERVER;
 
 public class PlayerChatListener {
 	@Subscribe(order = PostOrder.FIRST, async = false) // 尽可能减少异步执行带来的输出顺序影响

@@ -6,8 +6,8 @@ import com.electronwill.nightconfig.core.io.WritingMode;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
-import fun.qu_an.basic.api.config.AbstractAnnotationConfig;
-import fun.qu_an.basic.api.config.ConfigKey;
+import fun.qu_an.lib.basic.config.AbstractAnnotationConfig;
+import fun.qu_an.lib.basic.config.ConfigKey;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;

@@ -5,6 +5,7 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
+import fun.qu_an.lib.minecraft.velocity.util.TaskUtils;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import xyz.fcidd.velocity.chat.component.Components;
@@ -16,15 +17,14 @@ import xyz.fcidd.velocity.chat.util.TabListUtils;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import static xyz.fcidd.velocity.chat.util.ApiUtils.PROXY_SERVER;
-import static xyz.fcidd.velocity.chat.util.ApiUtils.API_TASK_UTIL;
+import static fun.qu_an.lib.minecraft.velocity.util.ProxyUtils.PROXY_SERVER;
 
 public class ServerConnectedListener {
 	@Subscribe(order = PostOrder.LAST, async = false)
 	// 尽可能避免因异步执行导致事件处理时间超过1s，错过tab列表更新
 	public void onPlayerConnectedLast(ServerConnectedEvent event) {
 		if (VelocityChatConfig.CONFIG.isShowGlobalTabList()) {
-			API_TASK_UTIL.delay(1, TimeUnit.SECONDS, TabListUtils::update);
+			TaskUtils.delay(1, TimeUnit.SECONDS, TabListUtils::update);
 		}
 	}
 

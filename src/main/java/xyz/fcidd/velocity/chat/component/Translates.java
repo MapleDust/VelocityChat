@@ -1,12 +1,12 @@
 package xyz.fcidd.velocity.chat.component;
 
-import fun.qu_an.minecraft.velocity.api.language.LanguageLoader;
+import fun.qu_an.lib.minecraft.velocity.language.LanguageLoader;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TranslatableComponent;
+import xyz.fcidd.velocity.chat.VelocityChatPlugin;
 
 import static xyz.fcidd.velocity.chat.VelocityChatPlugin.DATA_DIRECTORY;
-import static xyz.fcidd.velocity.chat.util.ApiUtils.QU_AN_API;
 
 public class Translates {
 	// 私聊消息
@@ -38,8 +38,10 @@ public class Translates {
 
 	public static final String SERVER_NAME = "qu_an.chat.server.name.";
 
-	public static final LanguageLoader LANGUAGE_LOADER = QU_AN_API.getLanguageLoader(
+	public static final LanguageLoader LANGUAGE_LOADER = LanguageLoader.create(
+		VelocityChatPlugin.getInstance(),
 		Key.key("qu_an", "chat"),
-		DATA_DIRECTORY.resolve("langs"), "langs"
+		DATA_DIRECTORY.resolve("langs"),
+		"langs"
 	);
 }
