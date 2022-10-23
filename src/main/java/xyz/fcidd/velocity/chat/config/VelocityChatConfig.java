@@ -25,10 +25,6 @@ public class VelocityChatConfig extends AbstractAnnotationConfig {
 	@ConfigKey(comment = "是否打印玩家命令日志")
 	boolean logPlayerCommand = true;
 	@Getter
-	@ConfigKey(comment = "群组名称")
-	@NotNull
-	String proxyName = "§6群组";
-	@Getter
 	@ConfigKey(comment = "是否在ping时发送玩家列表")
 	boolean sendPlayersOnPing = true;
 	@Getter
