@@ -6,13 +6,13 @@ import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
-import xyz.fcidd.velocity.chat.component.Components;
-import xyz.fcidd.velocity.chat.component.Translates;
+import xyz.fcidd.velocity.chat.text.Components;
+import xyz.fcidd.velocity.chat.text.Translates;
 import xyz.fcidd.velocity.chat.util.MessageTaskUtils;
 import xyz.fcidd.velocity.chat.util.TabListUtils;
 
 import static xyz.fcidd.velocity.chat.config.VelocityChatConfig.CONFIG;
-import static fun.qu_an.lib.minecraft.velocity.util.ProxyUtils.PROXY_SERVER;
+import static xyz.fcidd.velocity.chat.util.Utils.PROXY_SERVER;
 
 public class DisconnectListener {
 	@Subscribe(order = PostOrder.FIRST, async = false) // 尽可能减少异步执行带来的输出顺序影响

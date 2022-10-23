@@ -1,6 +1,6 @@
-package xyz.fcidd.velocity.chat.component;
+package xyz.fcidd.velocity.chat.text;
 
-import fun.qu_an.lib.minecraft.velocity.language.LanguageManager;
+import fun.qu_an.lib.minecraft.velocity.api.language.LanguageManager;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TranslatableComponent;

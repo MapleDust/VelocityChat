@@ -5,13 +5,12 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.command.CommandExecuteEvent;
 import com.velocitypowered.api.proxy.Player;
 import fun.qu_an.lib.minecraft.vanilla.util.CommandUtils;
-import fun.qu_an.lib.minecraft.velocity.util.PlayerUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.jetbrains.annotations.NotNull;
 import xyz.fcidd.velocity.chat.command.Commands;
-import xyz.fcidd.velocity.chat.component.Components;
-import xyz.fcidd.velocity.chat.component.Translates;
+import xyz.fcidd.velocity.chat.text.Components;
+import xyz.fcidd.velocity.chat.text.Translates;
 import xyz.fcidd.velocity.chat.util.MessageTaskUtils;
 
 import java.util.List;
@@ -19,6 +18,7 @@ import java.util.List;
 import static com.velocitypowered.api.event.command.CommandExecuteEvent.CommandResult.denied;
 import static xyz.fcidd.velocity.chat.config.VelocityChatConfig.CONFIG;
 import static xyz.fcidd.velocity.chat.util.LogUtils.LOGGER;
+import static xyz.fcidd.velocity.chat.util.Utils.PLAYER_UTIL;
 
 public class CommandExecuteListener {
 	@Subscribe(order = PostOrder.FIRST, async = false) // 尽可能减少异步执行带来的输出顺序影响
@@ -60,13 +60,13 @@ public class CommandExecuteListener {
 		if (i == 0) { // 非execute
 			if (i == size - 2) { // /tp <target>
 				// 跨服tp
-				if (PlayerUtils.tpWithServerSwitch(sourcePlayer, command.get(i + 1))) {
+				if (PLAYER_UTIL.tpWithServerSwitch(sourcePlayer, command.get(i + 1))) {
 					event.setResult(denied());
 				}
 			} else if (i == size - 3 // /tp <source> <target>
 				&& command.get(size - 2).equals(sourcePlayer.getUsername())) {
 				// 跨服tp
-				if (PlayerUtils.tpWithServerSwitch(sourcePlayer, command.get(i + 2))) {
+				if (PLAYER_UTIL.tpWithServerSwitch(sourcePlayer, command.get(i + 2))) {
 					event.setResult(denied());
 				}
 			} // else: /tp <x> <y> <z>
@@ -76,9 +76,9 @@ public class CommandExecuteListener {
 		int j = CommandUtils.indexOfRoot(command, Commands.TELL);
 		if (j == 0 // 非execute
 			&& j <= size - 3) { // /tell <target> <message>...
-			PlayerUtils.getPlayerByName(command.get(j + 1)).ifPresent(targetPlayer -> {
+			PLAYER_UTIL.getPlayerByName(command.get(j + 1)).ifPresent(targetPlayer -> {
 				// 如果不在同个服务器则接管该指令的执行
-				if (!PlayerUtils.hasTheSameServer(sourcePlayer, targetPlayer)) {
+				if (!PLAYER_UTIL.hasTheSameServer(sourcePlayer, targetPlayer)) {
 					event.setResult(denied());
 					TextComponent tellMessage = Component.text(String.join(" ", command.subList(2, size - 1)));
 					// 发送私聊

@@ -2,10 +2,10 @@ package xyz.fcidd.velocity.chat.listener;
 
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyPingEvent;
-import fun.qu_an.lib.minecraft.velocity.util.PlayerUtils;
 import org.jetbrains.annotations.NotNull;
 
 import static xyz.fcidd.velocity.chat.config.VelocityChatConfig.CONFIG;
+import static xyz.fcidd.velocity.chat.util.Utils.PLAYER_UTIL;
 
 public class ProxyPingListener {
 	@Subscribe
@@ -15,7 +15,7 @@ public class ProxyPingListener {
 				.getPing()
 				.asBuilder()
 				.clearSamplePlayers()
-				.samplePlayers(PlayerUtils.getSamplePlayers())
+				.samplePlayers(PLAYER_UTIL.getSamplePlayers())
 				.build());
 		}
 	}

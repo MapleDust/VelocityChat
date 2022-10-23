@@ -5,25 +5,25 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import fun.qu_an.lib.minecraft.velocity.util.TaskUtils;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
-import xyz.fcidd.velocity.chat.component.Components;
-import xyz.fcidd.velocity.chat.component.Translates;
+import xyz.fcidd.velocity.chat.text.Components;
+import xyz.fcidd.velocity.chat.text.Translates;
 import xyz.fcidd.velocity.chat.config.VelocityChatConfig;
 import xyz.fcidd.velocity.chat.util.MessageTaskUtils;
 import xyz.fcidd.velocity.chat.util.TabListUtils;
 
 import java.util.concurrent.TimeUnit;
 
-import static fun.qu_an.lib.minecraft.velocity.util.ProxyUtils.PROXY_SERVER;
+import static xyz.fcidd.velocity.chat.util.Utils.PROXY_SERVER;
+import static xyz.fcidd.velocity.chat.util.Utils.TASK_UTIL;
 
 public class ServerConnectedListener {
 	@Subscribe(order = PostOrder.LAST, async = false)
 	// 尽可能避免因异步执行导致事件处理时间超过1s，错过tab列表更新
 	public void onPlayerConnectedLast(ServerConnectedEvent event) {
 		if (VelocityChatConfig.CONFIG.isShowGlobalTabList()) {
-			TaskUtils.delay(1, TimeUnit.SECONDS, TabListUtils::update);
+			TASK_UTIL.delay(1, TimeUnit.SECONDS, TabListUtils::update);
 		}
 	}
 

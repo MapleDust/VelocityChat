@@ -9,13 +9,13 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import lombok.Getter;
 import org.slf4j.Logger;
-import xyz.fcidd.velocity.chat.component.Components;
+import xyz.fcidd.velocity.chat.text.Components;
 import xyz.fcidd.velocity.chat.listener.*;
 
 import java.nio.file.Path;
 
 import static xyz.fcidd.velocity.chat.BuildConstants.*;
-import static xyz.fcidd.velocity.chat.component.Translates.LANGUAGE_MANAGER;
+import static xyz.fcidd.velocity.chat.text.Translates.LANGUAGE_MANAGER;
 import static xyz.fcidd.velocity.chat.config.VelocityChatConfig.CONFIG;
 
 @Plugin(id = PLUGIN_ID,

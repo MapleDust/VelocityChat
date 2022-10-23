@@ -1,4 +1,4 @@
-package xyz.fcidd.velocity.chat.component;
+package xyz.fcidd.velocity.chat.text;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;

@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.UUID;
 
-import static fun.qu_an.lib.minecraft.velocity.util.ProxyUtils.PROXY_SERVER;
+import static xyz.fcidd.velocity.chat.util.Utils.PROXY_SERVER;
 
 public class TabListUtils {
 	public static void update() {

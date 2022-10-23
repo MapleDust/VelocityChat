@@ -14,7 +14,6 @@ import static xyz.fcidd.velocity.chat.VelocityChatPlugin.DATA_DIRECTORY;
 @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
 public class VelocityChatConfig extends AbstractAnnotationConfig {
 	public static final VelocityChatConfig CONFIG = new VelocityChatConfig(DATA_DIRECTORY.resolve("config.toml"));
-
 	@Getter
 	@ConfigKey(comment = """
 		在此处填写 MCDR 命令的前缀，支持多个MCDR命令前缀
