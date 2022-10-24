@@ -66,4 +66,4 @@
 
 ## 开发者相关
 
-依赖项：[衢安 Libs](https://gitee.com/virtual-qu-an/qu-an-libs)
+依赖项：[衢安 Velocity Libs](https://gitee.com/virtual-qu-an/qu-an-libs)
