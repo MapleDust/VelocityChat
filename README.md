@@ -5,8 +5,10 @@
 ## 功能
 
 - 跨服聊天
-  - 聊天消息支持彩色文字 。彩色文字可参照[此链接](https://wiki.biligame.com/mc/%E6%A0%BC%E5%BC%8F%E5%8C%96%E4%BB%A3%E7%A0%81)，在游戏中使用 `&`
-  符号代替 `§`
+    - 聊天消息支持彩色文字
+      。彩色文字可参照[此链接](https://wiki.biligame.com/mc/%E6%A0%BC%E5%BC%8F%E5%8C%96%E4%BB%A3%E7%A0%81)
+      ，在游戏中使用 `&`
+      符号代替 `§`
 - 玩家连接、退出、切换服务器时发送全局消息
 - （可选）客户端 ping（刷新服务器列表）时向客户端发送当前在线玩家
 - （可选）Tab 列表显示所有在线玩家
@@ -42,7 +44,7 @@
     - ViaVersion 版本：稳定版 4.3.1
     - 子服版本： 1.18.2
     - 客户端版本：1.19
-- 解决方案：使用 ViaVersion 最新 DEV 版，到 [此处](https://ci.viaversion.com/job/ViaVersion-DEV/) 下载
+- 解决方案：使用 ViaVersion 最新开发版，到 [此处](https://ci.viaversion.com/job/ViaVersion-DEV/) 下载
 
 ## 更新日志
 
@@ -61,3 +63,7 @@
     - 修复使用 MCDR 开服的服务端，MCDR 命令失效
 - v1.0.0
     - 添加根据配置文件，向聊天栏发送带有前缀的消息
+
+## 开发者相关
+
+依赖项：[衢安 Libs](https://gitee.com/virtual-qu-an/qu-an-libs)
