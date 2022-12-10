@@ -22,9 +22,11 @@ dependencies {
     compileOnly 'com.velocitypowered:velocity-api:3.1.1'
     annotationProcessor 'com.velocitypowered:velocity-api:3.1.1'
     compileOnly 'com.electronwill.night-config:toml:3.6.6'
-    compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
-    implementation "fun.qu-an.lib.minecraft.velocity:Qu_anVelocityLib:1.0-SNAPSHOT"
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    implementation "fun.qu-an.lib.basic:Qu_anBasicLib:1.1-SNAPSHOT"
+    implementation "fun.qu-an.lib.minecraft.vanilla:Qu_anVanillaLib:1.1-SNAPSHOT"
+    implementation "fun.qu-an.minecraft.velocity.api:Qu_anVelocityApi:1.1-SNAPSHOT"
 }
 
 def targetJavaVersion = 17

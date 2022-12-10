@@ -18,17 +18,17 @@ import static xyz.fcidd.velocity.chat.util.Utils.PROXY_SERVER;
 
 public class TabListUtils {
 	public static void update() {
-		PROXY_SERVER.getAllPlayers().forEach(player1 -> {
+		for (Player player1 : PROXY_SERVER.getAllPlayers()) {
 			TabList tabList = player1.getTabList();
 			RegisteredServer server1 = player1
 				.getCurrentServer()
 				.map(ServerConnection::getServer)
 				.orElse(null);
-			PROXY_SERVER.getAllPlayers().forEach(player2 -> {
-				if (player1.equals(player2)) return;
+			for (Player player2 : PROXY_SERVER.getAllPlayers()) {
+				if (player1.equals(player2)) continue;
 				Optional<ServerConnection> optional2 = player2.getCurrentServer();
 				if (optional2.isPresent() && optional2.get().getServer().equals(server1)) {
-					return;
+					continue;
 				}
 				tabList.addEntry(tabList
 					.removeEntry(player2.getUniqueId())
@@ -43,8 +43,8 @@ public class TabListUtils {
 							.style(TextColor.color(0x6D8BBF),
 								TextDecoration.UNDERLINED,
 								TextDecoration.ITALIC))));
-			});
-		});
+			}
+		}
 	}
 
 	public static void remove(@NotNull Player player) {

@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import xyz.fcidd.velocity.chat.command.Commands;
 import xyz.fcidd.velocity.chat.text.Components;
 import xyz.fcidd.velocity.chat.text.Translates;
-import xyz.fcidd.velocity.chat.util.MessageTaskUtils;
 
 import java.util.List;
 
@@ -22,26 +21,24 @@ import static xyz.fcidd.velocity.chat.util.Utils.PLAYER_UTIL;
 
 public class CommandExecuteListener {
 	@Subscribe(order = PostOrder.FIRST, async = false) // 尽可能减少异步执行带来的输出顺序影响
-	public void onCommandExecuteSyncFirst(@NotNull CommandExecuteEvent event) {
-		MessageTaskUtils.runInMessageThread(() -> {
-			if (!event.getResult().isAllowed()
-				|| !(event.getCommandSource() instanceof Player sourcePlayer)) {
-				return;
-			}
-			// 打印
-			if (CONFIG.isLogPlayerCommand()) {
-				sourcePlayer.getCurrentServer().ifPresentOrElse(
-					server -> LOGGER.info(
-						"[cmd][{}]<{}> /{}",
-						server.getServer().getServerInfo().getName(),
-						sourcePlayer.getUsername(),
-						event.getCommand()),
-					() -> LOGGER.info(
-						"[cmd][]<{}> /{}",
-						sourcePlayer.getUsername(),
-						event.getCommand()));
-			}
-		});
+	public void onCommandExecuteFirst(@NotNull CommandExecuteEvent event) {
+		if (!event.getResult().isAllowed()
+			|| !(event.getCommandSource() instanceof Player sourcePlayer)) {
+			return;
+		}
+		// 打印
+		if (CONFIG.isLogPlayerCommand()) {
+			sourcePlayer.getCurrentServer().ifPresentOrElse(
+				server -> LOGGER.info(
+					"[cmd][{}]<{}> /{}",
+					server.getServer().getServerInfo().getName(),
+					sourcePlayer.getUsername(),
+					event.getCommand()),
+				() -> LOGGER.info(
+					"[cmd][]<{}> /{}",
+					sourcePlayer.getUsername(),
+					event.getCommand()));
+		}
 	}
 
 	@Subscribe

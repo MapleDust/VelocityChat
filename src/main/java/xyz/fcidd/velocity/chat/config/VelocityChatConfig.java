@@ -1,6 +1,6 @@
 package xyz.fcidd.velocity.chat.config;
 
-import fun.qu_an.lib.basic.config.AbstractAnnotationConfig;
+import fun.qu_an.lib.basic.config.AnnotationConfig;
 import fun.qu_an.lib.basic.config.ConfigKey;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -12,7 +12,7 @@ import java.util.List;
 import static xyz.fcidd.velocity.chat.VelocityChatPlugin.DATA_DIRECTORY;
 
 @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
-public class VelocityChatConfig extends AbstractAnnotationConfig {
+public class VelocityChatConfig extends AnnotationConfig {
 	public static final VelocityChatConfig CONFIG = new VelocityChatConfig(DATA_DIRECTORY.resolve("config.toml"));
 	@Getter
 	@ConfigKey(comment = """
