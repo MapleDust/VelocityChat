@@ -25,8 +25,6 @@ import static xyz.fcidd.velocity.chat.util.Utils.PROXY_SERVER;
 public class PlayerChatListener {
 	@Subscribe(order = PostOrder.FIRST, async = false) // 尽可能减少异步执行带来的输出顺序影响
 	public void onPlayerChatSyncFirst(@NotNull PlayerChatEvent event) {
-		// 必须先取消消息发送再交给消息线程！
-		event.setResult(denied());
 		// 获取玩家发送的消息
 		String playerMessage = FormatUtils.replaceFormattingCode(event.getMessage());
 
@@ -52,6 +50,9 @@ public class PlayerChatListener {
 			}
 			return;
 		}
+
+		// 取消消息发送！
+		event.setResult(denied());
 
 		// 玩家名
 		Component playerNameComponent = Components.getPlayerComponent(player);

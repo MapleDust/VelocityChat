@@ -16,6 +16,9 @@ repositories {
         name = 'papermc-repo'
         url = 'https://repo.papermc.io/repository/maven-public/'
     }
+    maven {
+        url 'https://gitee.com/virtual-qu-an/qu-an-maven/raw/master'
+    }
 }
 
 dependencies {
