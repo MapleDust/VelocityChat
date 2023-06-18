@@ -4,7 +4,7 @@ import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.command.CommandExecuteEvent;
 import com.velocitypowered.api.proxy.Player;
-import fun.qu_an.lib.minecraft.vanilla.util.CommandUtils;
+import fun.qu_an.lib.basic.util.CharacterUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.jetbrains.annotations.NotNull;
@@ -30,12 +30,12 @@ public class CommandExecuteListener {
 		if (CONFIG.isLogPlayerCommand()) {
 			sourcePlayer.getCurrentServer().ifPresentOrElse(
 				server -> LOGGER.info(
-					"[cmd][{}]<{}> /{}",
+					"[command][{}]<{}> /{}",
 					server.getServer().getServerInfo().getName(),
 					sourcePlayer.getUsername(),
 					event.getCommand()),
 				() -> LOGGER.info(
-					"[cmd][]<{}> /{}",
+					"[command][]<{}> /{}",
 					sourcePlayer.getUsername(),
 					event.getCommand()));
 		}
@@ -53,27 +53,27 @@ public class CommandExecuteListener {
 		List<String> command = List.of(event.getCommand().split(" "));
 		int size = command.size();
 
-		int i = CommandUtils.indexOfRoot(command, Commands.TELEPORT);
-		if (i == 0) { // 非execute
-			if (i == size - 2) { // /tp <target>
+		String rootCommand = command.get(0);
+		if (rootCommand.equals("execute")) return;
+
+		if (CharacterUtils.equalsAny(rootCommand, Commands.TELEPORT)) {
+			if (size == 2) { // /tp <target>
 				// 跨服tp
-				if (PLAYER_UTIL.tpWithServerSwitch(sourcePlayer, command.get(i + 1))) {
+				if (PLAYER_UTIL.tpWithServerSwitch(sourcePlayer, command.get(1))) {
 					event.setResult(denied());
 				}
-			} else if (i == size - 3 // /tp <source> <target>
+			} else if (size == 3 // /tp <source> <target>
 				&& command.get(size - 2).equals(sourcePlayer.getUsername())) {
 				// 跨服tp
-				if (PLAYER_UTIL.tpWithServerSwitch(sourcePlayer, command.get(i + 2))) {
+				if (PLAYER_UTIL.tpWithServerSwitch(sourcePlayer, command.get(2))) {
 					event.setResult(denied());
 				}
 			} // else: /tp <x> <y> <z>
 			return;
 		}
 
-		int j = CommandUtils.indexOfRoot(command, Commands.TELL);
-		if (j == 0 // 非execute
-			&& j <= size - 3) { // /tell <target> <message>...
-			PLAYER_UTIL.getPlayerByName(command.get(j + 1)).ifPresent(targetPlayer -> {
+		if (CharacterUtils.equalsAny(rootCommand, Commands.TELL) && size >= 3) { // /tell <target> <message>...
+			PLAYER_UTIL.getPlayerByName(command.get(1)).ifPresent(targetPlayer -> {
 				// 如果不在同个服务器则接管该指令的执行
 				if (!PLAYER_UTIL.hasTheSameServer(sourcePlayer, targetPlayer)) {
 					event.setResult(denied());

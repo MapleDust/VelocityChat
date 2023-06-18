@@ -30,6 +30,9 @@ public class VelocityChatConfig extends AnnotationConfig {
 	@Getter
 	@ConfigKey(comment = "Tab列表是否显示全部群组玩家")
 	boolean showGlobalTabList = false;
+	@Getter
+	@ConfigKey(comment = "是否对所有玩家启用“/glist”指令")
+	boolean enableCommandGlist = true;
 
 	public VelocityChatConfig(@NotNull Path configPath) {
 		super(configPath);

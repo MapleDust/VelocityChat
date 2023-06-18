@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import static xyz.fcidd.velocity.chat.BuildConstants.*;
 import static xyz.fcidd.velocity.chat.text.Translates.LANGUAGE_MANAGER;
 import static xyz.fcidd.velocity.chat.config.VelocityChatConfig.CONFIG;
+import static xyz.fcidd.velocity.chat.util.Utils.PLAYER_UTIL;
 
 @Plugin(id = PLUGIN_ID,
 		name = PLUGIN_NAME,
@@ -72,5 +73,7 @@ public class VelocityChatPlugin {
 	private static void load() {
 		CONFIG.load();
 		LANGUAGE_MANAGER.loadOrReload();
+		// glist 权限
+		PLAYER_UTIL.registerPermission("velocity.command.glist", player -> CONFIG.isEnableCommandGlist());
 	}
 }

@@ -8,6 +8,8 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import xyz.fcidd.velocity.chat.VelocityChatPlugin;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +17,7 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public class Components {
 	private static final Map<Player, Component> PLAYER_COMPONENT_CACHE = new HashMap<>();
+	private static final Logger logger = VelocityChatPlugin.getLogger();
 
 	public static @NotNull Component getPlayerComponent(@NotNull Player player) {
 		Component component = PLAYER_COMPONENT_CACHE.get(player);

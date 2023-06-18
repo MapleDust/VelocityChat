@@ -13,6 +13,9 @@ repositories {
     mavenLocal()
     mavenCentral()
     maven {
+        url 'file:/G:/qu-an/Dev/Maven/repo'
+    }
+    maven {
         name = 'papermc-repo'
         url = 'https://repo.papermc.io/repository/maven-public/'
     }
@@ -22,14 +25,14 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'com.velocitypowered:velocity-api:3.1.1'
-    annotationProcessor 'com.velocitypowered:velocity-api:3.1.1'
+    compileOnly 'com.velocitypowered:velocity-api:3.2.0-SNAPSHOT'
+    annotationProcessor 'com.velocitypowered:velocity-api:3.2.0-SNAPSHOT'
     compileOnly 'com.electronwill.night-config:toml:3.6.6'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
     compileOnly 'org.projectlombok:lombok:1.18.24'
-    implementation "fun.qu-an.lib.basic:Qu_anBasicLib:1.1-SNAPSHOT"
+    implementation "fun.qu-an.lib.basic:Qu_anBasicLib:1.2-SNAPSHOT"
     implementation "fun.qu-an.lib.minecraft.vanilla:Qu_anVanillaLib:1.1-SNAPSHOT"
-    implementation "fun.qu-an.minecraft.velocity.api:Qu_anVelocityApi:1.1-SNAPSHOT"
+    implementation "fun.qu-an.minecraft.velocity.api:Qu_anVelocityApi:1.2-SNAPSHOT"
 }
 
 def targetJavaVersion = 17
