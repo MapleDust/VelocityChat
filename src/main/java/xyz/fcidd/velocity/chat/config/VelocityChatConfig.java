@@ -41,6 +41,8 @@ public class VelocityChatConfig extends AnnotationConfig {
 	private boolean enableCommandGlist = true;
 	@ConfigKey(comment = """
 		设置命令别名
+		broadcast：全局聊天
+		local：本地聊天
 		注：“vchat local” 仅对玩家可用
 		修改并重载后玩家需要重新加入游戏才会生效""")
 	private Config commandAlias = Config.wrap(Map.of(
