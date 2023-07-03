@@ -8,18 +8,20 @@ import fun.qu_an.lib.basic.util.CharacterUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import xyz.fcidd.velocity.chat.VelocityChatPlugin;
 import xyz.fcidd.velocity.chat.command.Commands;
-import xyz.fcidd.velocity.chat.text.Components;
+import xyz.fcidd.velocity.chat.util.ComponentUtils;
 import xyz.fcidd.velocity.chat.text.Translates;
 
 import java.util.List;
 
 import static com.velocitypowered.api.event.command.CommandExecuteEvent.CommandResult.denied;
 import static xyz.fcidd.velocity.chat.config.VelocityChatConfig.CONFIG;
-import static xyz.fcidd.velocity.chat.util.LogUtils.LOGGER;
 import static xyz.fcidd.velocity.chat.util.Utils.PLAYER_UTIL;
 
 public class CommandExecuteListener {
+	private static final Logger logger = VelocityChatPlugin.getLogger();
 	@Subscribe(order = PostOrder.FIRST, async = false) // 尽可能减少异步执行带来的输出顺序影响
 	public void onCommandExecuteFirst(@NotNull CommandExecuteEvent event) {
 		if (!event.getResult().isAllowed()
@@ -29,12 +31,12 @@ public class CommandExecuteListener {
 		// 打印
 		if (CONFIG.isLogPlayerCommand()) {
 			sourcePlayer.getCurrentServer().ifPresentOrElse(
-				server -> LOGGER.info(
+				server -> logger.info(
 					"[command][{}]<{}> /{}",
 					server.getServer().getServerInfo().getName(),
 					sourcePlayer.getUsername(),
 					event.getCommand()),
-				() -> LOGGER.info(
+				() -> logger.info(
 					"[command][]<{}> /{}",
 					sourcePlayer.getUsername(),
 					event.getCommand()));
@@ -80,12 +82,12 @@ public class CommandExecuteListener {
 					TextComponent tellMessage = Component.text(String.join(" ", command.subList(2, size - 1)));
 					// 发送私聊
 					targetPlayer.sendMessage(Translates.TELL_MESSAGE.args(
-						Components.getPlayerComponent(sourcePlayer),
+						ComponentUtils.getPlayerComponent(sourcePlayer),
 						tellMessage
 					));
 					// 发送反馈
 					sourcePlayer.sendMessage(Translates.TELL_RESPONSE.args(
-						Components.getPlayerComponent(targetPlayer),
+						ComponentUtils.getPlayerComponent(targetPlayer),
 						tellMessage
 					));
 				}

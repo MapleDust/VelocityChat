@@ -1,15 +1,17 @@
 package xyz.fcidd.velocity.chat.config;
 
+import com.electronwill.nightconfig.core.Config;
 import fun.qu_an.lib.basic.config.AnnotationConfig;
 import fun.qu_an.lib.basic.config.ConfigKey;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 
 import static xyz.fcidd.velocity.chat.VelocityChatPlugin.DATA_DIRECTORY;
+import static xyz.fcidd.velocity.chat.command.Commands.*;
 
 @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
 public class VelocityChatConfig extends AnnotationConfig {
@@ -22,19 +24,34 @@ public class VelocityChatConfig extends AnnotationConfig {
 	@NotNull
 	List<String> mcdrCommandPrefix = List.of();
 	@Getter
-	@ConfigKey(comment = "是否打印玩家命令日志")
-	boolean logPlayerCommand = true;
+	@ConfigKey(comment = "是否开启默认全局聊天")
+	private boolean defaultGlobalChat = true;
 	@Getter
-	@ConfigKey(comment = "是否在ping时发送玩家列表")
-	boolean sendPlayersOnPing = true;
+	@ConfigKey(comment = "是否打印玩家命令日志")
+	private boolean logPlayerCommand = true;
+	@Getter
+	@ConfigKey(comment = "是否在ping时发送玩家列表（在客户端服务器列表显示玩家列表）")
+	private boolean sendPlayersOnPing = false;
 	@Getter
 	@ConfigKey(comment = "Tab列表是否显示全部群组玩家")
-	boolean showGlobalTabList = false;
+	private boolean showGlobalTabList = false;
 	@Getter
 	@ConfigKey(comment = "是否对所有玩家启用“/glist”指令")
-	boolean enableCommandGlist = true;
+	private boolean enableCommandGlist = true;
+	@ConfigKey(comment = """
+		设置命令别名
+		注：“vchat local” 仅对玩家可用
+		修改并重载后玩家需要重新加入游戏才会生效""")
+	private Config commandAlias = Config.wrap(Map.of(
+		LOCAL, LOCAL_DEFAULT_ALIAS,
+		BROADCAST, BROADCAST_DEFAULT_ALIAS
+	), Config.inMemory().configFormat());
+	@Getter
+	private String commandBroadcastAlias;
+	@Getter
+	private String commandLocalAlias;
 
-	public VelocityChatConfig(@NotNull Path configPath) {
+	protected VelocityChatConfig(@NotNull Path configPath) {
 		super(configPath);
 	}
 
@@ -42,8 +59,24 @@ public class VelocityChatConfig extends AnnotationConfig {
 	 * 加载/重载配置文件
 	 */
 	@Override
-	@SneakyThrows
 	public void load() {
 		super.load();
+		boolean shouldSave = false;
+		Config commandAlias = this.commandAlias;
+		String broadcastAlias = commandAlias.get(BROADCAST);
+		if (broadcastAlias == null) {
+			commandAlias.set(BROADCAST, BROADCAST_DEFAULT_ALIAS);
+			shouldSave = true;
+		}
+		String localAlias = commandAlias.get(LOCAL);
+		if (localAlias == null) {
+			commandAlias.set(LOCAL, LOCAL_DEFAULT_ALIAS);
+			shouldSave = true;
+		}
+		if (shouldSave) {
+			this.save();
+		}
+		commandBroadcastAlias = broadcastAlias;
+		commandLocalAlias = localAlias;
 	}
 }

@@ -6,7 +6,7 @@ import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
-import xyz.fcidd.velocity.chat.text.Components;
+import xyz.fcidd.velocity.chat.util.ComponentUtils;
 import xyz.fcidd.velocity.chat.text.Translates;
 import xyz.fcidd.velocity.chat.util.TabListUtils;
 
@@ -18,7 +18,7 @@ public class DisconnectListener {
 	// 尽可能减少异步执行带来的输出顺序影响
 	public void onPlayerDisconnectSyncFirst(@NotNull DisconnectEvent event) {
 		// 玩家名
-		Component playerNameComponent = Components.getPlayerComponent(event.getPlayer());
+		Component playerNameComponent = ComponentUtils.getPlayerComponent(event.getPlayer());
 		// 将玩家退出群组的消息发送给所有人
 		PROXY_SERVER.sendMessage(Translates.DISCONNECT.args(playerNameComponent));
 	}
@@ -26,7 +26,7 @@ public class DisconnectListener {
 	@Subscribe
 	public void onPlayerDisconnect(@NotNull DisconnectEvent event) {
 		Player player = event.getPlayer();
-		Components.removeFromCache(player); // 移除玩家消息组件缓存
+		ComponentUtils.removeFromCache(player); // 移除玩家消息组件缓存
 		if (CONFIG.isShowGlobalTabList()) {
 			TabListUtils.remove(player); // 从 tab list 移除
 		}

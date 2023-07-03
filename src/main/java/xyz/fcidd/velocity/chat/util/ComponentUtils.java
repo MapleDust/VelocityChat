@@ -1,4 +1,4 @@
-package xyz.fcidd.velocity.chat.text;
+package xyz.fcidd.velocity.chat.util;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
@@ -10,13 +10,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import xyz.fcidd.velocity.chat.VelocityChatPlugin;
+import xyz.fcidd.velocity.chat.text.Translates;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("unused")
-public class Components {
-	private static final Map<Player, Component> PLAYER_COMPONENT_CACHE = new HashMap<>();
+public class ComponentUtils {
+	private static final Map<Player, Component> PLAYER_COMPONENT_CACHE = new ConcurrentHashMap<>();
 	private static final Logger logger = VelocityChatPlugin.getLogger();
 
 	public static @NotNull Component getPlayerComponent(@NotNull Player player) {
@@ -49,35 +50,41 @@ public class Components {
 
 	private static @NotNull Component getServerComponent0(@NotNull RegisteredServer server, String currentServerId) {
 		String serverId = server.getServerInfo().getName();
-		Component serverComponent;
+
+		int onlinePlayers = server.getPlayersConnected().size();
 
 		TranslatableComponent playerCountComponent;
-		int onlinePlayers = server.getPlayersConnected().size();
 		if (onlinePlayers == 1) {
 			playerCountComponent = Component.translatable("velocity.command.server-tooltip-player-online");
 		} else {
 			playerCountComponent = Component.translatable("velocity.command.server-tooltip-players-online");
 		}
 		playerCountComponent = playerCountComponent.args(Component.text(onlinePlayers));
-		serverComponent = Component
-			.translatable(Translates.SERVER_NAME + serverId);
-		if (serverId.equals(currentServerId)) {
-			serverComponent = serverComponent
-				.hoverEvent(HoverEvent
-					.showText(Component
-						.translatable("velocity.command.server-tooltip-current-server")
-						.append(Component.newline())
-						.append(playerCountComponent)));
+
+		String serverTranslationKey = Translates.SERVER_NAME + serverId;
+		Component serverComponent;
+		if (Utils.hasTranslation(serverTranslationKey)) {
+			serverComponent = Component.translatable(serverTranslationKey);
 		} else {
-			serverComponent = serverComponent
-				.clickEvent(ClickEvent.runCommand("/server " + serverId))
-				.hoverEvent(HoverEvent
-					.showText(Component
-						.translatable("velocity.command.server-tooltip-offer-connect-server")
-						.append(Component.newline())
-						.append(playerCountComponent)));
+			serverComponent = Component.text(serverId);
 		}
-		return serverComponent;
+
+		if (serverId.equals(currentServerId)) {
+			return serverComponent
+					.hoverEvent(HoverEvent
+						.showText(Component
+							.translatable("velocity.command.server-tooltip-current-server")
+							.append(Component.newline())
+							.append(playerCountComponent)));
+		} else {
+			return serverComponent
+					.clickEvent(ClickEvent.runCommand("/server " + serverId))
+					.hoverEvent(HoverEvent
+						.showText(Component
+							.translatable("velocity.command.server-tooltip-offer-connect-server")
+							.append(Component.newline())
+							.append(playerCountComponent)));
+		}
 	}
 
 	public static void resetCache() {
