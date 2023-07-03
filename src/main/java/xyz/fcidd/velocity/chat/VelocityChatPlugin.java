@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import xyz.fcidd.velocity.chat.command.VchatCommand;
 import xyz.fcidd.velocity.chat.listener.*;
 import xyz.fcidd.velocity.chat.util.ComponentUtils;
+import xyz.fcidd.velocity.chat.util.TabListUtils;
 
 import java.nio.file.Path;
 
@@ -69,6 +70,7 @@ public class VelocityChatPlugin {
 		load(); // 1、2
 		ComponentUtils.resetCache();
 		VchatCommand.reloadAlias(); // 3
+		TabListUtils.reload();
 		EventManager eventManager = proxyServer.getEventManager();
 		// reload permissions
 		proxyServer.getAllPlayers().forEach(player -> eventManager.fire(

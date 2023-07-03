@@ -21,7 +21,7 @@ public class ServerConnectedListener {
 	@Subscribe
 	public void onPlayerConnected(ServerConnectedEvent event) {
 		if (VelocityChatConfig.CONFIG.isShowGlobalTabList()) {
-			TASK_UTIL.delay(1, TimeUnit.SECONDS, TabListUtils::update);
+			TASK_UTIL.delay(1, TimeUnit.SECONDS, TabListUtils::refresh);
 		}
 	}
 

@@ -20,7 +20,8 @@ public class VelocityChatConfig extends AnnotationConfig {
 	@ConfigKey(comment = """
 		在此处填写 MCDR 命令的前缀，支持多个MCDR命令前缀
 		如果没有使用 MCDR 开服请保持默认
-		如果使用 MCDR 开服请根据实际情况填写，一般为“!!”""")
+		如果使用 MCDR 开服请根据实际情况填写，一般为“!!”
+		全局聊天不会接管以列表中字符串为开头的聊天消息""")
 	@NotNull
 	List<String> mcdrCommandPrefix = List.of();
 	@Getter
