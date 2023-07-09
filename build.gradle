@@ -30,7 +30,7 @@ dependencies {
     compileOnly 'com.electronwill.night-config:toml:3.6.6'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
     compileOnly 'org.projectlombok:lombok:1.18.24'
-    implementation "fun.qu-an.lib.basic:Qu_anBasicLib:1.3.1"
+    implementation "fun.qu-an.lib.basic:Qu_anBasicLib:1.3.2"
     implementation "fun.qu-an.lib.minecraft.vanilla:Qu_anVanillaLib:1.3.2"
     implementation "fun.qu-an.minecraft.velocity.api:Qu_anVelocityApi:1.3.7"
 }
