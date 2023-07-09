@@ -11,6 +11,7 @@ import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.ConsoleCommandSource;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
+import fun.qu_an.lib.minecraft.vanilla.util.FormatUtils;
 import net.kyori.adventure.text.Component;
 import org.slf4j.Logger;
 import xyz.fcidd.velocity.chat.VelocityChatPlugin;
@@ -115,6 +116,9 @@ public class VchatCommand {
 
 	private static int executeBroadcast(CommandContext<CommandSource> context) {
 		String message = context.getArgument("message", String.class);
+		if (CONFIG.isColorableChat()) {
+			message = FormatUtils.replaceFormattingCode(message);
+		}
 		CommandSource source = context.getSource();
 		if (source instanceof Player player) {
 			Utils.sendGlobalPlayerChat(player, message);

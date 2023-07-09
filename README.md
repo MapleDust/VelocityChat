@@ -30,7 +30,7 @@
 ### 语言文件
 
 - 区分默认和自定义语言文件
-- 运行时自定义语言文件的优先级高于默认语言文件
+- 自定义语言文件的优先级高于默认语言文件
 
 #### 默认语言文件 `langs/default/*.properties`
 
@@ -38,15 +38,16 @@
 
 #### 自定义语言文件 `langs/custom/*.properties`
 
+- 你可以在这里覆盖任何默认语言文件中的翻译！
 - 默认聊天格式：`qu_an.chat.message.chat.default=<聊天格式>`
 
 - 服务器聊天格式：`qu_an.chat.message.chat.server.<子服务器id>=<聊天格式>`
-    - 未指定服务器聊天格式时使用默认聊天格式
     - 例：
         - `qu_an.chat.message.chat.server.lobby=§8[§r{0}§8|§r{1}]§r<{2}§r> {3}`
         - `qu_an.chat.message.chat.server.survival=§8[§r{0}§8]§r<{2}§r> {3}`
+    - 未指定服务器聊天格式时使用默认聊天格式
 
-- 子服务器名称：`qu_an.chat.server.name.<子服务器id>`
+- 子服务器名称：`qu_an.chat.server.name.<子服务器id>=<子服务器名称>`
     - 例：
         - `qu_an.chat.server.name.lobby=大厅`
         - `qu_an.chat.server.name.survival=§a生存服`
@@ -65,4 +66,4 @@
 
 ## 开发者相关
 
-依赖项：[衢安 Libs](https://gitee.com/virtual-qu-an/qu-an-libs)
+依赖项（发布的插件中已经包含该依赖）：[衢安 Libs](https://gitee.com/virtual-qu-an/qu-an-libs)
