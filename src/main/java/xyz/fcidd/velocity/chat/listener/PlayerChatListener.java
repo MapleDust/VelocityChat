@@ -22,7 +22,7 @@ import static xyz.fcidd.velocity.chat.config.VelocityChatConfig.CONFIG;
 public class PlayerChatListener {
 	private static final Logger logger = VelocityChatPlugin.getLogger();
 
-	@Subscribe(order = PostOrder.FIRST, async = false) // 尽可能减少异步执行带来的输出顺序影响
+	@Subscribe(order = PostOrder.FIRST)
 	public void onPlayerChatSyncFirst(@NotNull PlayerChatEvent event) {
 		if (!CONFIG.isDefaultGlobalChat()) { // 是否接管聊天
 			return;

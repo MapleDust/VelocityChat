@@ -22,7 +22,7 @@ import static xyz.fcidd.velocity.chat.util.Utils.PLAYER_UTIL;
 
 public class CommandExecuteListener {
 	private static final Logger logger = VelocityChatPlugin.getLogger();
-	@Subscribe(order = PostOrder.FIRST, async = false) // 尽可能减少异步执行带来的输出顺序影响
+	@Subscribe(order = PostOrder.FIRST)
 	public void onCommandExecuteFirst(@NotNull CommandExecuteEvent event) {
 		if (!event.getResult().isAllowed()
 			|| !(event.getCommandSource() instanceof Player sourcePlayer)) {

@@ -14,8 +14,7 @@ import static xyz.fcidd.velocity.chat.config.VelocityChatConfig.CONFIG;
 import static xyz.fcidd.velocity.chat.util.Utils.PROXY_SERVER;
 
 public class DisconnectListener {
-	@Subscribe(order = PostOrder.FIRST, async = false)
-	// 尽可能减少异步执行带来的输出顺序影响
+	@Subscribe(order = PostOrder.FIRST)
 	public void onPlayerDisconnectSyncFirst(@NotNull DisconnectEvent event) {
 		// 玩家名
 		Component playerNameComponent = ComponentUtils.getPlayerComponent(event.getPlayer());

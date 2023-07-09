@@ -25,8 +25,7 @@ public class ServerConnectedListener {
 		}
 	}
 
-	@Subscribe(order = PostOrder.FIRST, async = false)
-	// 尽可能减少异步执行带来的输出顺序影响
+	@Subscribe(order = PostOrder.FIRST)
 	public void onPlayerConnectedFirst(@NotNull ServerConnectedEvent event) {
 		Player player = event.getPlayer();
 		RegisteredServer targetServer = event.getServer();
