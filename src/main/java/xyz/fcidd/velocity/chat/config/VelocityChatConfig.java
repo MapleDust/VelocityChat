@@ -39,6 +39,9 @@ public class VelocityChatConfig extends AnnotationConfig {
 	@Getter
 	@ConfigKey(comment = "是否对所有玩家启用“/glist”指令")
 	private boolean enableCommandGlist = true;
+	@Getter
+	@ConfigKey(comment = "是否可以使用“&”作为聊天格式化代码")
+	private boolean colorableChat = true;
 	@ConfigKey(comment = """
 		设置命令别名
 		broadcast：全局聊天

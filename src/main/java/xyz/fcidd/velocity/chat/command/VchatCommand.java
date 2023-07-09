@@ -125,7 +125,7 @@ public class VchatCommand {
 	}
 
 	private static int executeReload(CommandContext<CommandSource> context) {
-		VelocityChatPlugin.getInstance().onProxyReload(null);
+		VelocityChatPlugin.reload();
 		return 1;
 	}
 

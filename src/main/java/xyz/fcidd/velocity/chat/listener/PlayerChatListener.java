@@ -28,7 +28,10 @@ public class PlayerChatListener {
 			return;
 		}
 		// 获取玩家发送的消息
-		String playerMessage = FormatUtils.replaceFormattingCode(event.getMessage());
+		String playerMessage = event.getMessage();
+		if (CONFIG.isColorableChat()) {
+			playerMessage = FormatUtils.replaceFormattingCode(playerMessage);
+		}
 
 		// 获取玩家信息
 		Player player = event.getPlayer();
@@ -56,6 +59,7 @@ public class PlayerChatListener {
 		// 取消消息发送！
 		event.setResult(denied());
 
+		// 发送全局消息！
 		Utils.sendGlobalPlayerChat(player, playerMessage, currentServer, serverId);
 	}
 }

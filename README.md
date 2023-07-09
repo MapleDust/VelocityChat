@@ -5,12 +5,11 @@
 ## 功能
 
 - 跨服聊天
-    - 聊天消息支持彩色文字
-      。彩色文字可参照[此链接](https://wiki.biligame.com/mc/%E6%A0%BC%E5%BC%8F%E5%8C%96%E4%BB%A3%E7%A0%81)
-      ，在游戏中使用 `&`
-      符号代替 `§`
-    - `/vchat local` 像本地服务器发送聊天消息，默认别名`/br`
-    - `/vchat broadcast` 发送全局聊天消息，默认别名`/lc`
+    - （可配置，默认开启）聊天消息支持彩色文字
+      。彩色文字可参照[此链接](https://minecraft.fandom.com/zh/wiki/%E6%A0%BC%E5%BC%8F%E5%8C%96%E4%BB%A3%E7%A0%81)
+      ，在游戏中使用 `&`符号代替 `§`
+    - `/vchat local` 像本地服务器发送聊天消息，别名（可配置）`/br`
+    - `/vchat broadcast` 发送全局聊天消息，别名（可配置）`/lc`
 - 玩家连接、退出、切换服务器时发送全局消息
 - （可配置，默认关闭）客户端 ping（刷新服务器列表）时向客户端发送当前在线玩家
 - （可配置，默认关闭）Tab 列表显示所有在线玩家
@@ -24,18 +23,36 @@
 
 位于`plugins/VelocityChat`目录下
 
-### config.toml
+### 配置 `config.toml`
 
 - 见文件内
 
-### langs/*.properties
+### 语言文件
 
-语言文件
+- 区分默认和自定义语言文件
+- 运行时自定义语言文件的优先级高于默认语言文件
 
-- 如需恢复默认翻译，可以直接删除对应项目，然后在控制台输入“velocity reload”重载插件
-- 您可以在语言文件内设置子服务器的显示名称
+#### 默认语言文件 `langs/default/*.properties`
 
-## 已知问题（可能带有解决方案）
+- 现在会强制刷新默认语言文件
+
+#### 自定义语言文件 `langs/custom/*.properties`
+
+- 默认聊天格式：`qu_an.chat.message.chat.default=<聊天格式>`
+
+- 服务器聊天格式：`qu_an.chat.message.chat.server.<子服务器id>=<聊天格式>`
+    - 未指定服务器聊天格式时使用默认聊天格式
+    - 例：
+        - `qu_an.chat.message.chat.server.lobby=§8[§r{0}§8|§r{1}]§r<{2}§r> {3}`
+        - `qu_an.chat.message.chat.server.survival=§8[§r{0}§8]§r<{2}§r> {3}`
+
+- 子服务器名称：`qu_an.chat.server.name.<子服务器id>`
+    - 例：
+        - `qu_an.chat.server.name.lobby=大厅`
+        - `qu_an.chat.server.name.survival=§a生存服`
+    - 子服务器名称不存在时默认为子服务器id
+
+## 已知问题（已过时）
 
 ### 聊天消息出现在 Action Bar（物品栏上方）
 

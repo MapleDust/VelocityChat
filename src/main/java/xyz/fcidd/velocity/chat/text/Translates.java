@@ -50,10 +50,18 @@ public class Translates {
 
 	public static final String SERVER_NAME = "qu_an.chat.server.name.";
 
-	public static final LanguageManager LANGUAGE_MANAGER = LanguageManager.create(
+	public static final LanguageManager DEFAULT_LANG = LanguageManager.create(
 		VelocityChatPlugin.getInstance(),
 		Key.key("qu_an", "chat"),
-		DATA_DIRECTORY.resolve("langs"),
-		"langs"
+		DATA_DIRECTORY.resolve("langs/default"),
+		"langs/default",
+		true
+	);
+
+	public static final LanguageManager CUSTOM_LANG = LanguageManager.create(
+		VelocityChatPlugin.getInstance(),
+		Key.key("qu_an", "chat"),
+		DATA_DIRECTORY.resolve("langs/custom"),
+		"langs/custom"
 	);
 }

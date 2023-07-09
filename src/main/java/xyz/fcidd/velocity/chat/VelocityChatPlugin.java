@@ -9,6 +9,7 @@ import com.velocitypowered.api.event.proxy.ProxyReloadEvent;
 import com.velocitypowered.api.permission.Tristate;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
+import fun.qu_an.lib.minecraft.velocity.api.language.LanguageManager;
 import lombok.Getter;
 import org.slf4j.Logger;
 import xyz.fcidd.velocity.chat.command.VchatCommand;
@@ -20,7 +21,8 @@ import java.nio.file.Path;
 
 import static xyz.fcidd.velocity.chat.BuildConstants.*;
 import static xyz.fcidd.velocity.chat.config.VelocityChatConfig.CONFIG;
-import static xyz.fcidd.velocity.chat.text.Translates.LANGUAGE_MANAGER;
+import static xyz.fcidd.velocity.chat.text.Translates.CUSTOM_LANG;
+import static xyz.fcidd.velocity.chat.text.Translates.DEFAULT_LANG;
 import static xyz.fcidd.velocity.chat.util.Utils.PLAYER_UTIL;
 
 @Plugin(id = PLUGIN_ID,
@@ -62,14 +64,18 @@ public class VelocityChatPlugin {
 		// 玩家ping
 		eventManager.register(this, new ProxyPingListener());
 
-		logger.info("§a" + PLUGIN_NAME + " v" + VERSION + " loaded！");
+		logger.info("§a" + PLUGIN_NAME + " v" + VERSION + " loaded!");
 	}
 
 	@Subscribe
 	public void onProxyReload(ProxyReloadEvent event) {
-		load(); // 1、2
+		reload();
+	}
+
+	public static void reload() {
+		load(); // step 1 & 2
 		ComponentUtils.resetCache();
-		VchatCommand.reloadAlias(); // 3
+		VchatCommand.reloadAlias(); // step 3
 		TabListUtils.reload();
 		EventManager eventManager = proxyServer.getEventManager();
 		// reload permissions
@@ -78,8 +84,14 @@ public class VelocityChatPlugin {
 	}
 
 	private static void load() {
-		CONFIG.load(); // 1
-		LANGUAGE_MANAGER.loadOrReload(); // 2
+		CONFIG.load(); // step 1
+		// step 2
+		LanguageManager defaultLang = DEFAULT_LANG;
+		LanguageManager customLang = CUSTOM_LANG;
+		defaultLang.loadAndRegister();
+		customLang.loadAndRegister();
+		customLang.keys().forEach(defaultLang::unregister);
+		// end step 2
 		// glist 权限
 		PLAYER_UTIL.registerPermission("velocity.command.glist", player -> CONFIG.isEnableCommandGlist());
 	}
