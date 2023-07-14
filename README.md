@@ -1,5 +1,8 @@
 # VelocityChat
 
+- 中文
+- [English](./README_en.md)
+
 我的世界 Velocity 群组跨服聊天插件
 
 ## 功能
