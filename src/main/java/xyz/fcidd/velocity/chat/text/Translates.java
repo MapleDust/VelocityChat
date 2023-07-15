@@ -52,7 +52,7 @@ public class Translates {
 
 	public static final LanguageManager DEFAULT_LANG = LanguageManager.create(
 		VelocityChatPlugin.getInstance(),
-		Key.key("qu_an", "chat"),
+		Key.key("qu_an", "chat_default"),
 		DATA_DIRECTORY.resolve("langs/default"),
 		"langs/default",
 		true
@@ -60,7 +60,7 @@ public class Translates {
 
 	public static final LanguageManager CUSTOM_LANG = LanguageManager.create(
 		VelocityChatPlugin.getInstance(),
-		Key.key("qu_an", "chat"),
+		Key.key("qu_an", "chat_custom"),
 		DATA_DIRECTORY.resolve("langs/custom"),
 		"langs/custom"
 	);
