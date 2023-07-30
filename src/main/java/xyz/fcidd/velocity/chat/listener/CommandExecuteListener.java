@@ -1,6 +1,5 @@
 package xyz.fcidd.velocity.chat.listener;
 
-import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.command.CommandExecuteEvent;
 import com.velocitypowered.api.proxy.Player;
@@ -11,8 +10,8 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import xyz.fcidd.velocity.chat.VelocityChatPlugin;
 import xyz.fcidd.velocity.chat.command.Commands;
-import xyz.fcidd.velocity.chat.util.ComponentUtils;
 import xyz.fcidd.velocity.chat.text.Translates;
+import xyz.fcidd.velocity.chat.util.ComponentUtils;
 
 import java.util.List;
 
@@ -22,12 +21,14 @@ import static xyz.fcidd.velocity.chat.util.Utils.PLAYER_UTIL;
 
 public class CommandExecuteListener {
 	private static final Logger logger = VelocityChatPlugin.getLogger();
-	@Subscribe(order = PostOrder.FIRST)
-	public void onCommandExecuteFirst(@NotNull CommandExecuteEvent event) {
+
+	@Subscribe
+	public void onCommandExecute(@NotNull CommandExecuteEvent event) {
 		if (!event.getResult().isAllowed()
 			|| !(event.getCommandSource() instanceof Player sourcePlayer)) {
 			return;
 		}
+
 		// 打印
 		if (CONFIG.isLogPlayerCommand()) {
 			sourcePlayer.getCurrentServer().ifPresentOrElse(
@@ -40,14 +41,6 @@ public class CommandExecuteListener {
 					"[command][]<{}> /{}",
 					sourcePlayer.getUsername(),
 					event.getCommand()));
-		}
-	}
-
-	@Subscribe
-	public void onCommandExecute(@NotNull CommandExecuteEvent event) {
-		if (!event.getResult().isAllowed()
-			|| !(event.getCommandSource() instanceof Player sourcePlayer)) {
-			return;
 		}
 
 		// 接管一些指令

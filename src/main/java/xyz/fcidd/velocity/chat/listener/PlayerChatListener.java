@@ -1,6 +1,5 @@
 package xyz.fcidd.velocity.chat.listener;
 
-import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.proxy.Player;
@@ -22,8 +21,8 @@ import static xyz.fcidd.velocity.chat.config.VelocityChatConfig.CONFIG;
 public class PlayerChatListener {
 	private static final Logger logger = VelocityChatPlugin.getLogger();
 
-	@Subscribe(order = PostOrder.FIRST)
-	public void onPlayerChatSyncFirst(@NotNull PlayerChatEvent event) {
+	@Subscribe()
+	public void onPlayerChat(@NotNull PlayerChatEvent event) {
 		if (!CONFIG.isDefaultGlobalChat()) { // 是否接管聊天
 			return;
 		}

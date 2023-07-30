@@ -13,7 +13,6 @@ import java.util.Map;
 import static xyz.fcidd.velocity.chat.VelocityChatPlugin.DATA_DIRECTORY;
 import static xyz.fcidd.velocity.chat.command.Commands.*;
 
-@SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
 public class VelocityChatConfig extends AnnotationConfig {
 	public static final VelocityChatConfig CONFIG = new VelocityChatConfig(DATA_DIRECTORY.resolve("config.toml"));
 	@Getter
@@ -24,12 +23,18 @@ public class VelocityChatConfig extends AnnotationConfig {
 		全局聊天不会接管以列表中字符串为开头的聊天消息
 		Send to current dedicated server if chat message is starts with matched string.""")
 	@NotNull
-	List<String> mcdrCommandPrefix = List.of();
+	private List<String> mcdrCommandPrefix = List.of();
 	@Getter
 	@ConfigKey(comment = """
 		是否开启默认全局聊天
 		Enable default global chat.""")
 	private boolean defaultGlobalChat = true;
+	@Getter
+	@ConfigKey(comment = """
+		全局聊天时是否接管本地聊天
+		Whether to take over local chats when global chats.
+		""")
+	private boolean takeOverLocalChatsWhenGlobalChats = false;
 	@Getter
 	@ConfigKey(comment = """
 		是否打印玩家命令日志
@@ -80,7 +85,7 @@ public class VelocityChatConfig extends AnnotationConfig {
 	 * 加载/重载配置文件
 	 */
 	@Override
-	public void load() {
+	public synchronized void load() {
 		super.load();
 		boolean shouldSave = false;
 		Config commandAlias = this.commandAlias;

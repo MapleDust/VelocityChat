@@ -34,7 +34,7 @@ public class VchatCommand {
 		.executes(VchatCommand::executeLocal);
 	private static CommandMeta broadcastMeta;
 	private static CommandMeta localMeta;
-	private static final String PERMISSION_VELOCITY_RELOAD = "velocity.command.reload";
+	private static final String PERMISSION_VELOCITY_RELOAD = "velocity.command.admin";
 
 	public static void register() {
 		CommandManager commandManager = PROXY_SERVER.getCommandManager();
