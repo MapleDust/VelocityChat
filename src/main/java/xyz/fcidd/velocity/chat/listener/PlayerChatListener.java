@@ -30,46 +30,46 @@ public class PlayerChatListener {
 	@Subscribe()
 	public void onPlayerChat(@NotNull PlayerChatEvent event) {
 		// 获取玩家发送的消息
-		String playerMessage = event.getMessage();
+		String message = event.getMessage();
 
 		Player player = event.getPlayer();
 		// 如果是MCDR命令直接返回
 		List<String> mcdrCommandPrefixes = CONFIG.getMcdrCommandPrefix();
 		if (!mcdrCommandPrefixes.isEmpty()
-			&& CharacterUtils.startsWithAny(playerMessage, mcdrCommandPrefixes)) {
-			if (CONFIG.isLogPlayerCommand()) {
-				log("mcdr", playerMessage, player);
+			&& CharacterUtils.startsWithAny(message, mcdrCommandPrefixes)) {
+			if (CONFIG.isLogPlayerCommands()) {
+				log("mcdr", message, player);
 			}
 			return;
 		}
 
 		// 检查子服务器聊天前缀
 		String localChatPrefix = CONFIG.getLocalChatPrefix();
-		if (playerMessage.startsWith(localChatPrefix)) {
+		if (message.startsWith(localChatPrefix)) {
 			// 检查能否取消该玩家消息发送
 //			if (!playerChatCancellable.getOrDefault(player, false)) {
 //				return;
 //			}
 			// 能的话把前缀删掉
 			event.setResult(denied());
-			playerMessage = playerMessage.substring(localChatPrefix.length());
-			player.spoofChatInput(playerMessage);
+			message = message.substring(localChatPrefix.length());
+			player.spoofChatInput(message);
 			if (CONFIG.isLogLocalChats()) { // 打印子服务器聊天内容
-				log("localChat", playerMessage, player);
+				log("local", message, player);
 			}
 			return;
 		}
 		String globalChatPrefix = CONFIG.getGlobalChatPrefix();
 		// 检查全局聊天前缀
-		if (playerMessage.startsWith(globalChatPrefix)) {
-			playerMessage = playerMessage.substring(globalChatPrefix.length());
+		if (message.startsWith(globalChatPrefix)) {
+			message = message.substring(globalChatPrefix.length());
 		} else {
 			MessageChannel channel = Caches.getPlayerChannel(player);
 			// 玩家没有指定频道，如果当前频道为子服务器则 return
 			if (channel == null && !CONFIG.isDefaultGlobalChat()
-				|| channel != MessageChannel.GLOBAL) {
+				|| channel == MessageChannel.LOCAL) {
 				if (CONFIG.isLogLocalChats()) { // 打印子服务器聊天内容
-					log("localChat", playerMessage, player);
+					log("local", message, player);
 				}
 				return;
 			}
@@ -89,11 +89,11 @@ public class PlayerChatListener {
 		}
 
 		// 格式化消息组件
-		Component playerMessageComponent;
-		if (CONFIG.isColorableChat()) {
-			playerMessageComponent = ComponentUtils.formattedMessage(playerMessage);
+		Component messageComponent;
+		if (CONFIG.isFormattableChat()) {
+			messageComponent = ComponentUtils.formattedMessage(message);
 		} else {
-			playerMessageComponent = Component.text(playerMessage);
+			messageComponent = Component.text(message);
 		}
 
 		// 检查能否取消该玩家消息发送
@@ -103,10 +103,10 @@ public class PlayerChatListener {
 			// 取消消息发送！
 			event.setResult(denied());
 			// 发送全局消息！
-			Utils.sendGlobalPlayerChat(player, playerMessageComponent, currentServer, serverId);
+			Utils.sendGlobalPlayerChat(player, messageComponent, currentServer, serverId);
 		} else {
 			// 否则不接管所在服务器的聊天
-			Component chatComponent = Utils.getGlobalPlayerChatComponent(player, playerMessageComponent, currentServer, serverId);
+			Component chatComponent = Utils.getGlobalPlayerChatComponent(player, messageComponent, currentServer, serverId);
 			PROXY_SERVER.getConsoleCommandSource().sendMessage(chatComponent);
 			for (RegisteredServer server : PROXY_SERVER.getAllServers()) {
 				if (!server.equals(currentServer)) {

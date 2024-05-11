@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import xyz.fcidd.velocity.chat.VelocityChatPlugin;
 import xyz.fcidd.velocity.chat.command.Commands;
-import xyz.fcidd.velocity.chat.message.Translates;
+import xyz.fcidd.velocity.chat.message.Components;
 import xyz.fcidd.velocity.chat.util.CharacterUtils;
 import xyz.fcidd.velocity.chat.util.ComponentUtils;
 
@@ -62,7 +62,7 @@ public class CommandExecuteListener {
 		}
 
 		// TODO 单独控制 log tells?
-		if (CharacterUtils.equalsAny(rootCommand, Commands.TELL) && size >= 3) { // /tell <target> <message>...
+		if (CharacterUtils.equalsAny(rootCommand, Commands.TELLs) && size >= 3) { // /tell <target> <message>...
 			PROXY_SERVER.getPlayer(commandNodes.get(1)).ifPresent(targetPlayer -> {
 				// 如果不在同个服务器则接管该指令的执行
 				if (PLAYER_UTIL.hasTheSameServer(sourcePlayer, targetPlayer)) {
@@ -71,18 +71,18 @@ public class CommandExecuteListener {
 				event.setResult(denied());
 				TextComponent tellMessage = Component.text(String.join(" ", commandNodes.subList(2, size - 1)));
 				// 发送私聊
-				targetPlayer.sendMessage(Translates.TELL_MESSAGE.args(
+				targetPlayer.sendMessage(Components.TELL_MESSAGE.args(
 					ComponentUtils.getPlayerComponent(sourcePlayer),
 					tellMessage
 				));
 				// 发送反馈
-				sourcePlayer.sendMessage(Translates.TELL_SUCCEED.args(
+				sourcePlayer.sendMessage(Components.TELL_SUCCEED.args(
 					ComponentUtils.getPlayerComponent(targetPlayer),
 					tellMessage
 				));
 			});
 
-			if (CONFIG.isLogTells()) {
+			if (CONFIG.isLogPlayerTells()) {
 				logCommand(sourcePlayer, command);
 			}
 			return;
@@ -92,7 +92,7 @@ public class CommandExecuteListener {
 	}
 
 	private static void logCommand(Player sourcePlayer, String command) {
-		if (CONFIG.isLogPlayerCommand()) {
+		if (CONFIG.isLogPlayerCommands()) {
 			sourcePlayer.getCurrentServer().ifPresentOrElse(
 				server -> logger.info(
 					"[command][{}]<{}> /{}",

@@ -14,12 +14,11 @@ import org.slf4j.Logger;
 import xyz.fcidd.lib.velocity.language.LanguageManager;
 import xyz.fcidd.velocity.chat.command.VchatCommand;
 import xyz.fcidd.velocity.chat.listener.*;
-import xyz.fcidd.velocity.chat.message.Translates;
+import xyz.fcidd.velocity.chat.message.Components;
 import xyz.fcidd.velocity.chat.util.Caches;
 import xyz.fcidd.velocity.chat.util.TabListUtils;
 
 import java.nio.file.Path;
-import java.util.Set;
 
 import static xyz.fcidd.velocity.chat.BuildConstants.*;
 import static xyz.fcidd.velocity.chat.config.VelocityChatConfig.CONFIG;
@@ -58,8 +57,6 @@ public class VelocityChatPlugin {
 		eventManager.register(this, new ServerConnectedListener());
 		eventManager.register(this, new DisconnectListener());
 		eventManager.register(this, new ProxyPingListener());
-
-		logger.info("§a" + PLUGIN_NAME + " v" + VERSION + " loaded!");
 	}
 
 	@Subscribe
@@ -68,9 +65,9 @@ public class VelocityChatPlugin {
 	}
 
 	public static void reload() {
-		load(); // step 1 & 2
-		VchatCommand.reloadAlias(); // step 3
 		Caches.resetCaches();
+		load(); // step 1 & 2
+		VchatCommand.reload(); // step 3
 		TabListUtils.reload();
 		EventManager eventManager = proxyServer.getEventManager();
 		// reload permissions
@@ -78,13 +75,11 @@ public class VelocityChatPlugin {
 			new PermissionsSetupEvent(player, subject -> permission1 -> Tristate.UNDEFINED)));
 	}
 
-	private static Set<?> languageManager_keys;
-
 	private static void load() {
 		CONFIG.load(); // step 1
 		// step 2
-		LanguageManager defaultLang = Translates.DEFAULT_LM;
-		LanguageManager customLang = Translates.CUSTOM_LM;
+		LanguageManager defaultLang = Components.DEFAULT_LM;
+		LanguageManager customLang = Components.CUSTOM_LM;
 
 		defaultLang.loadAndRegister();
 		customLang.load();

@@ -38,6 +38,7 @@ public class Caches {
 	public static void resetCaches() {
 		playerComponentCache.clear();
 		playerChannelCache.clear();
+		serverComponentCache.clear();
 	}
 
 	public static Component getServerComponent(RegisteredServer server, int onlinePlayers) {

@@ -1,13 +1,19 @@
 package xyz.fcidd.velocity.chat.util;
 
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.proxy.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+
+import static xyz.fcidd.velocity.chat.util.Utils.PROXY_SERVER;
 
 /**
  * 游戏命令相关工具
@@ -78,5 +84,13 @@ public class CommandUtils {
 			++i;
 		}
 		return true;
+	}
+
+	public static CompletableFuture<Suggestions> suggestPlayers(CommandContext<CommandSource> context, SuggestionsBuilder builder) {
+		return CommandUtils.buildSuggestions(builder, PROXY_SERVER.getAllPlayers().stream().map(Player::getUsername).collect(Collectors.toSet()));
+	}
+
+	public static CompletableFuture<Suggestions> suggestServers(CommandContext<CommandSource> commandSourceCommandContext, SuggestionsBuilder builder) {
+		return CommandUtils.buildSuggestions(builder, PROXY_SERVER.getAllServers().stream().map(server -> server.getServerInfo().getName()).collect(Collectors.toSet()));
 	}
 }

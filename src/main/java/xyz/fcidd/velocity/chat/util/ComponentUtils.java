@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import xyz.fcidd.velocity.chat.VelocityChatPlugin;
-import xyz.fcidd.velocity.chat.message.Translates;
+import xyz.fcidd.velocity.chat.message.Components;
 
 import static xyz.fcidd.velocity.chat.util.Utils.PLAYER_UTIL;
 
@@ -65,7 +65,7 @@ public class ComponentUtils {
 		playerCountComponent = playerCountComponent.args(Component.text(onlinePlayers));
 
 		Component serverComponent;
-		String serverTranslationKey = Translates.SERVER_NAME + serverId;
+		String serverTranslationKey = Components.SERVER_NAME + serverId;
 		if (Utils.hasTranslation(serverTranslationKey)) {
 			serverComponent = Component.translatable(serverTranslationKey);
 		} else {
@@ -77,7 +77,7 @@ public class ComponentUtils {
 					.hoverEvent(HoverEvent
 						.showText(Component
 							.translatable("velocity.command.server-tooltip-current-server")
-							.append(Component.newline())
+							.appendNewline()
 							.append(playerCountComponent)));
 		} else {
 			serverComponent = serverComponent
@@ -85,7 +85,7 @@ public class ComponentUtils {
 					.hoverEvent(HoverEvent
 						.showText(Component
 							.translatable("velocity.command.server-tooltip-offer-connect-server")
-							.append(Component.newline())
+							.appendNewline()
 							.append(playerCountComponent)));
 		}
 

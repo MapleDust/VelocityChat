@@ -104,7 +104,7 @@ public final class AnnotationConfigUtils {
 		List<ConfigFieldRecord> list = new ArrayList<>();
 		for (Field field : annotationConfig.getClass().getDeclaredFields()) {
 			int modifiers = field.getModifiers();
-			// 检查是否static
+			// 检查是否static // TODO ??? 怎么没用上？
 			boolean isStatic = Modifier.isStatic(modifiers);
 			if (!field.isAnnotationPresent(ConfigKey.class)
 				|| Modifier.isTransient(modifiers)) {
@@ -115,10 +115,12 @@ public final class AnnotationConfigUtils {
 			String path = annotation.path();
 			if ("".equals(path)) {
 				path = getTomlKey(field.getName());
+			} else if (path.endsWith(".")){ // 以点结尾则根据变量名生成该项的名称
+				path += getTomlKey(field.getName());
 			}
 			list.add(new ConfigFieldRecord(new FieldAccessor(annotationConfig, field), path, annotation.comment()));
 		}
-		return list;
+		return List.copyOf(list);
 	}
 
 	private static @NotNull String getTomlKey(@NotNull String fieldName) {

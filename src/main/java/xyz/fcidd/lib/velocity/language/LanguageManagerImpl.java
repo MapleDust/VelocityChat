@@ -43,12 +43,12 @@ final class LanguageManagerImpl implements LanguageManager {
 
 	@Override
 	public void load() {
+		keys.clear(); // 清除缓存
 		TranslationRegistry registry = TranslationRegistry.create(registryKey);
 		// 已存在的语言文件
 		Set<String> existLangFiles = new HashSet<>();
 		FileUtils.forEachChild(langsFolder, file -> existLangFiles.add(file.getName()));
 		// 如果该文件不存在则从jar中读取并复制到插件语言文件目录，存在则强制更新内容
-		keys.clear(); // 清除缓存
 		ResourceUtils.visitResourceFolder(pluginClass, langsPathInJar, (zipFile, zipEntry) -> visit(existLangFiles, zipFile, zipEntry));
 		// 注册语言文件
 		FileUtils.forEachChild(langsFolder, file -> {

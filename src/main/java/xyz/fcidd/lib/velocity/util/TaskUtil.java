@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
-@SuppressWarnings({"UnusedReturnValue", "unused"})
 public final class TaskUtil {
 	@Contract(value = "_, _ -> new", pure = true)
 	public static @NotNull TaskUtil create(Object plugin, ProxyServer proxyServer) {

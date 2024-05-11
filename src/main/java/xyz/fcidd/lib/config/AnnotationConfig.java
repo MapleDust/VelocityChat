@@ -27,11 +27,14 @@ import java.util.concurrent.CompletableFuture;
  *
  * <p>以下是一个简单的字符串配置项示例：</p>
  * <p>当不填入参数时，配置项的名称由字段名决定，会在所有大写字母前加入“_”并改为小写</p>
- *
  * <pre>{@code
  * @ConfigKey()
  * private String mySetting = "本项的默认值";}</pre>
- * <p>
+ *
+ * <p>路径以“.”结尾时，配置项的名称由字段名决定，本例的配置项名称将会设置为“my_setting”</p>
+ * <pre>{@code
+ * @ConfigKey(path = "my_grandparent_path.my_parent_path.")
+ * private String mySetting = "本项的默认值";}</pre>
  *
  * <p>comment用于指定当前配置项的注释，支持使用文本块设置多行注释</p>
  * <pre>{@code
@@ -54,9 +57,14 @@ import java.util.concurrent.CompletableFuture;
  * 		),
  * 		...
  * 	));}</pre>
- * <p>可以在初始化时为默认映射表中项目设置默认注释：</p>
+ * <p>可以在块内或初始化时为默认映射表中项目设置默认注释：</p>
  * <pre>{@code
- * public YourConfig(...) {
+ * public MyConfig(...) {
+ * 		myMap.setComment(k2, "注释");
+ * }}</pre>
+ * 或
+ * <pre>{@code
+ * {
  * 		myMap.setComment(k2, "注释");
  * }}</pre>
  * <p>
@@ -71,19 +79,31 @@ import java.util.concurrent.CompletableFuture;
  * 		myMap.setComment(k2, "注释");
  * }}</pre>
  */
-@SuppressWarnings("unused")
+// TODO 重构这一坨屎山
 public abstract class AnnotationConfig {
 	/**
 	 * 使用 night-config 的带注释的配置文件
 	 */
-	protected final CommentedFileConfig fileConfig;
-	private List<ConfigFieldRecord> fieldCache;
+	private final CommentedFileConfig fileConfig;
+	private Config defaultConfig = null;
+	private volatile List<ConfigFieldRecord> fieldCache;
 	private final boolean forceComments;
+
+	private List<ConfigFieldRecord> getFieldCache() {
+		if (fieldCache == null) {
+			synchronized (fileConfig) {
+				if (fieldCache == null) {
+					return fieldCache = AnnotationConfigUtils.getConfigFields(this);
+				}
+			}
+		}
+		return fieldCache;
+	}
 
 	/**
 	 * 使用默认配置设定读取目标文件
 	 *
-	 * @param path               目标文件路径
+	 * @param path 目标文件路径
 	 */
 	protected AnnotationConfig(@NotNull Path path) {
 		this(path, false);
@@ -92,7 +112,7 @@ public abstract class AnnotationConfig {
 	/**
 	 * 使用自定义的配置文件设定
 	 *
-	 * @param fileConfig         自定义的配置文件
+	 * @param fileConfig 自定义的配置文件
 	 */
 	protected AnnotationConfig(CommentedFileConfig fileConfig) {
 		this(fileConfig, false);
@@ -101,7 +121,7 @@ public abstract class AnnotationConfig {
 	/**
 	 * 使用默认配置设定读取目标文件
 	 *
-	 * @param path               目标文件路径
+	 * @param path          目标文件路径
 	 * @param forceComments 是否强制更新注释
 	 */
 	protected AnnotationConfig(@NotNull Path path, boolean forceComments) {
@@ -112,7 +132,7 @@ public abstract class AnnotationConfig {
 	/**
 	 * 使用自定义的配置文件设定
 	 *
-	 * @param fileConfig         自定义的配置文件
+	 * @param fileConfig    自定义的配置文件
 	 * @param forceComments 是否强制更新注释
 	 */
 	protected AnnotationConfig(CommentedFileConfig fileConfig, boolean forceComments) {
@@ -125,13 +145,21 @@ public abstract class AnnotationConfig {
 	 */
 	protected void load() {
 		synchronized (fileConfig) {
+			List<ConfigFieldRecord> fieldCache = getFieldCache();
+			Config defaultConfig = this.defaultConfig;
+			if (defaultConfig == null) {
+				defaultConfig = this.defaultConfig = Config.inMemory();
+				final Config finalDefaultConfig = defaultConfig;
+				fieldCache.forEach(entry -> loadDefault(entry, finalDefaultConfig));
+			}
 			CommentedFileConfig fileConfig = this.fileConfig;
 			fileConfig.clear();
 			fileConfig.load();
-			if (fieldCache == null) {
-				fieldCache = AnnotationConfigUtils.getConfigFields(this);
-			}
-			fieldCache.forEach(this::load0);
+			final Config finalDefaultConfig = defaultConfig;
+			// 去除冗余项
+			fileConfig.valueMap().keySet().stream().filter(path -> !finalDefaultConfig.contains(path)).toList()
+				.forEach(fileConfig::remove);
+			fieldCache.forEach(entry -> load0(entry, fileConfig, finalDefaultConfig));
 			fileConfig.save();
 		}
 	}
@@ -143,10 +171,7 @@ public abstract class AnnotationConfig {
 		synchronized (fileConfig) {
 			CommentedFileConfig fileConfig = this.fileConfig;
 			fileConfig.clear();
-			if (fieldCache == null) {
-				fieldCache = AnnotationConfigUtils.getConfigFields(this);
-			}
-			fieldCache.forEach(this::save0);
+			getFieldCache().forEach(entry -> save0(entry, fileConfig));
 			fileConfig.save();
 		}
 	}
@@ -160,17 +185,28 @@ public abstract class AnnotationConfig {
 		return CompletableFuture.runAsync(this::save);
 	}
 
-	private void load0(@NotNull ConfigFieldRecord entry) {
+	private void loadDefault(@NotNull ConfigFieldRecord entry, Config defaultConfig) {
 		FieldAccessor field = entry.accessor();
 		String path = entry.path();
-		CommentedFileConfig fileConfig = this.fileConfig;
+		// 如果不是 static 则赋值，static 修饰的参数仅用来承载注释
+		if (!field.isStatic()) {
+			// 设置值
+			Object value = field.get();
+			if (value == null) value = "null";
+			defaultConfig.set(path, value);
+		}
+	}
+
+	private void load0(@NotNull ConfigFieldRecord entry, CommentedFileConfig fileConfig, Config defaultConfig) {
+		FieldAccessor field = entry.accessor();
+		String path = entry.path();
 		// 如果不是 static 则赋值，static 修饰的参数仅用来承载注释
 		if (!field.isStatic()) {
 			// 设置值
 			Object fileConfigValue = fileConfig.get(path);
 			if (fileConfigValue == null) {
 				// 为null则将内存中的写入文件
-				Object value = field.get();
+				Object value = defaultConfig.get(path);
 				if (value == null) value = "null";
 				fileConfig.set(path, value);
 			} else {
@@ -178,7 +214,7 @@ public abstract class AnnotationConfig {
 					field.set(fileConfigValue);
 				} catch (ClassCastException e) {
 					// 文件给出的类型不对则将内存中的写入文件
-					Object value = field.get();
+					Object value = defaultConfig.get(path);
 					if (value == null) value = "null";
 					fileConfig.set(path, value);
 				}
@@ -186,24 +222,19 @@ public abstract class AnnotationConfig {
 		}
 		// 设置注释
 		String comment = entry.comment();
-		if (!comment.equals("")) {
-			if (forceComments) {
-				fileConfig.setComment(path, comment);
-			} else if (fileConfig.getComment(path) == null) {
-				fileConfig.setComment(path, comment);
-			}
+		if (!"".equals(comment) && (forceComments || fileConfig.getComment(path) == null)) {
+			fileConfig.setComment(path, comment);
 		}
 	}
 
-	private void save0(@NotNull ConfigFieldRecord entry) {
+	private void save0(@NotNull ConfigFieldRecord entry, CommentedFileConfig fileConfig) {
 		FieldAccessor field = entry.accessor();
 		String path = entry.path();
-		CommentedFileConfig fileConfig = this.fileConfig;
 		if (!field.isStatic()) {
 			fileConfig.set(path, field.get());
 		}
 		String comment = entry.comment();
-		if (!comment.equals("")) {
+		if (!"".equals(comment) && (forceComments || fileConfig.getComment(path) == null)) {
 			fileConfig.setComment(path, comment);
 		}
 	}

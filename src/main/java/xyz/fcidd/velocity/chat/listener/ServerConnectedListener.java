@@ -7,7 +7,7 @@ import com.velocitypowered.api.proxy.server.RegisteredServer;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import xyz.fcidd.velocity.chat.config.VelocityChatConfig;
-import xyz.fcidd.velocity.chat.message.Translates;
+import xyz.fcidd.velocity.chat.message.Components;
 import xyz.fcidd.velocity.chat.util.ComponentUtils;
 import xyz.fcidd.velocity.chat.util.TabListUtils;
 
@@ -29,14 +29,14 @@ public class ServerConnectedListener {
 		event.getPreviousServer().ifPresentOrElse(
 			server -> {
 				// 发送服务器切换消息
-				PROXY_SERVER.sendMessage(Translates.SERVER_SWITCH.args(
+				PROXY_SERVER.sendMessage(Components.SERVER_SWITCH.args(
 					playerNameComponent,
 					ComponentUtils.getServerComponent(server),
 					targetServerComponent)
 				);
 			}, () -> {
 				// 发送服务器连接消息
-				PROXY_SERVER.sendMessage(Translates.CONNECTED.args(
+				PROXY_SERVER.sendMessage(Components.CONNECTED.args(
 					playerNameComponent,
 					targetServerComponent
 				));
