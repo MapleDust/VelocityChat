@@ -1,19 +1,26 @@
-package xyz.fcidd.velocity.chat.text;
+package xyz.fcidd.velocity.chat.message;
 
-import fun.qu_an.lib.minecraft.velocity.api.language.LanguageManager;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TranslatableComponent;
+import xyz.fcidd.lib.velocity.language.LanguageManager;
 import xyz.fcidd.velocity.chat.VelocityChatPlugin;
 
 import static xyz.fcidd.velocity.chat.VelocityChatPlugin.DATA_DIRECTORY;
 
 public class Translates {
 	public static final Component DASH_AND_SPACE = Component.text("- ");
+
+	// 控制台广播
+
+	public static final Component PROXY_BROADCAST_PREFIX = Component.text("§4[Proxy] §r");
+	public static final Component PROXY = Component.text("§4[Proxy]");
+
 	// 私聊消息
 
 	public static final TranslatableComponent TELL_MESSAGE = Component.translatable("qu_an.chat.message.tell");
-	public static final TranslatableComponent TELL_RESPONSE = Component.translatable("qu_an.chat.command.tell.response");
+	public static final TranslatableComponent TELL_SUCCEED = Component.translatable("qu_an.chat.message.tell.succeed");
+	public static final TranslatableComponent TELL_FAILED = Component.translatable("qu_an.chat.message.tell.player_not_found");
 
 	// 连接消息
 
@@ -26,11 +33,19 @@ public class Translates {
 
 	public static final TranslatableComponent DEFAULT_CHAT = Component.translatable("qu_an.chat.message.chat.default");
 
-	// help
-
+	public static final TranslatableComponent RELOADED = Component.translatable("qu_an.chat.command.reload");
+	public static final TranslatableComponent CHANNEL_CURRENT = Component.translatable("qu_an.chat.command.channel.current");
+	public static final TranslatableComponent CHANNEL_SWITCH = Component.translatable("qu_an.chat.command.channel.switch");
+	public static final TranslatableComponent CHANNEL_GLOBAL = Component.translatable("qu_an.chat.command.channel.global");
+	public static final TranslatableComponent CHANNEL_LOCAL = Component.translatable("qu_an.chat.command.channel.local");
 	public static final TranslatableComponent HELP = Component.translatable("qu_an.chat.command.help");
 	public static final TranslatableComponent HELP_BROADCAST = Component.translatable("qu_an.chat.command.help.broadcast");
+	public static final TranslatableComponent HELP_RELOAD = Component.translatable("qu_an.chat.command.help.reload");
+	public static final TranslatableComponent HELP_GLOBAL = Component.translatable("qu_an.chat.command.help.global");
 	public static final TranslatableComponent HELP_LOCAL = Component.translatable("qu_an.chat.command.help.local");
+	public static final TranslatableComponent HELP_CHANNEL = Component.translatable("qu_an.chat.command.help.channel");
+	public static final TranslatableComponent HELP_CHANNEL_GLOBAL = Component.translatable("qu_an.chat.command.help.channel.global");
+	public static final TranslatableComponent HELP_CHANNEL_LOCAL = Component.translatable("qu_an.chat.command.help.channel.local");
 
 	// 群组名
 
@@ -50,7 +65,8 @@ public class Translates {
 
 	public static final String SERVER_NAME = "qu_an.chat.server.name.";
 
-	public static final LanguageManager DEFAULT_LANG = LanguageManager.create(
+	// TODO 弃用格式化代码，改用 MiniMessage
+	public static final LanguageManager DEFAULT_LM = LanguageManager.create(
 		VelocityChatPlugin.getInstance(),
 		Key.key("qu_an", "chat_default"),
 		DATA_DIRECTORY.resolve("langs/default"),
@@ -58,7 +74,7 @@ public class Translates {
 		true
 	);
 
-	public static final LanguageManager CUSTOM_LANG = LanguageManager.create(
+	public static final LanguageManager CUSTOM_LM = LanguageManager.create(
 		VelocityChatPlugin.getInstance(),
 		Key.key("qu_an", "chat_custom"),
 		DATA_DIRECTORY.resolve("langs/custom"),

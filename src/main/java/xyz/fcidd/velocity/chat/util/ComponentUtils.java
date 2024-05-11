@@ -6,36 +6,33 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import xyz.fcidd.velocity.chat.VelocityChatPlugin;
-import xyz.fcidd.velocity.chat.text.Translates;
+import xyz.fcidd.velocity.chat.message.Translates;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import static xyz.fcidd.velocity.chat.util.Utils.PLAYER_UTIL;
 
 @SuppressWarnings("unused")
 public class ComponentUtils {
-	private static final Map<Player, Component> PLAYER_COMPONENT_CACHE = new ConcurrentHashMap<>();
 	private static final Logger logger = VelocityChatPlugin.getLogger();
+	public static final MiniMessage SIMPLE_MINI_MESSAGE = MiniMessage.builder()
+		.tags(TagResolver.builder()
+			.resolver(StandardTags.decorations())
+			.resolver(StandardTags.reset())
+			.resolver(StandardTags.color()).build()).build();
 
 	public static @NotNull Component getPlayerComponent(@NotNull Player player) {
-		Component component = PLAYER_COMPONENT_CACHE.get(player);
+		Component component = Caches.getPlayerComponent(player);
 		if (component != null) return component;
 		String playerName = player.getUsername();
-		Component playerComponent = Component.text(playerName)
-			.hoverEvent(player.asHoverEvent())
-			.clickEvent(ClickEvent.clickEvent(
-				ClickEvent.Action.SUGGEST_COMMAND,
-				"/tell " + playerName + " "
-			));
-		PLAYER_COMPONENT_CACHE.put(player, playerComponent);
+		Component playerComponent = PLAYER_UTIL.getPlayerComponent(player);
+		Caches.setPlayerComponent(player, playerComponent);
 		return playerComponent;
-	}
-
-	public static void removeFromCache(@NotNull Player player) {
-		PLAYER_COMPONENT_CACHE.remove(player);
 	}
 
 	public static @NotNull Component getServerComponent(@Nullable RegisteredServer server) {
@@ -53,6 +50,12 @@ public class ComponentUtils {
 
 		int onlinePlayers = server.getPlayersConnected().size();
 
+		// 查缓存
+		Component cachedServerComponent = Caches.getServerComponent(server, onlinePlayers);
+		if (cachedServerComponent != null) {
+			return cachedServerComponent;
+		}
+
 		TranslatableComponent playerCountComponent;
 		if (onlinePlayers == 1) {
 			playerCountComponent = Component.translatable("velocity.command.server-tooltip-player-online");
@@ -61,8 +64,8 @@ public class ComponentUtils {
 		}
 		playerCountComponent = playerCountComponent.args(Component.text(onlinePlayers));
 
-		String serverTranslationKey = Translates.SERVER_NAME + serverId;
 		Component serverComponent;
+		String serverTranslationKey = Translates.SERVER_NAME + serverId;
 		if (Utils.hasTranslation(serverTranslationKey)) {
 			serverComponent = Component.translatable(serverTranslationKey);
 		} else {
@@ -70,14 +73,14 @@ public class ComponentUtils {
 		}
 
 		if (serverId.equals(currentServerId)) {
-			return serverComponent
+			serverComponent = serverComponent
 					.hoverEvent(HoverEvent
 						.showText(Component
 							.translatable("velocity.command.server-tooltip-current-server")
 							.append(Component.newline())
 							.append(playerCountComponent)));
 		} else {
-			return serverComponent
+			serverComponent = serverComponent
 					.clickEvent(ClickEvent.runCommand("/server " + serverId))
 					.hoverEvent(HoverEvent
 						.showText(Component
@@ -85,9 +88,12 @@ public class ComponentUtils {
 							.append(Component.newline())
 							.append(playerCountComponent)));
 		}
+
+		Caches.setServerComponent(server, onlinePlayers, serverComponent);
+		return serverComponent;
 	}
 
-	public static void resetCache() {
-		PLAYER_COMPONENT_CACHE.clear();
+	public static Component formattedMessage(String message) {
+		return SIMPLE_MINI_MESSAGE.deserialize(message);
 	}
 }

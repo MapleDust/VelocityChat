@@ -9,20 +9,20 @@ import com.velocitypowered.api.event.proxy.ProxyReloadEvent;
 import com.velocitypowered.api.permission.Tristate;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
-import fun.qu_an.lib.minecraft.velocity.api.language.LanguageManager;
 import lombok.Getter;
 import org.slf4j.Logger;
+import xyz.fcidd.lib.velocity.language.LanguageManager;
 import xyz.fcidd.velocity.chat.command.VchatCommand;
 import xyz.fcidd.velocity.chat.listener.*;
-import xyz.fcidd.velocity.chat.util.ComponentUtils;
+import xyz.fcidd.velocity.chat.message.Translates;
+import xyz.fcidd.velocity.chat.util.Caches;
 import xyz.fcidd.velocity.chat.util.TabListUtils;
 
 import java.nio.file.Path;
+import java.util.Set;
 
 import static xyz.fcidd.velocity.chat.BuildConstants.*;
 import static xyz.fcidd.velocity.chat.config.VelocityChatConfig.CONFIG;
-import static xyz.fcidd.velocity.chat.text.Translates.CUSTOM_LANG;
-import static xyz.fcidd.velocity.chat.text.Translates.DEFAULT_LANG;
 import static xyz.fcidd.velocity.chat.util.Utils.PLAYER_UTIL;
 
 @Plugin(id = PLUGIN_ID,
@@ -53,15 +53,10 @@ public class VelocityChatPlugin {
 		VchatCommand.register(); // 3
 		// 注册事件
 		EventManager eventManager = proxyServer.getEventManager();
-		// 命令执行
 		eventManager.register(this, new CommandExecuteListener());
-		// 玩家聊天消息
 		eventManager.register(this, new PlayerChatListener());
-		// 玩家连接/切换服务器
 		eventManager.register(this, new ServerConnectedListener());
-		// 玩家断开服务器
 		eventManager.register(this, new DisconnectListener());
-		// 玩家ping
 		eventManager.register(this, new ProxyPingListener());
 
 		logger.info("§a" + PLUGIN_NAME + " v" + VERSION + " loaded!");
@@ -74,8 +69,8 @@ public class VelocityChatPlugin {
 
 	public static void reload() {
 		load(); // step 1 & 2
-		ComponentUtils.resetCache();
 		VchatCommand.reloadAlias(); // step 3
+		Caches.resetCaches();
 		TabListUtils.reload();
 		EventManager eventManager = proxyServer.getEventManager();
 		// reload permissions
@@ -83,14 +78,18 @@ public class VelocityChatPlugin {
 			new PermissionsSetupEvent(player, subject -> permission1 -> Tristate.UNDEFINED)));
 	}
 
+	private static Set<?> languageManager_keys;
+
 	private static void load() {
 		CONFIG.load(); // step 1
 		// step 2
-		LanguageManager defaultLang = DEFAULT_LANG;
-		LanguageManager customLang = CUSTOM_LANG;
+		LanguageManager defaultLang = Translates.DEFAULT_LM;
+		LanguageManager customLang = Translates.CUSTOM_LM;
+
 		defaultLang.loadAndRegister();
-		customLang.loadAndRegister();
+		customLang.load();
 		customLang.keys().forEach(defaultLang::unregister);
+		customLang.register();
 		// end step 2
 		// glist 权限
 		PLAYER_UTIL.registerPermission("velocity.command.glist", player -> CONFIG.isEnableCommandGlist());
