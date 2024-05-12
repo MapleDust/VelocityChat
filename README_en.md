@@ -56,7 +56,3 @@ Some of the translations:
         - `qu_an.chat.server.name.lobby=Lobby`
         - `qu_an.chat.server.name.survival=§aSurvival Server`
     - Use server id when missing.
-
-## Development
-
-Dependency (has been included in the released plugin)：[衢安 Libs](https://gitee.com/virtual-qu-an/qu-an-libs)

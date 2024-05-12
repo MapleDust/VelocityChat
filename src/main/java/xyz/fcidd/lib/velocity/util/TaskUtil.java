@@ -29,6 +29,7 @@ public final class TaskUtil {
 	 * @param runnable 计划任务
 	 * @return 计划任务的实例
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	public ScheduledTask delay(int time, @NotNull TimeUnit unit, @NotNull Runnable runnable) {
 		return proxyServer.getScheduler()
 			.buildTask(plugin, runnable)

@@ -3,7 +3,6 @@ package xyz.fcidd.lib.util.io;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -18,27 +17,9 @@ import static xyz.fcidd.lib.util.io.JarPathFormat.*;
 
 
 public class ResourceUtils {
-	public static @Nullable String readToString(@NotNull Class<?> target, String path) {
-		InputStream is = getAsStream(target, path);
-		if (is == null) {
-			return null;
-		}
-		try (is; ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-			baos.writeBytes(is.readAllBytes());
-			return baos.toString(StandardCharsets.UTF_8);
-		} catch (IOException e) {
-			return null;
-		}
-	}
-
 	@Nullable
 	public static InputStream getAsStream(@NotNull Class<?> target, String path) {
 		return target.getClassLoader().getResourceAsStream(JarPathFormat.format(path, ENDS_WITHOUT_SLASH));
-	}
-
-	@Nullable
-	public static URL getAsURL(@NotNull Class<?> target, String path) {
-		return target.getClassLoader().getResource(JarPathFormat.format(path, ENDS_WITHOUT_SLASH));
 	}
 
 	/**
@@ -68,15 +49,5 @@ public class ResourceUtils {
 			return false;
 		}
 		return true;
-	}
-
-	@Deprecated(forRemoval = true)
-	public static @NotNull String formatPath(@NotNull String path) {
-		return JarPathFormat.format(path, ENDS_WITH_SLASH);
-	}
-
-	@Deprecated(forRemoval = true)
-	public static @NotNull String formatPath(@NotNull String path, boolean endsWithSlash) {
-		return JarPathFormat.format(path, endsWithSlash ? ENDS_WITH_SLASH : ENDS_WITHOUT_SLASH);
 	}
 }

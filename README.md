@@ -66,7 +66,3 @@
     - 子服版本： 1.18.2
     - 客户端版本：1.19
 - 解决方案：使用 ViaVersion 最新版，到 [此处](https://ci.viaversion.com/job/ViaVersion/) 下载
-
-## 开发者相关
-
-依赖项（发布的插件中已经包含该依赖）：[衢安 Libs](https://gitee.com/virtual-qu-an/qu-an-libs)

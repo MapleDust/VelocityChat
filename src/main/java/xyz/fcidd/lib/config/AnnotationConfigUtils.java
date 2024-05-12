@@ -1,57 +1,26 @@
 package xyz.fcidd.lib.config;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
-import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.file.GenericBuilder;
 import com.electronwill.nightconfig.core.io.ParsingMode;
 import com.electronwill.nightconfig.core.io.WritingMode;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xyz.fcidd.lib.util.reflect.FieldAccessor;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
-@SuppressWarnings({"unused", "UnusedReturnValue"})
 public final class AnnotationConfigUtils {
+	private static final Logger logger = LoggerFactory.getLogger(AnnotationConfig.class.getSimpleName());
 	private static final Map<String, String> CONFIG_KEY_CACHE = new WeakHashMap<>();
-
-	public static @Nullable String getString(@NotNull Config config, String path) {
-		try {
-			return config.get(path);
-		} catch (RuntimeException e) {
-			return null;
-		}
-	}
-
-	public static @Nullable Boolean getBoolean(@NotNull Config config, String path) {
-		try {
-			return config.get(path);
-		} catch (RuntimeException e) {
-			return null;
-		}
-	}
-
-	public static <T> @Nullable List<T> getList(@NotNull Config config, String path) {
-		try {
-			return config.get(path);
-		} catch (RuntimeException e) {
-			return null;
-		}
-	}
-
-	public static @Nullable <T extends Config> T getTable(@NotNull T config, String path) {
-		try {
-			return config.get(path);
-		} catch (RuntimeException e) {
-			return null;
-		}
-	}
-
 	public static @NotNull CommentedConfig wrap(@NotNull Map<?, ?> tree) {
 		return wrap(tree, false);
 	}
@@ -79,19 +48,15 @@ public final class AnnotationConfigUtils {
 		return CommentedConfig.wrap(map, CommentedConfig.inMemory().configFormat());
 	}
 
-	@SuppressWarnings("ResultOfMethodCallIgnored")
 	public static GenericBuilder<CommentedConfig, CommentedFileConfig> defaultConfigBuilder(@NotNull Path path) {
 		return CommentedFileConfig
 			.builder(path)
 //				.autosave() // 自动保存
 			.concurrent() // 线程安全
-			.onFileNotFound(((file, configFormat) -> {
-				Path parent = file.getParent();
-				if (parent != null) {
-					parent.toFile().mkdirs(); // 创建父目录
-				}
-				file.toFile().createNewFile(); // 创建文件
-				configFormat.initEmptyFile(file); // 获取文件格式
+			.onFileNotFound(((path1, configFormat) -> {
+				Files.createDirectories(path1.getParent());
+				Files.createFile(path1);
+				configFormat.initEmptyFile(path1); // 获取文件格式
 				return false; // 阻断后续操作，因为文件为空
 			}))
 			.preserveInsertionOrder() // 保持顺序
@@ -102,23 +67,46 @@ public final class AnnotationConfigUtils {
 
 	public static @NotNull List<ConfigFieldRecord> getConfigFields(@NotNull AnnotationConfig annotationConfig) {
 		List<ConfigFieldRecord> list = new ArrayList<>();
-		for (Field field : annotationConfig.getClass().getDeclaredFields()) {
+		Set<String> pathSet = new HashSet<>();
+		Set<String> commentPathSet = new HashSet<>();
+		Class<? extends @NotNull AnnotationConfig> configClass = annotationConfig.getClass();
+		for (Field field : configClass.getDeclaredFields()) {
 			int modifiers = field.getModifiers();
-			// 检查是否static // TODO ??? 怎么没用上？
-			boolean isStatic = Modifier.isStatic(modifiers);
-			if (!field.isAnnotationPresent(ConfigKey.class)
-				|| Modifier.isTransient(modifiers)) {
+			ConfigKey configKey = field.getAnnotation(ConfigKey.class);
+			if (configKey == null
+				|| Modifier.isTransient(modifiers)
+				|| Modifier.isStatic(modifiers)) {
 				continue;
 			}
-			ConfigKey annotation = field.getAnnotation(ConfigKey.class);
 			// 获取路径，不存在则默认为根据变量名生成
-			String path = annotation.path();
+			String path = configKey.path();
 			if ("".equals(path)) {
 				path = getTomlKey(field.getName());
 			} else if (path.endsWith(".")){ // 以点结尾则根据变量名生成该项的名称
 				path += getTomlKey(field.getName());
 			}
-			list.add(new ConfigFieldRecord(new FieldAccessor(annotationConfig, field), path, annotation.comment()));
+			if (!pathSet.add(path)) { // 查重
+				logger.warn("Duplicated path \"{}\" at {}#{}, ignored!", path, configClass.getName(), field.getName());
+				continue;
+			}
+			// 获取其他注释
+			Comment[] comments = configKey.comments();
+			Map<String, String> commentsMap;
+			if (comments.length > 0) {
+				commentsMap = Arrays.stream(comments)
+					.filter(comment -> {
+						String path1 = comment.path();
+						if (commentPathSet.add(path1)) {
+							return true;
+						}
+						logger.warn("Duplicated comment path \"{}\" at {}#{}, ignored!", path1, configClass.getName(), field.getName());
+						return false;
+					})
+					.collect(Collectors.toUnmodifiableMap(Comment::path, Comment::comment));
+			} else {
+				commentsMap = Map.of();
+			}
+			list.add(new ConfigFieldRecord(new FieldAccessor(annotationConfig, field), path, configKey.comment(), commentsMap));
 		}
 		return List.copyOf(list);
 	}

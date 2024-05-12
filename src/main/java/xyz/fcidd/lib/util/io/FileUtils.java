@@ -3,44 +3,12 @@ package xyz.fcidd.lib.util.io;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
-import java.net.URI;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Path;
-import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import static xyz.fcidd.lib.util.io.JarPathFormat.ENDS_WITH_SLASH;
-
-@SuppressWarnings("unused")
 public class FileUtils {
-	/**
-	 * 创建输入的文件和路径
-	 */
-	@SuppressWarnings("ResultOfMethodCallIgnored")
-	public static void createFileAndDirs(@NotNull Path path) {
-		File file = path.toFile();
-		if (file.exists()) return;
-		file.getParentFile().mkdirs();
-		try {
-			file.createNewFile();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	/**
-	 * 将文本写入指定路径的文件
-	 */
-	public static void write(@NotNull Path path, @NotNull String text) throws IOException {
-		try (FileWriter fileWriter = new FileWriter(path.toFile())) {
-			fileWriter.write(text);
-		}
-	}
-
 	/**
 	 * 遍历输入的目录下第一层的所有文件
 	 */
@@ -77,7 +45,6 @@ public class FileUtils {
 		}
 	}
 
-	@SuppressWarnings({"ResultOfMethodCallIgnored", "UnusedReturnValue", "BooleanMethodIsAlwaysInverted"})
 	public static boolean create(@NotNull File file) {
 		if (!file.exists()) {
 			file.getParentFile().mkdirs();
@@ -88,43 +55,5 @@ public class FileUtils {
 			}
 		}
 		return true;
-	}
-
-	public static FileSystem getZipFileSystem(@NotNull Path zipPath, boolean create) throws IOException {
-		return FileSystems.newFileSystem(
-			URI.create("jar:file:" + zipPath.toUri().getPath()),
-			create ? Map.of("create", "true") : Map.of()
-		);
-	}
-
-	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
-	public static boolean isFile(@NotNull Path path) {
-		if (path.getNameCount() == 0) {
-			return false;
-		}
-		File file = path.toFile();
-		return file.isFile();
-	}
-
-	public static void requireIsFile(@NotNull Path path) {
-		if (!isFile(path)) {
-			throw new IllegalArgumentException("Not a file path " + path);
-		}
-	}
-
-	public static void requireIsFile(@NotNull Path path, String message) {
-		if (!isFile(path)) {
-			throw new IllegalArgumentException(message);
-		}
-	}
-
-	@Deprecated(forRemoval = true)
-	public static void visitResourceFolder(@NotNull Class<?> target, String path, @NotNull BiConsumer<ZipFile, ZipEntry> consumer) {
-		ResourceUtils.visitResourceFolder(target, path, consumer);
-	}
-
-	@Deprecated(forRemoval = true)
-	public static @NotNull String formatPath(@NotNull String path) {
-		return JarPathFormat.format(path, ENDS_WITH_SLASH);
 	}
 }

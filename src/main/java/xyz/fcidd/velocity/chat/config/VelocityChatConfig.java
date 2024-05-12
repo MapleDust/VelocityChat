@@ -1,15 +1,14 @@
 package xyz.fcidd.velocity.chat.config;
 
-import com.electronwill.nightconfig.core.Config;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import xyz.fcidd.lib.config.AnnotationConfig;
+import xyz.fcidd.lib.config.Comment;
 import xyz.fcidd.lib.config.ConfigKey;
 import xyz.fcidd.velocity.chat.message.MessageChannel;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 
 import static xyz.fcidd.velocity.chat.VelocityChatPlugin.DATA_DIRECTORY;
 import static xyz.fcidd.velocity.chat.command.Commands.*;
@@ -86,13 +85,15 @@ public class VelocityChatConfig extends AnnotationConfig {
 		Enable MiniMessage formats in chat. (<_colorname_>, <_decorationname_>, <reset>)
 		MiniMessage (https://docs.advntr.dev/minimessage/format.html)""")
 	private boolean formattableChat = true;
-	@ConfigKey(comment = """
-		设置命令别名
-		修改并重载后玩家需要切换服务器或重新加入游戏才会生效
-		Set aliases.""")
-	private static @NotNull Config commandAlias = Config.wrap(Map.of(), Config.inMemory().configFormat());
 	@Getter
-	@ConfigKey(path = "command_alias." + GLOBAL)
+	@ConfigKey(
+		comments = @Comment(
+			path = "command_alias",
+			comment = """
+				设置命令别名
+				修改并重载后玩家需要切换服务器或重新加入游戏才会生效
+				Set aliases."""),
+		path = "command_alias." + GLOBAL)
 	private @NotNull String commandGlobalAlias = GLOBAL_DEFAULT_ALIAS;
 	@Getter
 	@ConfigKey(path = "command_alias." + LOCAL)

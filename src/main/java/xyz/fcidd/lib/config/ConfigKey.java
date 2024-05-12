@@ -19,4 +19,6 @@ public @interface ConfigKey {
 	 * @return 配置文件路径
 	 */
 	String path() default "";
+
+	Comment[] comments() default {};
 }

@@ -69,11 +69,7 @@ import java.util.concurrent.CompletableFuture;
  * }}</pre>
  * <p>
  *
- * <p>static 修饰的参数仅用来承载注释，不会写入文件</p>
- * <pre>{@code
- * private static final CommentedConfig myMap = AnnotationConfigUtils.wrap(...));
- * }</pre>
- * <p>可以在静态块内为默认映射表中项目设置默认注释：</p>
+ * <p>在静态块内为默认映射表中项目设置默认注释：</p>
  * <pre>{@code
  * static {
  * 		myMap.setComment(k2, "注释");
@@ -153,11 +149,12 @@ public abstract class AnnotationConfig {
 				fieldCache.forEach(entry -> loadDefault(entry, finalDefaultConfig));
 			}
 			CommentedFileConfig fileConfig = this.fileConfig;
-			fileConfig.clear();
+			fileConfig.clear(); // 先清空
 			fileConfig.load();
 			final Config finalDefaultConfig = defaultConfig;
 			// 去除冗余项
-			fileConfig.valueMap().keySet().stream().filter(path -> !finalDefaultConfig.contains(path)).toList()
+			fileConfig.valueMap().keySet().stream()
+				.filter(path -> !finalDefaultConfig.contains(path))
 				.forEach(fileConfig::remove);
 			fieldCache.forEach(entry -> load0(entry, fileConfig, finalDefaultConfig));
 			fileConfig.save();
@@ -189,53 +186,74 @@ public abstract class AnnotationConfig {
 		FieldAccessor field = entry.accessor();
 		String path = entry.path();
 		// 如果不是 static 则赋值，static 修饰的参数仅用来承载注释
-		if (!field.isStatic()) {
-			// 设置值
-			Object value = field.get();
-			if (value == null) value = "null";
-			defaultConfig.set(path, value);
-		}
+//		if (!field.isStatic()) { // 没有 static 了
+		// 设置值
+		Object value = field.get();
+		if (value == null) value = "null";
+		defaultConfig.set(path, value);
+//		}
 	}
 
 	private void load0(@NotNull ConfigFieldRecord entry, CommentedFileConfig fileConfig, Config defaultConfig) {
 		FieldAccessor field = entry.accessor();
 		String path = entry.path();
 		// 如果不是 static 则赋值，static 修饰的参数仅用来承载注释
-		if (!field.isStatic()) {
-			// 设置值
-			Object fileConfigValue = fileConfig.get(path);
-			if (fileConfigValue == null) {
-				// 为null则将内存中的写入文件
+//		if (!field.isStatic()) { // 没有 static 了
+		// 设置值
+		Object fileConfigValue = fileConfig.get(path);
+		if (fileConfigValue == null) {
+			// 为null则将默认配置写入文件
+			Object value = defaultConfig.get(path);
+			if (value == null) value = "null";
+			fileConfig.set(path, value);
+		} else {
+			try {
+				field.set(fileConfigValue);
+			} catch (ClassCastException e) {
+				// 文件给出的类型不对则将默认配置写入文件
 				Object value = defaultConfig.get(path);
 				if (value == null) value = "null";
 				fileConfig.set(path, value);
-			} else {
-				try {
-					field.set(fileConfigValue);
-				} catch (ClassCastException e) {
-					// 文件给出的类型不对则将内存中的写入文件
-					Object value = defaultConfig.get(path);
-					if (value == null) value = "null";
-					fileConfig.set(path, value);
-				}
 			}
 		}
+//		}
 		// 设置注释
 		String comment = entry.comment();
 		if (!"".equals(comment) && (forceComments || fileConfig.getComment(path) == null)) {
 			fileConfig.setComment(path, comment);
 		}
+		// 其他注释
+		setOtherComments(fileConfig, path, entry.otherComments());
 	}
 
 	private void save0(@NotNull ConfigFieldRecord entry, CommentedFileConfig fileConfig) {
 		FieldAccessor field = entry.accessor();
 		String path = entry.path();
-		if (!field.isStatic()) {
-			fileConfig.set(path, field.get());
-		}
+//		if (!field.isStatic()) { // 没有 static 了
+		// 设置值
+		fileConfig.set(path, field.get());
+//		}
+		// 设置注释
 		String comment = entry.comment();
-		if (!"".equals(comment) && (forceComments || fileConfig.getComment(path) == null)) {
+		if (!"".equals(comment) && (forceComments || !fileConfig.containsComment(path))) {
 			fileConfig.setComment(path, comment);
 		}
+		// 其他注释
+		setOtherComments(fileConfig, path, entry.otherComments());
+	}
+
+	private void setOtherComments(CommentedFileConfig fileConfig, String path, Map<String, String> otherComments) {
+		if (otherComments.isEmpty()) {
+			return;
+		}
+		if (forceComments) {
+			otherComments.forEach(fileConfig::setComment);
+			return;
+		}
+		otherComments.forEach((path1, comment1) -> {
+			if (!fileConfig.containsComment(path)) {
+				fileConfig.setComment(path1, comment1);
+			}
+		});
 	}
 }
