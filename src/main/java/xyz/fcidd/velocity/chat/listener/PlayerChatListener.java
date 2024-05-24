@@ -10,10 +10,10 @@ import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import xyz.fcidd.velocity.chat.VelocityChatPlugin;
+import xyz.fcidd.velocity.chat.message.Components;
 import xyz.fcidd.velocity.chat.message.MessageChannel;
 import xyz.fcidd.velocity.chat.util.Caches;
 import xyz.fcidd.velocity.chat.util.CharacterUtils;
-import xyz.fcidd.velocity.chat.util.ComponentUtils;
 import xyz.fcidd.velocity.chat.util.Utils;
 
 import java.util.List;
@@ -91,7 +91,7 @@ public class PlayerChatListener {
 		// 格式化消息组件
 		Component messageComponent;
 		if (CONFIG.isFormattableChat()) {
-			messageComponent = ComponentUtils.formattedMessage(message);
+			messageComponent = Components.formattedMessage(message);
 		} else {
 			messageComponent = Component.text(message);
 		}
@@ -106,7 +106,7 @@ public class PlayerChatListener {
 			Utils.sendGlobalPlayerChat(player, messageComponent, currentServer, serverId);
 		} else {
 			// 否则不接管所在服务器的聊天
-			Component chatComponent = Utils.getGlobalPlayerChatComponent(player, messageComponent, currentServer, serverId);
+			Component chatComponent = Components.getGlobalPlayerChatComponent(player, messageComponent, currentServer, serverId);
 			PROXY_SERVER.getConsoleCommandSource().sendMessage(chatComponent);
 			for (RegisteredServer server : PROXY_SERVER.getAllServers()) {
 				if (!server.equals(currentServer)) {

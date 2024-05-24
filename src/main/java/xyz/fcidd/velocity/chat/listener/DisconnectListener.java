@@ -5,7 +5,6 @@ import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
-import xyz.fcidd.velocity.chat.util.ComponentUtils;
 import xyz.fcidd.velocity.chat.message.Components;
 import xyz.fcidd.velocity.chat.util.Caches;
 import xyz.fcidd.velocity.chat.util.TabListUtils;
@@ -18,7 +17,7 @@ public class DisconnectListener {
 	public void onPlayerDisconnect(@NotNull DisconnectEvent event) {
 		Player player = event.getPlayer();
 		// 玩家名
-		Component playerNameComponent = ComponentUtils.getPlayerComponent(player);
+		Component playerNameComponent = Components.getPlayerComponent(player);
 		// 将玩家退出群组的消息发送给所有人
 		PROXY_SERVER.sendMessage(Components.DISCONNECT.args(playerNameComponent));
 		Caches.removePlayerCaches(player); // 移除玩家缓存

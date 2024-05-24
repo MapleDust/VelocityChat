@@ -17,8 +17,6 @@ import org.slf4j.Logger;
 import xyz.fcidd.velocity.chat.VelocityChatPlugin;
 import xyz.fcidd.velocity.chat.message.MessageChannel;
 import xyz.fcidd.velocity.chat.util.Caches;
-import xyz.fcidd.velocity.chat.util.CommandUtils;
-import xyz.fcidd.velocity.chat.util.ComponentUtils;
 import xyz.fcidd.velocity.chat.util.Utils;
 
 import java.util.Optional;
@@ -46,7 +44,7 @@ public class VchatCommand {
 		.executes(VchatCommand::executeLocalMessage);
 	private static final RequiredArgumentBuilder<CommandSource, String> TELL_RRB = RequiredArgumentBuilder
 		.<CommandSource, String>argument("player", StringArgumentType.word())
-		.suggests(CommandUtils::suggestPlayers)
+		.suggests(Commands::suggestPlayers)
 		.then(RequiredArgumentBuilder
 			.<CommandSource, String>argument("message", StringArgumentType.greedyString())
 			.executes(VchatCommand::executeTell));
@@ -58,7 +56,7 @@ public class VchatCommand {
 		.executes(VchatCommand::executeTellConsole);
 	private static final RequiredArgumentBuilder<CommandSource, String> NOTIFY_RRB = RequiredArgumentBuilder
 		.<CommandSource, String>argument("server", StringArgumentType.word())
-		.suggests(CommandUtils::suggestServers)
+		.suggests(Commands::suggestServers)
 		.then(RequiredArgumentBuilder
 			.<CommandSource, String>argument("message", StringArgumentType.greedyString())
 			.executes(VchatCommand::executeNotify));
@@ -178,20 +176,20 @@ public class VchatCommand {
 			return 0;
 		}
 		player.spoofChatInput(message);
-		return 1;
+		return SUCCEED;
 	}
 
 	private static int executeGlobalMessage(@NotNull CommandContext<CommandSource> context) {
 		String message = context.getArgument("message", String.class);
 		Component messageComponent;
 		if (CONFIG.isFormattableChat()) {
-			messageComponent = ComponentUtils.formattedMessage(message);
+			messageComponent = formattedMessage(message);
 		} else {
 			messageComponent = Component.text(message);
 		}
 		CommandSource source = context.getSource();
 		Utils.sendGlobalPlayerChat(((Player) source), messageComponent);
-		return 1;
+		return SUCCEED;
 	}
 
 	private static int executeChannel(CommandContext<CommandSource> context) {
@@ -204,27 +202,27 @@ public class VchatCommand {
 			case GLOBAL -> player.sendMessage(CHANNEL_CURRENT.args(CHANNEL_GLOBAL));
 			case LOCAL -> player.sendMessage(CHANNEL_CURRENT.args(CHANNEL_LOCAL));
 		}
-		return 1;
+		return SUCCEED;
 	}
 
 	private static int executeGlobal(CommandContext<CommandSource> context) {
 		Player player = (Player) context.getSource();
 		Caches.setPlayerChannel(player, MessageChannel.GLOBAL);
 		player.sendMessage(CHANNEL_SWITCH.args(CHANNEL_GLOBAL));
-		return 1;
+		return SUCCEED;
 	}
 
 	private static int executeLocal(CommandContext<CommandSource> context) {
 		Player player = (Player) context.getSource();
 		Caches.setPlayerChannel(player, MessageChannel.LOCAL);
 		player.sendMessage(CHANNEL_SWITCH.args(CHANNEL_LOCAL));
-		return 1;
+		return SUCCEED;
 	}
 
 	private static int executeReload(CommandContext<CommandSource> context) {
 		VelocityChatPlugin.reload();
 		PROXY_SERVER.sendMessage(RELOADED);
-		return 1;
+		return SUCCEED;
 	}
 
 	private static int executeHelp(@NotNull CommandContext<CommandSource> context) {
@@ -262,7 +260,7 @@ public class VchatCommand {
 				.appendNewline()
 				.append(DASH_AND_SPACE)
 				.append(HELP_CHANNEL));
-			return 1;
+			return SUCCEED;
 		}
 
 		if (source instanceof ConsoleCommandSource console) {
@@ -279,10 +277,10 @@ public class VchatCommand {
 				.appendNewline()
 				.append(DASH_AND_SPACE)
 				.append(HELP_TELL.args(Component.text(CONFIG.getCommandTellAlias()))));
-			return 1;
+			return SUCCEED;
 		}
 
-		return 0;
+		return FAILED;
 	}
 
 	private static int executeTell(CommandContext<CommandSource> context) {
@@ -293,7 +291,7 @@ public class VchatCommand {
 		PROXY_SERVER.getPlayer(player).ifPresentOrElse(player1 -> {
 			Component messageComponent;
 			if (CONFIG.isFormattableChat()) {
-				messageComponent = ComponentUtils.formattedMessage(message);
+				messageComponent = formattedMessage(message);
 			} else {
 				messageComponent = Component.text(message);
 			}
@@ -303,46 +301,46 @@ public class VchatCommand {
 			));
 			// 发送反馈
 			source.sendMessage(TELL_SUCCEED.args(
-				ComponentUtils.getPlayerComponent(player1),
+				getPlayerComponent(player1),
 				messageComponent
 			));
 		}, () -> {
 			// 发送反馈
 			source.sendMessage(PLAYER_NOT_FOUND.args(Component.text(player)));
 		});
-		return 1;
+		return SUCCEED;
 	}
 
 	private static int executeBroadcast(@NotNull CommandContext<CommandSource> context) {
 		String message = context.getArgument("message", String.class);
 		Component messageComponent;
 		if (CONFIG.isFormattableChat()) {
-			messageComponent = ComponentUtils.formattedMessage(message);
+			messageComponent = formattedMessage(message);
 		} else {
 			messageComponent = Component.text(message);
 		}
 		PROXY_SERVER.sendMessage(PROXY_BROADCAST_PREFIX.append(messageComponent));
-		return 1;
+		return SUCCEED;
 	}
 
 	private static int executeTellConsole(CommandContext<CommandSource> context) {
 		String message = context.getArgument("message", String.class);
 		Component messageComponent;
 		if (CONFIG.isFormattableChat()) {
-			messageComponent = ComponentUtils.formattedMessage(message);
+			messageComponent = formattedMessage(message);
 		} else {
 			messageComponent = Component.text(message);
 		}
 		Player source = (Player) context.getSource();
 		PROXY_SERVER.getConsoleCommandSource().sendMessage(TELL_MESSAGE.args(
-			ComponentUtils.getPlayerComponent(source),
+			getPlayerComponent(source),
 			messageComponent
 		));
 		source.sendMessage(TELL_SUCCEED.args(
 			PROXY,
 			messageComponent
 		));
-		return 1;
+		return SUCCEED;
 	}
 
 	private static int executeNotify(CommandContext<CommandSource> context) {
@@ -353,7 +351,7 @@ public class VchatCommand {
 		PROXY_SERVER.getServer(server).ifPresentOrElse(target1 -> {
 			Component message0;
 			if (CONFIG.isFormattableChat()) {
-				message0 = ComponentUtils.formattedMessage(message);
+				message0 = formattedMessage(message);
 			} else {
 				message0 = Component.text(message);
 			}
@@ -361,12 +359,12 @@ public class VchatCommand {
 			if (source instanceof ConsoleCommandSource) {
 				message1 = PROXY;
 			} else if (source instanceof Player player) {
-				message1 = ComponentUtils.getPlayerComponent(player);
+				message1 = getPlayerComponent(player);
 			} else {
 				message1 = Component.text("???"); // ???为什么会进这里？
 			}
 			message1 = message1.append(PROXY_NOTIFY_0)
-				.append(ComponentUtils.getServerComponent(target1))
+				.append(getServerComponent(target1))
 				.append(PROXY_NOTIFY_1)
 				.append(message0);
 			// 发送
@@ -377,6 +375,6 @@ public class VchatCommand {
 			// 发送反馈
 			source.sendMessage(SERVER_NOT_FOUND.args(Component.text(server)));
 		});
-		return 1;
+		return SUCCEED;
 	}
 }

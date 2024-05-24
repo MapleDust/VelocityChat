@@ -16,8 +16,10 @@ import java.util.concurrent.CompletableFuture;
  * <p>使用了 <a href="https://github.com/TheElectronWill/night-config">night-config</a> 实现，支持 json yaml toml hocon 格式</p>
  * <p>
  *
- * <p>若要将字段注册为配置项，应对其添加{@link ConfigKey} 注解</p>
- * <p>该注解有两个可选的参数：</p>
+ * <p>配置项支持 基本类型、{@link String}、{@link List}、{@link Config}</p>
+ * <p>若要将字段注册为配置项，对其添加{@link ConfigKey} 注解</p>
+ * <p>该注解有三个可选的参数：</p>
+ * <p>
  *
  * <p>path可以用于指定当前字段的配置项路径以及名称</p>
  * <p>本例的配置项名称将会设置为“my_setting”，原始字段名会被忽略</p>
@@ -35,8 +37,9 @@ import java.util.concurrent.CompletableFuture;
  * <pre>{@code
  * @ConfigKey(path = "my_grandparent_path.my_parent_path.")
  * private String mySetting = "本项的默认值";}</pre>
+ * <p>
  *
- * <p>comment用于指定当前配置项的注释，支持使用文本块设置多行注释</p>
+ * <p>comment用于指定当前配置项的注释，使用文本块设置多行注释</p>
  * <pre>{@code
  * @ConfigKey(comment = """
  * 	这是一条配置文件注释
@@ -44,36 +47,28 @@ import java.util.concurrent.CompletableFuture;
  * private String mySetting2 = "本项的默认值";}</pre>
  * <p>
  *
- * <p>配置文件中映射表类型的默认值必须使用任意的 {@link Config}</p>
- * <p>使用 {@link AnnotationConfigUtils#wrap} 方法可以将 {@link Map} 解析为 {@link Config}</p>
- *
+ * <p>comments用于指定任意路径配置项的注释，使用文本块设置多行注释</p>
  * <pre>{@code
- * @ConfigKey()
- * private CommentedConfig myMap = AnnotationConfigUtils.wrap(
- * 	Map.of(
- * 		"k1", ""
- * 		"k2", Map.of(
- * 			...
- * 		),
- * 		...
- * 	));}</pre>
- * <p>可以在块内或初始化时为默认映射表中项目设置默认注释：</p>
- * <pre>{@code
- * public MyConfig(...) {
- * 		myMap.setComment(k2, "注释");
- * }}</pre>
+ * @ConfigKey(
+ *    comments = @Comment(
+ * 		path = "path.to.the.comment",
+ * 		comment = """
+ * 		这是一条配置文件注释
+ * 		这是第二行注释""")
+ * private String mySetting2 = "本项的默认值";}</pre>
  * 或
  * <pre>{@code
- * {
- * 		myMap.setComment(k2, "注释");
- * }}</pre>
- * <p>
- *
- * <p>在静态块内为默认映射表中项目设置默认注释：</p>
- * <pre>{@code
- * static {
- * 		myMap.setComment(k2, "注释");
- * }}</pre>
+ * @ConfigKey(
+ *    comments = {@Comment(
+ *        path = "path.to.the.comment",
+ * 		comment = """
+ * 		这是一条配置文件注释
+ * 		这是第二行注释"""), @Comment(
+ * 		path = "path.to.another.comment",
+ * 		comment = """
+ * 		这是一条配置文件注释
+ * 		这是第二行注释""")}
+ * private String mySetting2 = "本项的默认值";}</pre>
  */
 // TODO 重构这一坨屎山
 public abstract class AnnotationConfig {

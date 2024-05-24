@@ -11,7 +11,6 @@ import xyz.fcidd.velocity.chat.VelocityChatPlugin;
 import xyz.fcidd.velocity.chat.command.Commands;
 import xyz.fcidd.velocity.chat.message.Components;
 import xyz.fcidd.velocity.chat.util.CharacterUtils;
-import xyz.fcidd.velocity.chat.util.ComponentUtils;
 
 import java.util.List;
 
@@ -40,7 +39,7 @@ public class CommandExecuteListener {
 
 		int size = commandNodes.size();
 		// TODO 换更好的实现。本服务器拒绝命令后再执行跨服tp、修改命令提示
-		if (CharacterUtils.equalsAny(rootCommand, Commands.TELEPORT)) {
+		if (CharacterUtils.equalsAny(rootCommand, Commands.TELEPORTs)) {
 			if (!CONFIG.isCommandTeleportSwitchServers()) {
 				return;
 			}
@@ -50,7 +49,7 @@ public class CommandExecuteListener {
 					event.setResult(denied());
 				}
 			} else if (size == 3 // /tp <source> <target>
-				&& commandNodes.get(size - 2).equals(sourcePlayer.getUsername())) {
+					   && commandNodes.get(size - 2).equals(sourcePlayer.getUsername())) {
 				// 跨服tp
 				if (PLAYER_UTIL.tpWithServerSwitch(sourcePlayer, commandNodes.get(2))) {
 					event.setResult(denied());
@@ -72,12 +71,12 @@ public class CommandExecuteListener {
 				TextComponent tellMessage = Component.text(String.join(" ", commandNodes.subList(2, size - 1)));
 				// 发送私聊
 				targetPlayer.sendMessage(Components.TELL_MESSAGE.args(
-					ComponentUtils.getPlayerComponent(sourcePlayer),
+					Components.getPlayerComponent(sourcePlayer),
 					tellMessage
 				));
 				// 发送反馈
 				sourcePlayer.sendMessage(Components.TELL_SUCCEED.args(
-					ComponentUtils.getPlayerComponent(targetPlayer),
+					Components.getPlayerComponent(targetPlayer),
 					tellMessage
 				));
 			});

@@ -26,29 +26,7 @@ public class Utils {
 	}
 
 	public static void sendGlobalPlayerChat(@NotNull Player player, @NotNull Component chatMessage, RegisteredServer currentServer, String serverId) {
-		PROXY_SERVER.sendMessage(getGlobalPlayerChatComponent(player, chatMessage, currentServer, serverId));
+		PROXY_SERVER.sendMessage(Components.getGlobalPlayerChatComponent(player, chatMessage, currentServer, serverId));
 	}
 
-	public static @NotNull Component getGlobalPlayerChatComponent(@NotNull Player player, @NotNull Component chatMessage, RegisteredServer currentServer, String serverId) {
-		// 玩家名
-		Component playerNameComponent = ComponentUtils.getPlayerComponent(player);
-		// 构建并发送玩家消息
-		String serverChatFormatTranslationKey = Components.SERVER_CHAT + serverId;
-		if (hasTranslation(serverChatFormatTranslationKey)) {
-			return Component.translatable(
-				serverChatFormatTranslationKey, // 追加子服务器id
-				Components.PROXY_NAME, // 群组名称
-				ComponentUtils.getServerComponent(currentServer), // 服务器名称
-				playerNameComponent, // 玩家名
-				chatMessage // 聊天内容
-			);
-		} else {
-			return Components.DEFAULT_CHAT.args(
-				Components.PROXY_NAME, // 群组名称
-				ComponentUtils.getServerComponent(currentServer), // 服务器名称
-				playerNameComponent, // 玩家名
-				chatMessage // 聊天内容
-			);
-		}
-	}
 }

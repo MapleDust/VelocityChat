@@ -21,10 +21,13 @@ import java.util.stream.Collectors;
 public final class AnnotationConfigUtils {
 	private static final Logger logger = LoggerFactory.getLogger(AnnotationConfig.class.getSimpleName());
 	private static final Map<String, String> CONFIG_KEY_CACHE = new WeakHashMap<>();
+
+	@Deprecated
 	public static @NotNull CommentedConfig wrap(@NotNull Map<?, ?> tree) {
 		return wrap(tree, false);
 	}
 
+	@Deprecated
 	public static @NotNull CommentedConfig wrap(@NotNull Map<?, ?> tree, boolean concurrent) {
 		Map<String, Object> map = new HashMap<>();
 		for (Map.Entry<?, ?> entry : tree.entrySet()) {
@@ -65,7 +68,7 @@ public final class AnnotationConfigUtils {
 			.writingMode(WritingMode.REPLACE);
 	}
 
-	public static @NotNull List<ConfigFieldRecord> getConfigFields(@NotNull AnnotationConfig annotationConfig) {
+	static @NotNull List<ConfigFieldRecord> getConfigFields(@NotNull AnnotationConfig annotationConfig) {
 		List<ConfigFieldRecord> list = new ArrayList<>();
 		Set<String> pathSet = new HashSet<>();
 		Set<String> commentPathSet = new HashSet<>();
@@ -81,9 +84,9 @@ public final class AnnotationConfigUtils {
 			// 获取路径，不存在则默认为根据变量名生成
 			String path = configKey.path();
 			if ("".equals(path)) {
-				path = getTomlKey(field.getName());
+				path = getConfigKey(field.getName());
 			} else if (path.endsWith(".")){ // 以点结尾则根据变量名生成该项的名称
-				path += getTomlKey(field.getName());
+				path += getConfigKey(field.getName());
 			}
 			if (!pathSet.add(path)) { // 查重
 				logger.warn("Duplicated path \"{}\" at {}#{}, ignored!", path, configClass.getName(), field.getName());
@@ -111,7 +114,7 @@ public final class AnnotationConfigUtils {
 		return List.copyOf(list);
 	}
 
-	private static @NotNull String getTomlKey(@NotNull String fieldName) {
+	private static @NotNull String getConfigKey(@NotNull String fieldName) {
 		String tomlPath = CONFIG_KEY_CACHE.get(fieldName);
 		if (tomlPath == null) {
 			StringBuilder sb = new StringBuilder();

@@ -18,8 +18,8 @@ public class VelocityChatConfig extends AnnotationConfig {
 	@Getter
 	@ConfigKey(comment = """
 		在此处填写 MCDR 命令的前缀，支持多个MCDR命令前缀
-		如果没有使用 MCDR 开服请保持默认
-		如果使用 MCDR 开服请根据实际情况填写，一般为“!!”
+		如果没有使用 MCDR 请保持默认
+		如果使用 MCDR ，请根据实际情况填写，一般为“!!”
 		全局聊天不会接管以列表中字符串为开头的聊天消息
 		Send to current dedicated server only if the message starting with matched string.""")
 	@NotNull
@@ -56,8 +56,8 @@ public class VelocityChatConfig extends AnnotationConfig {
 	private boolean logPlayerCommands = false;
 	@Getter
 	@ConfigKey(comment = """
-		是否打印玩家命令日志
-		Log player commands.""")
+		是否打印玩家私聊内容
+		Log player tells.""")
 	private boolean logPlayerTells = false;
 	@Getter
 	@ConfigKey(comment = """
